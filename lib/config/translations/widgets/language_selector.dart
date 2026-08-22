@@ -51,7 +51,7 @@ class LanguageSelector extends StatelessWidget {
 
         return ListView(
           children: controller.supportedLanguages.map((lang) {
-            // ✅ 'locale' এর বদলে 'code'+'country' দিয়ে বানাচ্ছি
+            // Build locale from code + country
             final localeValue = '${lang['code']}_${lang['country']}';
             final isSelected = currentValue == localeValue;
 
@@ -65,7 +65,6 @@ class LanguageSelector extends StatelessWidget {
                   : null,
               tileColor: isSelected ? Colors.purple.withOpacity(0.1) : null,
               onTap: () {
-                // ✅ 'locale' এর বদলে 'code' use করছি
                 controller.changeLanguage(lang['code']!);
                 Get.back();
               },

@@ -34,7 +34,7 @@ class CommunicatorContentModel {
   }
 }
 
-// ─── Helper: translations থেকে name/speak বের করা ───────────────────────────
+// Helper: resolve name/speak from translations
 String _resolveName(Map<String, dynamic> json, String lang) {
   final translations = json['translations'];
   if (translations is Map) {
@@ -57,19 +57,18 @@ String? _resolveSpeak(Map<String, dynamic> json, String lang) {
   return json['speak'];
 }
 
-// ✅ সঠিক — এইটা দিয়ে replace করো
 String? _resolveWord(Map<String, dynamic> json, String lang) {
   final translations = json['translations'];
   if (translations is Map) {
     final langData = translations[lang];
     if (langData is Map) {
-      // 'word' key আগে চেক, তারপর fallback হিসেবে 'name'
+      // Prefer 'word', then fall back to 'name'
       final word = langData['word'];
       if (word != null && (word as String).isNotEmpty) return word;
       final name = langData['name'];
       if (name != null && (name as String).isNotEmpty) return name as String;
     }
-    // lang না পাইলে 'en' তে fallback
+    // Fall back to English if the requested language is missing
     final enData = translations['en'];
     if (enData is Map) {
       return (enData['word'] ?? enData['name']) as String?;

@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Get.offAllNamed(AppRoutes.COMMUNICATORHOMESCREEN);
         }
         else {
-          // যদি role null বা unknown হয়
+          // Unknown or missing role → sign in
           Get.offAllNamed(AppRoutes.SIGNINSCREEN);
         }
 

@@ -6,7 +6,6 @@ class CaregiverProfileBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<CaregiverProfileController>(() => CaregiverProfileController());
-    // ✅ এটাই missing ছিল — profile screen এ invitation controller দরকার
     Get.lazyPut<CaregiverInvitationController>(() => CaregiverInvitationController());
   }
 }

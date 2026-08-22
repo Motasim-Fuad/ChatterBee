@@ -5,7 +5,7 @@ class ActivityModel {
   final String activityName;
   final String datetime;
   final String? imageIcon;
-  final String? status;  // ✅ যোগ করা হয়েছে
+  final String? status;
   final String createdAt;
   final String updatedAt;
 

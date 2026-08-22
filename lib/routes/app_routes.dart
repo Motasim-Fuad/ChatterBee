@@ -317,9 +317,8 @@ final List<GetPage> routes = [
   GetPage(
   name: AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS,
   page: () => const CommunicatorAllQuickSpeaksScreen(),
-  // NOTE: CommunicatorHomeController ইতিমধ্যে registered থাকবে
-  //       (home screen থেকে navigate হয়), তাই আলাদা binding লাগবে না।
-  //       তবে যদি deep-link দরকার হয় তাহলে নিচের binding দাও:
+  // CommunicatorHomeController is usually already registered from home.
+  // Keep this binding for deep-link / cold-start navigation.
   binding: BindingsBuilder(() {
     if (!Get.isRegistered<CommunicatorHomeController>()) {
       Get.put(CommunicatorHomeController());

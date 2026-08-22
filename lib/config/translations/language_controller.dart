@@ -23,7 +23,7 @@ class LanguageController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // 🔥 Pro status change হলে auto react করবে
+    // React when Pro status changes
     ever(proController.isProUser, (_) {
       _handleProChange();
     });
@@ -38,7 +38,7 @@ class LanguageController extends GetxController {
 
   void _handleProChange() {
     if (!isPro) {
-      // ❗ Pro expire হলে force back to English
+      // Force English if Pro expires
       currentLocale.value = const Locale('en', 'US');
       Get.updateLocale(currentLocale.value);
     }

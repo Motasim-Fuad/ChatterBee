@@ -243,7 +243,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
 // Auto-renewal disclaimer
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Platform.isIOS  // ← .ios না, .isIOS লিখতে হবে
+                      child: Platform.isIOS
                           ? Text(
                         'Payment will be charged to your Apple ID account at confirmation of purchase. '
                             'Subscription automatically renews unless canceled at least 24 hours before '
@@ -256,7 +256,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                           height: 1.5,
                         ),
                       )
-                          : const SizedBox.shrink(), // Android-এ কিছুই দেখাবে না
+                          : const SizedBox.shrink(),
                     ),
 
                     const SizedBox(height: 12),

@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 class FcmTokenRepository {
   final ApiClient _apiClient = ApiClient();
 
-  /// Register FCM Token — backend এ token save করে
+  /// Register FCM token with the backend
   Future<ApiResponse> registerFcmToken({
     required String deviceToken,
     required String deviceType,
@@ -46,7 +46,7 @@ class FcmTokenRepository {
     }
   }
 
-  /// Delete FCM Token — ID দিয়ে token delete করে
+  /// Delete FCM token by ID
   Future<ApiResponse> deleteFcmToken({required String tokenId}) async {
     try {
       final String url = "${AppUrl.baseUrl}/api/notification/fcm-tokens/$tokenId/";
@@ -86,7 +86,7 @@ class FcmTokenRepository {
     }
   }
 
-  /// Device type detect করে
+  /// Detect device type
   static String getDeviceType() {
     if (Platform.isAndroid) return "android";
     if (Platform.isIOS) return "ios";

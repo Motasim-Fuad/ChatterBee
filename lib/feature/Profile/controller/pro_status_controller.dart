@@ -12,7 +12,7 @@ class ProStatusController extends GetxController {
 
   // ── Reactive state ─────────────────────────────────────────
   final isProUser    = false.obs;
-  final isChecking   = true.obs;   // initial load spinner এর জন্য
+  final isChecking   = true.obs;   // initial load spinner
 
   // ── Lifecycle ──────────────────────────────────────────────
   @override
@@ -22,7 +22,7 @@ class ProStatusController extends GetxController {
     _listenToStream();
   }
 
-  // ── 1. App launch-এ একবার current status fetch ────────────
+  // Fetch current status once on app launch
   Future<void> _initStatus() async {
     isChecking.value = true;
     try {
@@ -36,7 +36,7 @@ class ProStatusController extends GetxController {
   }
 
   // ── 2. RevenueCat stream → auto update ────────────────────
-  //    Subscription expire হলে RevenueCat নিজেই এই listener call করবে
+  // RevenueCat calls this listener when a subscription expires
   void _listenToStream() {
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
     debugPrint('[PRO] ✅ Stream listener attached');
@@ -70,12 +70,11 @@ class ProStatusController extends GetxController {
     debugPrint('');
   }
 
-  // ── Manual refresh (Pull-to-refresh বা debug-এ কাজে লাগবে) ─
+  // Manual refresh (pull-to-refresh or debug)
   Future<void> refresh() => _initStatus();
 
   // ── Cleanup ────────────────────────────────────────────────
-  // permanent: true হওয়ায় এটা normally call হবে না
-  // কিন্তু safety-এর জন্য রাখা ভালো
+  // With permanent: true this is rarely called; kept as a safety net
   @override
   void onClose() {
     Purchases.removeCustomerInfoUpdateListener(_onCustomerInfoUpdated);

@@ -58,7 +58,7 @@ class CommunicatorProfileController extends GetxController {
   String _capitalizeFirst(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase();
 
-  // ✅ Buddy Bee: free user হলে block
+  // Buddy Bee: block free users
   void toggleBuddyBeeMode(bool value) {
     if (value && !_isPro) {
       _showProUpgradeDialog('buddy_bee_mode'.tr);

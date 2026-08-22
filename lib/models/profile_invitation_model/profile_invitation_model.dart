@@ -43,8 +43,8 @@ class InvitationModel {
 // ==================== CONNECTION MODEL ====================
 
 class ConnectionModel {
-  final int id;             // connection record এর id
-  final int communicatorId; // communicator user এর id (API তে communicator_id)
+  final int id;             // connection record id
+  final int communicatorId; // communicator user id (API field: communicator_id)
   final String communicatorName;
   final String? communicatorAvatar;
   final String? profileType;
@@ -62,7 +62,7 @@ class ConnectionModel {
   });
 
   factory ConnectionModel.fromJson(Map<String, dynamic> json) {
-    // API connection structure এর দুটো possible format:
+    // API connection payload can arrive in two shapes:
     //
     // Format 1 (flat):
     //   {"id": 1, "communicator_id": 130, "communicator_name": "...", ...}
@@ -90,7 +90,7 @@ class ConnectionModel {
       profileType = communicatorField['profile_type'];
     } else {
       // Flat or integer FK — Format 1 & 3
-      // ✅ FIX: communicator_id field থেকে নাও, integer FK থেকে নয়
+      // Prefer communicator_id over an integer FK
       commId = json['communicator_id'] ??
           (isIntId ? communicatorField : 0);
       commName = json['communicator_name'] ?? json['full_name'] ?? '';

@@ -66,7 +66,7 @@ class CommunicatorHomeController extends GetxController {
     isLoading.value = true;
     loadError.value = '';
 
-    // 1️⃣ Profile থেকে buddy_mode check করো
+    // Check buddy_mode from profile
     try {
       final profileRes = await _authRepository.getProfile();
       if (profileRes.isSuccess && profileRes.data != null) {
@@ -77,10 +77,10 @@ class CommunicatorHomeController extends GetxController {
       debugPrint('CommunicatorHomeController: profile fetch error: $e');
     }
 
-    // 2️⃣ Current language নাও
+    // Current language
     final lang = _currentLang;
 
-    // 3️⃣ Buddy mode অনুযায়ী সঠিক endpoint hit করো
+    // Hit the endpoint that matches buddy mode
     final res = isBuddyMode.value
         ? await _repo.getBuddyModeContent(lang: lang)
         : await _repo.getContent(lang: lang);
@@ -117,7 +117,6 @@ class CommunicatorHomeController extends GetxController {
 
   // ── Speak button ───────────────────────────────────────────────────────────
   /// Plays audio + calls pressed API + starts 2-second cooldown
-// speakQuickSpeak() — replace করো:
   void speakQuickSpeak() {
     if (isSpeakCooldown.value) return;
 
@@ -140,7 +139,7 @@ class CommunicatorHomeController extends GetxController {
 
   void clearQuickSpeak() {
     _stopAudio();
-    TtsService.to.stop(); // TTS ও বন্ধ করো
+    TtsService.to.stop();
     selectedQsId.value = -1;
     quickSpeakText.value = '';
     quickSpeakImage.value = '';
@@ -148,7 +147,7 @@ class CommunicatorHomeController extends GetxController {
   }
   // ── Cooldown helpers ───────────────────────────────────────────────────────
   void _startCooldown() {
-    _cancelCooldown(); // আগের timer থাকলে বাতিল করো
+    _cancelCooldown();
 
     cooldownCount.value = 5;
     isSpeakCooldown.value = true;

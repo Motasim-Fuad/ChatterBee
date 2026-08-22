@@ -67,7 +67,7 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
           );
         }
 
-        // ── Content ──  (backend data — translate হবে না)
+        // Content from backend (not translated locally)
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),

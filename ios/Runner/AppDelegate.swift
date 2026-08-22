@@ -4,7 +4,7 @@ import AVFoundation
 import UserNotifications
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {  // ✅ UNUserNotificationCenterDelegate সরিয়ে দাও
+@objc class AppDelegate: FlutterAppDelegate {
 
   override func application(
     _ application: UIApplication,

@@ -24,7 +24,7 @@ class SecureStorageService {
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserRole = 'user_role';
 
-  // ✅ FCM Token এর জন্য নতুন key যোগ করুন
+  // FCM token id key
   static const String _keyFcmTokenId = 'fcm_token_id';
 
   // ==================== TOKEN METHODS ====================
@@ -98,7 +98,7 @@ class SecureStorageService {
 
   // ==================== ✅ FCM TOKEN METHODS ====================
 
-  /// Save FCM Token ID (backend থেকে পাওয়া ID)
+  /// Save FCM token ID returned by the backend
   Future<void> saveFcmTokenId(String tokenId) async {
     await _storage.write(key: _keyFcmTokenId, value: tokenId);
   }

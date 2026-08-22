@@ -345,7 +345,7 @@ class CaregiverHomeController extends GetxController {
         await _soundPlayer!.stopPlayer();
         qsIsPlayingAudio.value = false;
       }
-      // ✅ FIX: getApplicationDocumentsDirectory (getTemporaryDirectory নয়)
+      // Persist audio in the app documents directory, not temp.
       final dir = await getApplicationDocumentsDirectory();
       final path =
           '${dir.path}/qs_audio_${DateTime.now().millisecondsSinceEpoch}.aac';

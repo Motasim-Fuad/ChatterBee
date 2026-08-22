@@ -11,8 +11,7 @@ class SubscriptionController extends GetxController {
   final selectedPlan = 'monthly'.obs;
   final isLoading    = false.obs;
 
-  // ❌ নিজের isProUser সরিয়ে দাও
-  // ✅ সরাসরি global controller থেকে পড়ো
+  // Read Pro status from the global controller
   bool get isProUser => ProStatusController.to.isProUser.value;
 
   Package? _monthlyPackage;
@@ -58,7 +57,7 @@ class SubscriptionController extends GetxController {
   void onInit() {
     super.onInit();
     _loadOfferings();
-    // ❌ _checkProStatus() সরিয়ে দাও — ProStatusController এটা handle করে
+    // Pro status is handled by ProStatusController
   }
 
   Future<void> _loadOfferings() async {
@@ -110,7 +109,7 @@ class SubscriptionController extends GetxController {
     try {
       final success = await RevenueCatService.instance.purchase(package);
       if (success) {
-        // ✅ শুধু global controller update করো — local isProUser নেই
+        // Update global Pro status only — no local isProUser
         ProStatusController.to.isProUser.value = true;
         _showSuccessSheet();
       } else {
@@ -128,7 +127,6 @@ class SubscriptionController extends GetxController {
     try {
       final restored = await RevenueCatService.instance.restorePurchases();
       if (restored) {
-        // ✅ শুধু global controller update করো
         ProStatusController.to.isProUser.value = true;
         Get.snackbar('Restored! 🐝', 'Your subscription has been restored.',
             snackPosition: SnackPosition.TOP,

@@ -15,7 +15,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ FIX: controller না থাকলে এখানে create করো
+    // Create invitation controller if it is not already registered
     if (!Get.isRegistered<CaregiverInvitationController>()) {
       Get.put(CaregiverInvitationController());
     }
@@ -143,8 +143,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                     // Empty state — dashed add button
                     return GestureDetector(
                       onTap: () {
-                        // ✅ Free user = 0 connection, তাই canAddCommunicator(0) = true
-                        // কিন্তু connections.length >= 1 হলে block হবে
+                        // Free users can add when count is 0; blocked at 1+
                         if (controller.canAddCommunicator(invCtrl.connections.length)) {
                           invCtrl.showInviteDialog();
                         }
@@ -231,7 +230,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                                       backgroundColor: isSelected
                                           ? const Color(0xFFE8F5E9)
                                           : Colors.grey[200],
-                                      // ✅ FIX: null/empty check করে তবেই NetworkImage
+                                      // Use NetworkImage only when the URL is valid
                                       backgroundImage: _hasValidUrl(connection.communicatorAvatar)
                                           ?CachedNetworkImageProvider("${AppUrl.baseUrl}${connection.communicatorAvatar}")
                                           : null,
@@ -359,7 +358,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
     );
   }
 
-  // ✅ Helper: avatar URL valid কিনা check করে
+  // Returns true when the avatar URL is usable
   bool _hasValidUrl(String? url) {
     return url != null && url.isNotEmpty && Uri.tryParse(url)?.hasAbsolutePath == true;
   }

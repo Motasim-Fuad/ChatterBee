@@ -58,7 +58,7 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // ── Buddy mode — CommunicatorHomeController থেকে নাও ─────────
+  // Buddy mode from CommunicatorHomeController
   bool get _isBuddyMode {
     try {
       return Get.find<CommunicatorHomeController>().isBuddyMode.value;
@@ -67,7 +67,7 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // ── Refresh — buddy mode + lang দিয়ে সঠিক endpoint ──────────
+  // Refresh using the buddy-mode + language endpoint
   Future<void> refresh() async {
     final lang = _currentLang;
 
@@ -91,7 +91,7 @@ class CommunicatorItemController extends GetxController {
         }
       }
 
-      // Home controller ও update করো
+      // Also refresh the home controller
       if (Get.isRegistered<CommunicatorHomeController>()) {
         Get.find<CommunicatorHomeController>().loadContent();
       }

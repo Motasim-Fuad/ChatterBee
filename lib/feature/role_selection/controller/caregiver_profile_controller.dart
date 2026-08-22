@@ -53,7 +53,7 @@ class CaregiverProfileController extends GetxController {
     }
   }
 
-  // ✅ Buddy Bee: free user হলে block + dialog দেখাও
+  // Buddy Bee: block free users and show upgrade dialog
   void toggleBuddyBeeMode(bool value) {
     if (value && !_isPro) {
       _showProUpgradeDialog('buddy_bee_mode'.tr);
@@ -62,7 +62,7 @@ class CaregiverProfileController extends GetxController {
     isBuddyBeeMode.value = value;
   }
 
-  // ✅ Communicator add: free caregiver শুধু 1টা connect করতে পারবে
+  // Free caregivers can connect only 1 communicator
   /// [currentCount] = invCtrl.connections.length
   bool canAddCommunicator(int currentCount) {
     if (_isPro) return true;

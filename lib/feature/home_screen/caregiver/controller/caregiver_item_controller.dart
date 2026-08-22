@@ -173,7 +173,7 @@ class CaregiverItemController extends GetxController {
         if (playingItemId.value == item.id) playingItemId.value = -1;
       });
     } else {
-      // Custom audio নেই → TTS
+      // No custom audio → TTS
       await TtsService.to.speak(item.word ?? '', lang: _currentLang);
     }
   }
@@ -353,7 +353,7 @@ class CaregiverItemController extends GetxController {
         }
       }
     } else {
-      // ✅ FIX: getApplicationDocumentsDirectory (getTemporaryDirectory নয়)
+      // Persist audio in the app documents directory, not temp.
       final dir = await getApplicationDocumentsDirectory();
       final recordPath =
           '${dir.path}/item_audio_${DateTime.now().millisecondsSinceEpoch}.aac';
