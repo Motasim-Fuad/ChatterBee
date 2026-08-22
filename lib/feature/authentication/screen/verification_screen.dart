@@ -13,7 +13,6 @@ class VerificationScreen extends StatelessWidget {
     return GetBuilder<VerificationController>(
       builder: (controller) {
         return AbsorbPointer(
-          // Block ALL touches when navigating
           absorbing: controller.isNavigating,
           child: Scaffold(
             backgroundColor: AppColors.bgColor,
@@ -25,7 +24,6 @@ class VerificationScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 20),
-                      // Back Button
                       GestureDetector(
                         onTap: () => Get.back(),
                         child: Container(
@@ -39,13 +37,11 @@ class VerificationScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
 
-                      // Logo Section
                       Center(
                         child: Image.asset(ImagesLink.logo, height: 95,),
                       ),
                       const SizedBox(height: 60),
 
-                      // Title and Subtitle
                       Center(
                         child: Column(
                           children: [
@@ -72,11 +68,9 @@ class VerificationScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 60),
 
-                      // OTP Input Section
                       GetBuilder<VerificationController>(
                         builder: (controller) => Column(
                           children: [
-                            // OTP Input Fields - Wrapped with IgnorePointer
                             IgnorePointer(
                               ignoring: controller.isLoading || controller.isNavigating,
                               child: Row(
@@ -126,7 +120,6 @@ class VerificationScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 40),
 
-                            // Resend Code Section
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -156,7 +149,6 @@ class VerificationScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
 
-                            // Timer
                             if (!controller.canResend)
                               Text(
                                 'Resend code at ${controller.formatTime(controller.resendTimer)}',
@@ -172,7 +164,6 @@ class VerificationScreen extends StatelessWidget {
 
                       SizedBox(height: MediaQuery.of(context).size.height * 0.15),
 
-                      // Continue Button
                       GetBuilder<VerificationController>(
                         builder: (controller) => SizedBox(
                           width: double.infinity,

@@ -15,7 +15,6 @@ class SnacksController extends GetxController {
     ItemModel(imagePath: ImagesLink.doritosImg, label: 'Doritos'),
     ItemModel(imagePath: ImagesLink.cheeseImag, label: 'Cheese'),
     ItemModel(imagePath: ImagesLink.breadImg, label: 'Bread'),
-    // Add more snack items as needed
   ];
 
   void selectItem(String item) => selectedItem.value = item;

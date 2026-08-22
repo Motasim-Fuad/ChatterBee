@@ -1,7 +1,5 @@
-
 class ImagesLink{
 
-  //icons
   static const String logo = "assets/icons/logo.png";
   static const String splashLogo = "assets/icons/splash_logo.png";
   static const String successfulIcon = "assets/icons/successful_icon.png";
@@ -41,17 +39,14 @@ class ImagesLink{
   static const String cancelIcon = "assets/icons/cancel_icon.svg";
 
 
-  //images
   static const String success = "assets/images/success.png";
   static const String profileImg = "assets/images/profile_img.png";
 
-  //Quick Speak Images
   static const String textToSpeakImg = 'assets/images/text_to_speak.png';
   static const String hungryImg = 'assets/images/hungry.png';
   static const String breakImg = 'assets/images/break.png';
   static const String helpMeImg = 'assets/images/help_me.png';
 
-  //Tap to Talk
   static const String emotions = 'assets/images/emotions.png';
   static const String activities = 'assets/images/activities.png';
   static const String people = 'assets/images/people.png';
@@ -66,7 +61,6 @@ class ImagesLink{
   static const String moreWords = 'assets/images/more_words.png';
   static const String mySchedule = 'assets/images/my_schedule.png';
 
-  // Emotion Images
   static const String happyImg = 'assets/emotions/happyImg.png';
   static const String angryImg = 'assets/emotions/angryImg.png';
   static const String loveImg = 'assets/emotions/loveImg.png';
@@ -76,26 +70,22 @@ class ImagesLink{
   static const String dislikeImg = 'assets/emotions/dislikeImg.png';
   static const String neutralImg = 'assets/emotions/neutralImg.png';
 
-  // Activity Images
   static const String playImg = 'assets/activities/play.png';
   static const String readImg = 'assets/activities/read.png';
   static const String drawImg = 'assets/activities/draw.png';
   static const String watchTvImg = 'assets/activities/watch_tv.png';
 
-  // People Images
   static const String momImg = 'assets/people/mom.png';
   static const String dadImg = 'assets/people/dad.png';
   static const String brotherImg = 'assets/people/brother.png';
   static const String sisterImg = 'assets/people/sister.png';
   static const String friendImg = 'assets/people/friend.png';
 
-  //Places Images
   static const String homeImg = 'assets/people/home.png';
   static const String parkImg = 'assets/people/park.png';
   static const String schoolImg = 'assets/people/school.png';
   static const String storeImg = 'assets/people/store.png';
 
-  // Food & Drink Images
   static const String appleImg = 'assets/food_drink/apple.png';
   static const String waterImg = 'assets/food_drink/water.png';
   static const String milkImg = 'assets/food_drink/milk.png';
@@ -110,7 +100,6 @@ class ImagesLink{
   static const String fruitsImg = 'assets/food_drink/fruits.png';
   static const String snacksImg = 'assets/food_drink/snacks.png';
 
-  // Breakfast Food Images
   static const String cerealImg = 'assets/breakfast/cereal.png';
   static const String sandwichImg = 'assets/breakfast/sandwich.png';
   static const String muffinImg = 'assets/breakfast/muffin.png';
@@ -122,7 +111,6 @@ class ImagesLink{
   static const String baconImg = 'assets/breakfast/bacon.png';
   static const String eggImg = 'assets/breakfast/egg.png';
 
-  // Meals Items
   static const String pizzaImg = 'assets/breakfast/pizza.png';
   static const String pastaImg = 'assets/breakfast/pasta.png';
   static const String burgerImg = 'assets/breakfast/burger.png';
@@ -130,13 +118,11 @@ class ImagesLink{
   static const String noodlesImg = 'assets/breakfast/noodles.png';
   static const String yogurtImg = 'assets/breakfast/yogurt.png';
 
-  // Drinks Items
   static const String milkImag = 'assets/breakfast/milk.png';
   static const String sodaImg = 'assets/breakfast/soda.png';
   static const String smoothieImg = 'assets/breakfast/smoothie.png';
   static const String juiceImag = 'assets/breakfast/juice.png';
 
-  // Fruits Items
   static const String orangeImg = 'assets/breakfast/apple.png';
   static const String grapeImg = 'assets/breakfast/grapes.png';
   static const String bananaImag = 'assets/breakfast/banana.png';
@@ -146,7 +132,6 @@ class ImagesLink{
   static const String blueberryImag = 'assets/breakfast/blueberry.png';
   static const String strawberryImg = 'assets/breakfast/strawberry.png';
 
-  // Snacks Items
   static const String popcornImg = 'assets/breakfast/popcorn.png';
   static const String frenchFriesImg = 'assets/breakfast/french_fries.png';
   static const String nachosImg = 'assets/breakfast/nachos.png';
@@ -155,13 +140,11 @@ class ImagesLink{
   static const String cheeseImag = 'assets/breakfast/cheese.png';
   static const String breadImg = 'assets/breakfast/bread.png';
 
-  // Health Items
   static const String feelSickImg = 'assets/health/feel_sick.png';
   static const String needDoctorImg = 'assets/health/need_doctor.png';
   static const String headHurtsImg = 'assets/health/head_hurts.png';
   static const String needMedicineImg = 'assets/health/need_medicine.png';
 
-  // Question Items
   static const String yesOrNoImg = 'assets/question/yes_or_no.png';
   static const String whatImg = 'assets/question/what.png';
   static const String whoImg = 'assets/question/who.png';
@@ -169,7 +152,6 @@ class ImagesLink{
   static const String whereImg = 'assets/question/where.png';
   static const String whyImg = 'assets/question/why.png';
 
-  // Action Items
   static const String call911Img = 'assets/action/call_911.png';
   static const String callDoctorImg = 'assets/action/call_doctor.png';
   static const String iamInPainImg = 'assets/action/iam_in_pain.png';
@@ -181,7 +163,6 @@ class ImagesLink{
   static const String callHomeImg = 'assets/action/call_home.png';
   static const String myMedicinesImg = 'assets/action/my_medicines.png';
 
-  // Things Items
   static const String goodMorningImg = 'assets/things/good_morning.png';
   static const String hiImg = 'assets/things/hi.png';
   static const String byeImg = 'assets/things/bye.png';
@@ -194,7 +175,6 @@ class ImagesLink{
   static const String wowImg = 'assets/things/wow.png';
   static const String goodJobImg = 'assets/things/good_job.png';
 
-  // Core Words Items
   static const String yesImg = 'assets/core_words/yes.png';
   static const String noImg = 'assets/core_words/no.png';
   static const String thisImg = 'assets/core_words/this.png';
@@ -207,12 +187,10 @@ class ImagesLink{
   static const String itImg = 'assets/core_words/it.png';
   static const String someImg = 'assets/core_words/some.png';
 
-  // Schedule Images
   static const String morningRoutineImg = 'assets/schedules/morning_routine.png';
   static const String therapySessionImg = 'assets/schedules/therapy_session.png';
   static const String afternoonSnackImg = 'assets/schedules/afternoon_snack.png';
   static const String dinnerImg = 'assets/schedules/dinner.png';
-
 
 
 }

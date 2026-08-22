@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/view/caregiver_all_categories_screen.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
@@ -23,10 +21,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ALL CATEGORIES SCREEN
-//  — Search bar, no speak bar, edit mode + add preserved
-// ════════════════════════════════════════════════════════════════════════════
 
 class CaregiverAllCategoriesScreen extends StatelessWidget {
   const CaregiverAllCategoriesScreen({super.key});
@@ -52,7 +46,6 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF1A1A1A))),
         actions: [
-          // Edit / Done
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -79,7 +72,6 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
               ),
             ),
           )),
-          // Add button
           Obx(() => !controller.isEditMode.value
               ? Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -100,7 +92,6 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ── Search Bar ───────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: Container(
@@ -143,7 +134,6 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // ── Grid ─────────────────────────────────────────────────────────
           Expanded(
             child: Obx(() {
               final query = searchQuery.value;

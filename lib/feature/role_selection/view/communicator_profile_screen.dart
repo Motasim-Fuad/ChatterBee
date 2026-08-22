@@ -31,7 +31,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Profile Avatar with upload ──
                 Center(
                   child: Stack(
                     children: [
@@ -64,7 +63,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 ),
                 const SizedBox(height: 30),
 
-                // ── Full Name ──
                 Text('full_name'.tr,
                     style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
                 const SizedBox(height: 6),
@@ -89,15 +87,12 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 const SizedBox(height: 20),
 
 
-
-                // ── Buddy Bee Mode ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('buddy_bee_mode'.tr, style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600)),
                     Obx(() => CustomSwitch(
                       value: controller.isBuddyBeeMode.value,
-                     // onChanged: (val) { controller.isBuddyBeeMode.value = val; controller.toggleBuddyBeeMode(val); },
                       onChanged: (val) => controller.toggleBuddyBeeMode(val),
                     )),
                   ],
@@ -107,7 +102,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 const SizedBox(height: 20),
 
 
-                // ── Invitations Type ──
                 GestureDetector(
                   onTap: (){
                     Get.toNamed(AppRoutes.COMMUNICATOR_INVITATIONS);
@@ -115,7 +109,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      // border: Border.all(),
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                       color: AppColors.navColor,
                     ),
@@ -135,7 +128,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 ),
                 const SizedBox(height: 20),
 
-                // ── Profile Type ──
                 Text('profile_type'.tr, style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 Obx(() {
@@ -191,9 +183,7 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 }),
                 const SizedBox(height: 20),
 
-                // Voice Type was retired by the release-readiness contract.
                 if (false) ...[
-                // ── Voice Type Grid ──
                 Text('voice_type'.tr, style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 GridView.builder(
@@ -205,10 +195,8 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                   itemBuilder: (context, index) {
                     final voiceType = controller.voiceTypes[index];
                     return Obx(() {
-                      // FIX: compare against 'key', not 'type'
                       final isSelected = controller.selectedVoiceType.value == voiceType['key'];
                       return GestureDetector(
-                        // FIX: pass 'key' to selectVoiceType
                         onTap: () => controller.selectVoiceType(voiceType['key']),
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -237,7 +225,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                 ],
 
 
-                // ── Continue Button ──
                 Obx(() => SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -265,7 +252,6 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
   }
 }
 
-// CustomSwitch widget (same as before)
 class CustomSwitch extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;

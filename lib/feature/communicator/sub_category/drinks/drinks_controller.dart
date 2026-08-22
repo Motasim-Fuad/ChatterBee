@@ -11,7 +11,6 @@ class DrinksController extends GetxController {
     ItemModel(imagePath: ImagesLink.sodaImg, label: 'Soda'),
     ItemModel(imagePath: ImagesLink.smoothieImg, label: 'Smoothie'),
     ItemModel(imagePath: ImagesLink.juiceImag, label: 'Juice'),
-    // Add more drink items as needed
   ];
 
   void selectItem(String item) => selectedItem.value = item;

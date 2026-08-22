@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/view/caregiver_item_screen.dart
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
@@ -27,10 +25,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  CAREGIVER ITEM SCREEN
-//  — Folder cards, tap → card-lift dialog, edit mode, add button
-// ════════════════════════════════════════════════════════════════════════════
 
 class CaregiverItemScreen extends StatelessWidget {
   const CaregiverItemScreen({super.key});
@@ -57,7 +51,6 @@ class CaregiverItemScreen extends StatelessWidget {
               color: const Color(0xFF1A1A1A)),
         ),
         actions: [
-          // Edit / Done
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -84,7 +77,6 @@ class CaregiverItemScreen extends StatelessWidget {
               ),
             ),
           )),
-          // Add button
           Obx(() => !controller.isEditMode.value
               ? Padding(
             padding: const EdgeInsets.only(right: 12),
@@ -297,9 +289,7 @@ class _CaregiverBarButton extends StatelessWidget {
       );
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ITEM CARD-LIFT DIALOG
-// ════════════════════════════════════════════════════════════════════════════
+// Show Item Dialog
 
 void _showItemDialog(
     BuildContext context,
@@ -348,7 +338,6 @@ void _showItemDialog(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Image circle
                       Container(
                         width: 100,
                         height: 100,
@@ -378,7 +367,6 @@ void _showItemDialog(
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF1A1A1A))),
                       const SizedBox(height: 20),
-                      // Speak / No-audio button
                       GestureDetector(
                         onTap: () async {
                           if (!hasAudio) {

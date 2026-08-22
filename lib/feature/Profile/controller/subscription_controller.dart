@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class SubscriptionController extends GetxController {
-  // ── State ──────────────────────────────────────────────────
   final selectedPlan = 'monthly'.obs;
   final isLoading    = false.obs;
 
@@ -17,14 +16,14 @@ class SubscriptionController extends GetxController {
   Package? _monthlyPackage;
   Package? _annuallyPackage;
 
-  // ── Price getters ──────────────────────────────────────────
+  // Monthly Price
   String get monthlyPrice =>
       _monthlyPackage?.storeProduct.priceString ?? '\$2.99';
 
   String get annuallyPrice =>
       _annuallyPackage?.storeProduct.priceString ?? '\$29.99';
 
-  // ── Trial text getters ─────────────────────────────────────
+  // Monthly Trial Text
   String get monthlyTrialText {
     final days =
         _monthlyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
@@ -37,7 +36,7 @@ class SubscriptionController extends GetxController {
     return days != null ? '$days-week free trial' : '1-week free trial';
   }
 
-  // ── Button text ────────────────────────────────────────────
+  // Continue Button Text
   String get continueButtonText {
     if (isProUser) return 'Already Subscribed';
     return selectedPlan.value == 'monthly'
@@ -45,19 +44,17 @@ class SubscriptionController extends GetxController {
         : 'Start $annuallyTrialText';
   }
 
-  // ── Helpers ────────────────────────────────────────────────
   bool isPlanSelected(String plan) => selectedPlan.value == plan;
   void selectPlan(String plan)     => selectedPlan.value = plan;
 
   Package? get selectedPackage =>
       selectedPlan.value == 'monthly' ? _monthlyPackage : _annuallyPackage;
 
-  // ── Init ───────────────────────────────────────────────────
+  // On Init
   @override
   void onInit() {
     super.onInit();
     _loadOfferings();
-    // Pro status is handled by ProStatusController
   }
 
   Future<void> _loadOfferings() async {
@@ -86,7 +83,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // ── Continue ───────────────────────────────────────────────
+  // Continue
   void onContinuePressed() {
     if (isProUser) {
       Get.snackbar('Already Pro 🐝', 'You have an active subscription.',
@@ -109,7 +106,6 @@ class SubscriptionController extends GetxController {
     try {
       final success = await RevenueCatService.instance.purchase(package);
       if (success) {
-        // Update global Pro status only — no local isProUser
         ProStatusController.to.isProUser.value = true;
         _showSuccessSheet();
       } else {
@@ -121,7 +117,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // ── Restore ────────────────────────────────────────────────
+  // Restore
   Future<void> restorePurchases() async {
     isLoading.value = true;
     try {
@@ -140,7 +136,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // ── Success Sheet ──────────────────────────────────────────
+  // Show Success Sheet
   void _showSuccessSheet() {
     Get.bottomSheet(
       Container(

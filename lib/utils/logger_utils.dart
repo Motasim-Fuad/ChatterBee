@@ -13,42 +13,42 @@ class LoggerUtils {
     ),
   );
 
-  /// Info log - General information
+  // Info log - General information
   static void logInfo(String message) {
     if (kDebugMode) {
       _logger.i(message);
     }
   }
 
-  /// Debug log - Debugging information
+  // Debug log - Debugging information
   static void logDebug(String message) {
     if (kDebugMode) {
       _logger.d(message);
     }
   }
 
-  /// Warning log - Warning messages
+  // Warning log - Warning messages
   static void logWarning(String message) {
     if (kDebugMode) {
       _logger.w(message);
     }
   }
 
-  /// Error log - Error messages
+  // Error log - Error messages
   static void logError(String message, [dynamic error, StackTrace? stackTrace]) {
     if (kDebugMode) {
       _logger.e(message, error: error, stackTrace: stackTrace);
     }
   }
 
-  /// Success log - Success messages
+  // Success log - Success messages
   static void logSuccess(String message) {
     if (kDebugMode) {
       _logger.i('✅ $message');
     }
   }
 
-  /// API log - API related logs
+  // API log - API related logs
   static void logApi(String message) {
     if (kDebugMode) {
       _logger.i('🌐 API: $message');

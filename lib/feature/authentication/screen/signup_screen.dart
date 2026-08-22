@@ -22,13 +22,11 @@ class SignUpScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 40),
-                // Logo Section
                 Center(
                   child: Image.asset(ImagesLink.logo, height: 95,),
                 ),
                 const SizedBox(height: 48),
 
-                // Title and Subtitle
                 Text(
                   'Sign up',
                   style: GoogleFonts.nunito(
@@ -47,12 +45,10 @@ class SignUpScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 40),
 
-                // Form Section
                 GetBuilder<SignUpController>(
                   builder: (controller) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // First Name Field
                       Text(
                         'First Name',
                         style: GoogleFonts.nunito(
@@ -132,7 +128,6 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      // Email Field
                       Text(
                         'Email address',
                         style: GoogleFonts.nunito(
@@ -188,7 +183,6 @@ class SignUpScreen extends StatelessWidget {
                             )),
                       const SizedBox(height: 20),
 
-                      // Password Field
                       Text(
                         'Password',
                         style: GoogleFonts.nunito(
@@ -244,7 +238,6 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
 
-                      // Sign Up Button
                       SizedBox(
                         width: double.infinity,
                         height: 48,
@@ -279,7 +272,6 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 32),
 
-                      // Sign In Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

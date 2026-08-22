@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/controller/caregiver_sub_catagory_controller.dart
-
 import 'dart:io';
 import 'package:chatter_bee/Repository/caregiver_repository/caregiver_customization_repository.dart';
 import 'package:chatter_bee/config/translations/language_controller.dart';
@@ -38,7 +36,7 @@ class CaregiverSubCategoryController extends GetxController {
     subCategories.value = parentCategory.subCategories;
   }
 
-  // ✅ FIX: toLanguageTag() → "en-US" → normalize → "en"
+  // Normalize Lang
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -193,9 +191,6 @@ class CaregiverSubCategoryController extends GetxController {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  SUBCATEGORY BOTTOM SHEET
-// ════════════════════════════════════════════════════════════════
 
 class _SubCategorySheet extends StatefulWidget {
   final CaregiverSubCategoryController controller;

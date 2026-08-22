@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/view/communicator_all_quick_speaks_screen.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +21,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ALL QUICK SPEAKS SCREEN
-//  — Speak bar at top, full scrollable grid of every quick speak
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommunicatorAllQuickSpeaksScreen
     extends GetView<CommunicatorHomeController> {
@@ -54,7 +48,6 @@ class CommunicatorAllQuickSpeaksScreen
       ),
       body: Column(
         children: [
-          // ── Speak Bar (with cooldown support) ────────────────────────────
           Obx(() => Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: CommSpeakBar(
@@ -70,7 +63,6 @@ class CommunicatorAllQuickSpeaksScreen
 
           const SizedBox(height: 14),
 
-          // ── Grid ─────────────────────────────────────────────────────────
           Expanded(
             child: Obx(() {
               if (controller.quickSpeaks.isEmpty) {

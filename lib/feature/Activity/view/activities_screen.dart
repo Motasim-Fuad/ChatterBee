@@ -21,7 +21,7 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'visual_schedules'.tr,  // ✅
+          'visual_schedules'.tr,
           style: GoogleFonts.nunito(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -40,11 +40,10 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Section Header ──────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                 child: Text(
-                  'todays_schedule'.tr,  // ✅
+                  'todays_schedule'.tr,
                   style: GoogleFonts.nunito(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -53,7 +52,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                 ),
               ),
 
-              // ── Error ───────────────────────────────────────────────────
               if (controller.errorMessage.value.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -79,7 +77,7 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                         TextButton(
                           onPressed: controller.fetchActivities,
                           child: Text(
-                            'retry'.tr,  // ✅
+                            'retry'.tr,
                             style: GoogleFonts.nunito(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -91,7 +89,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                   ),
                 ),
 
-              // ── List ────────────────────────────────────────────────────
               Expanded(
                 child: controller.todayActivities.isEmpty
                     ? _EmptyState(onAdd: controller.goToAddActivity)
@@ -109,7 +106,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                 ),
               ),
 
-              // ── Add Button ──────────────────────────────────────────────
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: SizedBox(
@@ -119,7 +115,7 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                     onPressed: controller.goToAddActivity,
                     icon: const Icon(Icons.add, color: Colors.black87),
                     label: Text(
-                      'add_activity'.tr,  // ✅
+                      'add_activity'.tr,
                       style: GoogleFonts.nunito(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -155,7 +151,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
       children: [
         const SizedBox(height: 12),
 
-        /// 🔹 Status Header
         Text(
           _statusHeader(status),
           style: GoogleFonts.nunito(
@@ -167,7 +162,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
 
         const SizedBox(height: 8),
 
-        /// 🔹 Activities
         ...items.map((activity) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: _ActivityListItem(
@@ -193,7 +187,6 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
   }
 }
 
-// ─── Activity List Item ──────────────────────────────────────────────────────
 class _ActivityListItem extends StatelessWidget {
   final ActivityModel activity;
   final VoidCallback onDelete;
@@ -261,7 +254,6 @@ class _ActivityListItem extends StatelessWidget {
                           fontSize: 12, color: Colors.grey.shade500),
                     ),
                     const SizedBox(width: 8),
-                    // ── Status Badge ──
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
@@ -271,7 +263,7 @@ class _ActivityListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        _statusLabel(activity.status),  // ✅
+                        _statusLabel(activity.status),
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -285,7 +277,6 @@ class _ActivityListItem extends StatelessWidget {
             ),
           ),
 
-          // ── 3-dot Menu ────────────────────────────────────────────────
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert,
                 color: Colors.black54, size: 20),
@@ -303,7 +294,7 @@ class _ActivityListItem extends StatelessWidget {
                     const Icon(Icons.edit_outlined,
                         color: Colors.blue, size: 18),
                     const SizedBox(width: 8),
-                    Text('edit'.tr,  // ✅
+                    Text('edit'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14, color: Colors.blue)),
                   ],
@@ -316,7 +307,7 @@ class _ActivityListItem extends StatelessWidget {
                     const Icon(Icons.delete_outline,
                         color: Colors.red, size: 18),
                     const SizedBox(width: 8),
-                    Text('delete'.tr,  // ✅
+                    Text('delete'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14, color: Colors.red)),
                   ],
@@ -330,7 +321,6 @@ class _ActivityListItem extends StatelessWidget {
   }
 }
 
-// ─── Activity Image ──────────────────────────────────────────────────────────
 class _ActivityImage extends StatelessWidget {
   final String? imageUrl;
   const _ActivityImage({this.imageUrl});
@@ -358,7 +348,6 @@ class _ActivityImage extends StatelessWidget {
       child: Icon(Icons.event_note, color: Color(0xFFFFB74D), size: 26));
 }
 
-// ─── Empty State ─────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
   final VoidCallback onAdd;
   const _EmptyState({required this.onAdd});
@@ -380,7 +369,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'no_activities_today'.tr,  // ✅
+            'no_activities_today'.tr,
             style: GoogleFonts.nunito(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
@@ -388,7 +377,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'no_activities_desc'.tr,  // ✅
+            'no_activities_desc'.tr,
             textAlign: TextAlign.center,
             style: GoogleFonts.nunito(
                 fontSize: 14,

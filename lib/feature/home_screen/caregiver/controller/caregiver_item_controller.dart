@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/controller/caregiver_item_controller.dart
-
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatter_bee/Repository/caregiver_repository/caregiver_customization_repository.dart';
@@ -89,7 +87,7 @@ class CaregiverItemController extends GetxController {
     await _soundPlayer!.openPlayer();
   }
 
-  // ✅ FIX: toLanguageTag() → "en-US" → normalize → "en"
+  // Normalize Lang
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -156,7 +154,6 @@ class CaregiverItemController extends GetxController {
 
 
   Future<void> playItemAudio(ItemModel item) async {
-    // ✅ TTS logic
     if (item.speak != null && item.speak!.isNotEmpty) {
       final url = AppUrl.mediaUrl(item.speak);
       if (url == null) return;
@@ -173,7 +170,6 @@ class CaregiverItemController extends GetxController {
         if (playingItemId.value == item.id) playingItemId.value = -1;
       });
     } else {
-      // No custom audio → TTS
       await TtsService.to.speak(item.word ?? '', lang: _currentLang);
     }
   }
@@ -191,7 +187,6 @@ class CaregiverItemController extends GetxController {
 
   Future<void> speakSelected() async {
     if (selectedWord.value.trim().isEmpty) return;
-    // The sentence button always uses native TTS, never uploaded item audio.
     await TtsService.to.speak(selectedWord.value, lang: _currentLang);
   }
 
@@ -353,7 +348,6 @@ class CaregiverItemController extends GetxController {
         }
       }
     } else {
-      // Persist audio in the app documents directory, not temp.
       final dir = await getApplicationDocumentsDirectory();
       final recordPath =
           '${dir.path}/item_audio_${DateTime.now().millisecondsSinceEpoch}.aac';
@@ -399,9 +393,6 @@ class CaregiverItemController extends GetxController {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  ITEM FORM BOTTOM SHEET
-// ════════════════════════════════════════════════════════════════
 
 class ItemFormSheet extends StatefulWidget {
   final CaregiverItemController controller;

@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/contoller/communicator_item_controller.dart
-
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -24,13 +22,11 @@ class CommunicatorItemController extends GetxController {
   final RxList<CommItemModel> items = <CommItemModel>[].obs;
   final RxInt playingId = (-1).obs;
 
-  // ── Quick speak bar ───────────────────────────────────────────
   final RxString selectedWord = ''.obs;
   final RxInt selectedItemId = (-1).obs;
   final RxString selectedImage = ''.obs;
   final RxString selectedColor = '#FFD700'.obs;
 
-  // ── Speak button cooldown ─────────────────────────────────────
   final RxBool isSpeakCooldown = false.obs;
   final RxInt cooldownCount = 5.obs;
 
@@ -49,7 +45,7 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // ── Current language ──────────────────────────────────────────
+  // Current language
   String get _currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
@@ -91,14 +87,13 @@ class CommunicatorItemController extends GetxController {
         }
       }
 
-      // Also refresh the home controller
       if (Get.isRegistered<CommunicatorHomeController>()) {
         Get.find<CommunicatorHomeController>().loadContent();
       }
     }
   }
 
-  // ── Item tap → word bar ────────────────────────────────────────
+  // Item tap → word bar
   void onItemTap(CommItemModel item) {
     if (selectedItemId.value == item.id) {
       selectedItemId.value = -1;
@@ -112,8 +107,7 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // ── Speak button ───────────────────────────────────────────────
-  /// Plays audio + calls pressed API + starts 2-second cooldown
+  // Plays audio + calls pressed API + starts 2-second cooldown
   void speakSelected() {
     if (isSpeakCooldown.value) return;
     if (selectedWord.value.isEmpty) return;
@@ -121,14 +115,13 @@ class CommunicatorItemController extends GetxController {
     final item = items.firstWhereOrNull((i) => i.id == selectedItemId.value);
     if (item == null) return;
 
-    // The sentence button must always use native TTS.
     TtsService.to.speak(selectedWord.value, lang: _currentLang);
 
     _repo.pressContent(contentType: 'item', contentId: item.id);
     _startCooldown();
   }
 
-  // clearSelection
+  // Clear Selection
   void clearSelection() {
     _stopAudio();
     TtsService.to.stop();
@@ -138,7 +131,7 @@ class CommunicatorItemController extends GetxController {
     _cancelCooldown();
   }
 
-  // ── Cooldown helpers ───────────────────────────────────────────
+  // Cooldown helpers
   void _startCooldown() {
     _cancelCooldown();
 
@@ -163,7 +156,7 @@ class CommunicatorItemController extends GetxController {
     cooldownCount.value = 5;
   }
 
-  // ── Audio ──────────────────────────────────────────────────────
+  // Play Audio Internal
   Future<void> _playAudioInternal(int id, String? audioPath) async {
     final url = AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -187,7 +180,7 @@ class CommunicatorItemController extends GetxController {
     playingId.value = -1;
   }
 
-  /// Public legacy — kept for compatibility
+  // Public legacy — kept for compatibility
   Future<void> playAudio(int id, String? audioPath) async {
     if (playingId.value == id) {
       await _stopAudio();

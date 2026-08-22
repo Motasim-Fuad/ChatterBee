@@ -37,7 +37,6 @@ class EmotionsScreen extends GetView<EmotionsController> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -71,7 +70,6 @@ class EmotionsScreen extends GetView<EmotionsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakEmotion(),
                     child: Container(
@@ -103,7 +101,6 @@ class EmotionsScreen extends GetView<EmotionsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearEmotion(),
                     child: Container(
@@ -133,7 +130,6 @@ class EmotionsScreen extends GetView<EmotionsController> {
               ),
             ),
 
-            // Emotions Grid
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

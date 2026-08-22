@@ -20,7 +20,7 @@ class CommunicatorInvitationsScreen
         leading: IconButton(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.arrow_back)),
-        title: Text('invitations'.tr,  // ✅
+        title: Text('invitations'.tr,
             style: GoogleFonts.nunito(
                 color: Colors.black,
                 fontSize: 18,
@@ -65,13 +65,13 @@ class CommunicatorInvitationsScreen
                 size: 48, color: Color(0xFFFFC857)),
           ),
           const SizedBox(height: 20),
-          Text('no_pending_invitations'.tr,  // ✅
+          Text('no_pending_invitations'.tr,
               style: GoogleFonts.nunito(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Colors.black)),
           const SizedBox(height: 8),
-          Text('no_pending_desc'.tr,  // ✅
+          Text('no_pending_desc'.tr,
               textAlign: TextAlign.center,
               style: GoogleFonts.nunito(
                   fontSize: 14, color: const Color(0xFF636F85))),
@@ -81,7 +81,6 @@ class CommunicatorInvitationsScreen
   }
 }
 
-// ==================== INVITATION CARD ====================
 class _InvitationCard extends StatelessWidget {
   final InvitationModel invitation;
   final CommunicatorInvitationController controller;
@@ -134,7 +133,7 @@ class _InvitationCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(invitation.caregiverName ?? 'caregiver'.tr,  // ✅
+                    Text(invitation.caregiverName ?? 'caregiver'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -153,7 +152,7 @@ class _InvitationCard extends StatelessWidget {
                   color: const Color(0xFFFFF3CC),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text('pending'.tr,  // ✅
+                child: Text('pending'.tr,
                     style: GoogleFonts.nunito(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
@@ -165,7 +164,7 @@ class _InvitationCard extends StatelessWidget {
           const Divider(height: 1),
           const SizedBox(height: 14),
 
-          Text('wants_to_connect'.tr,  // ✅
+          Text('wants_to_connect'.tr,
               style: GoogleFonts.nunito(
                   fontSize: 13, color: const Color(0xFF636F85))),
           const SizedBox(height: 16),
@@ -188,7 +187,7 @@ class _InvitationCard extends StatelessWidget {
                       padding:
                       const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    child: Text('decline'.tr,  // ✅
+                    child: Text('decline'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -216,7 +215,7 @@ class _InvitationCard extends StatelessWidget {
                         child: CircularProgressIndicator(
                             strokeWidth: 2,
                             color: Colors.white))
-                        : Text('accept'.tr,  // ✅
+                        : Text('accept'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,

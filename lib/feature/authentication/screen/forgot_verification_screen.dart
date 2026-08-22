@@ -27,7 +27,6 @@ class ForgotVerificationScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    // Back Button
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
@@ -41,13 +40,11 @@ class ForgotVerificationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // Logo Section
                     Center(
                       child: Image.asset(ImagesLink.logo, height: 95,),
                     ),
                     const SizedBox(height: 60),
 
-                    // Title and Subtitle
                     Center(
                       child: Column(
                         children: [
@@ -74,11 +71,9 @@ class ForgotVerificationScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 60),
 
-                    // OTP Input Section
                     GetBuilder<ForgotVerificationController>(
                       builder: (controller) => Column(
                         children: [
-                          // OTP Input Fields
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: List.generate(
@@ -120,7 +115,6 @@ class ForgotVerificationScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 40),
 
-                          // Resend Code Section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -148,7 +142,6 @@ class ForgotVerificationScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
 
-                          // Timer
                           if (!controller.canResend)
                             Text(
                               'Resend code at ${controller.formatTime(controller.resendTimer)}',
@@ -164,7 +157,6 @@ class ForgotVerificationScreen extends StatelessWidget {
 
                     const Spacer(),
 
-                    // Continue Button
                     GetBuilder<ForgotVerificationController>(
                       builder: (controller) => SizedBox(
                         width: double.infinity,

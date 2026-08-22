@@ -21,7 +21,6 @@ class CreateNewPasswordScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
-              // Back Button
               GestureDetector(
                 onTap: () => Get.back(),
                 child: Container(
@@ -35,13 +34,11 @@ class CreateNewPasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Logo Section
               Center(
                 child: Image.asset(ImagesLink.logo, height: 95),
               ),
               const SizedBox(height: 60),
 
-              // Title and Subtitle
               Center(
                 child: Column(
                   children: [
@@ -68,12 +65,10 @@ class CreateNewPasswordScreen extends StatelessWidget {
               ),
               const SizedBox(height: 40),
 
-              // Password Fields Section
               GetBuilder<CreateNewPasswordController>(
                 builder: (controller) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // New Password Label
                     Text(
                       'New Password',
                       style: GoogleFonts.nunito(
@@ -84,7 +79,6 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // New Password Field
                     SizedBox(
                       height: 48,
                       child: TextField(
@@ -151,7 +145,6 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
 
-                    // Confirm Password Label
                     Text(
                       'Confirm Password',
                       style: GoogleFonts.nunito(
@@ -162,7 +155,6 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
 
-                    // Confirm Password Field
                     SizedBox(
                       height: 48,
                       child: TextField(
@@ -228,7 +220,6 @@ class CreateNewPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // Reset Password Button
                     SizedBox(
                       width: double.infinity,
                       height: 48,

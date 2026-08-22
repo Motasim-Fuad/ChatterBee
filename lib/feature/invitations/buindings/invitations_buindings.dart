@@ -1,4 +1,3 @@
-
 import 'package:chatter_bee/feature/invitations/controller/caregiver_invitation_controller.dart';
 import 'package:chatter_bee/feature/invitations/controller/communicator_invitation_controller.dart';
 import 'package:get/get.dart';
@@ -16,13 +15,3 @@ class CommunicatorInvitationBinding extends Bindings {
     Get.lazyPut<CommunicatorInvitationController>(() => CommunicatorInvitationController());
   }
 }
-
-
-
-
-
-
-
-
-
-

@@ -23,14 +23,12 @@ class LoginScreen extends GetView<LoginController> {
               children: [
                 const SizedBox(height: 40),
 
-                // Logo and Welcome Section
                 Center(
                   child: Image.asset(ImagesLink.logo, height: 95,),
                 ),
 
                 const SizedBox(height: 48),
 
-                // Welcome Text
                 Text(
                   'Welcome to ChatterBee!',
                   style: GoogleFonts.nunito(
@@ -50,7 +48,6 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 40),
 
-                // Email Field
                 Text(
                   'Email address',
                   style: GoogleFonts.nunito(
@@ -106,7 +103,6 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 20),
 
-                // Password Field
                 Text(
                   'Password',
                   style: GoogleFonts.nunito(
@@ -170,7 +166,6 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 16),
 
-                // Remember Me and Forgot Password Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -223,7 +218,6 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 24),
 
-                // Sign In Button
                 SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -258,7 +252,6 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 32),
 
-                // Sign Up Link
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,

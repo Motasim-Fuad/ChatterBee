@@ -1,17 +1,14 @@
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StorageService {
-  // Singleton instance
   static final StorageService _instance = StorageService._internal();
   factory StorageService() => _instance;
   StorageService._internal();
 
   SharedPreferences? _prefs;
 
-  // ==================== INITIALIZATION ====================
 
-  /// Initialize SharedPreferences - Call this in main.dart before runApp()
+  // Initialize SharedPreferences - Call this in main.dart before runApp()
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     print('✅ StorageService initialized');
@@ -24,7 +21,6 @@ class StorageService {
     return _prefs!;
   }
 
-  // ==================== STORAGE KEYS ====================
   static const String _keyUserRole = 'user_role';
   static const String _keyUserName = 'user_name';
   static const String _keyIsLoggedIn = 'is_logged_in';
@@ -32,7 +28,7 @@ class StorageService {
   static const String _keyTheme = 'theme';
   static const String _keyLanguage = 'language';
 
-  // ==================== STRING METHODS ====================
+  // Set String
 
   Future<bool> setString(String key, String value) async {
     return await prefs.setString(key, value);
@@ -42,7 +38,7 @@ class StorageService {
     return prefs.getString(key) ?? defaultValue;
   }
 
-  // ==================== INT METHODS ====================
+  // Set Int
 
   Future<bool> setInt(String key, int value) async {
     return await prefs.setInt(key, value);
@@ -52,7 +48,7 @@ class StorageService {
     return prefs.getInt(key) ?? defaultValue;
   }
 
-  // ==================== BOOL METHODS ====================
+  // Set Bool
 
   Future<bool> setBool(String key, bool value) async {
     return await prefs.setBool(key, value);
@@ -62,7 +58,7 @@ class StorageService {
     return prefs.getBool(key) ?? defaultValue;
   }
 
-  // ==================== DOUBLE METHODS ====================
+  // Set Double
 
   Future<bool> setDouble(String key, double value) async {
     return await prefs.setDouble(key, value);
@@ -72,7 +68,7 @@ class StorageService {
     return prefs.getDouble(key) ?? defaultValue;
   }
 
-  // ==================== STRING LIST METHODS ====================
+  // Set String List
 
   Future<bool> setStringList(String key, List<String> value) async {
     return await prefs.setStringList(key, value);
@@ -82,86 +78,84 @@ class StorageService {
     return prefs.getStringList(key);
   }
 
-  // ==================== APP-SPECIFIC METHODS ====================
 
-  /// Save user role
+  // Save user role
   Future<bool> saveUserRole(String role) async {
     return await setString(_keyUserRole, role);
   }
 
-  /// Get user role
+  // Get user role
   String? getUserRole() {
     return getString(_keyUserRole);
   }
 
-  /// Save user name
+  // Save user name
   Future<bool> saveUserName(String name) async {
     return await setString(_keyUserName, name);
   }
 
-  /// Get user name
+  // Get user name
   String? getUserName() {
     return getString(_keyUserName);
   }
 
-  /// Set logged in status
+  // Set logged in status
   Future<bool> setLoggedIn(bool value) async {
     return await setBool(_keyIsLoggedIn, value);
   }
 
-  /// Check if logged in
+  // Check if logged in
   bool isLoggedIn() {
     return getBool(_keyIsLoggedIn, defaultValue: false) ?? false;
   }
 
-  /// Set onboarding complete
+  // Set onboarding complete
   Future<bool> setOnboardingComplete(bool value) async {
     return await setBool(_keyOnboardingComplete, value);
   }
 
-  /// Check if onboarding is complete
+  // Check if onboarding is complete
   bool isOnboardingComplete() {
     return getBool(_keyOnboardingComplete, defaultValue: false) ?? false;
   }
 
-  /// Save theme
+  // Save theme
   Future<bool> saveTheme(String theme) async {
     return await setString(_keyTheme, theme);
   }
 
-  /// Get theme
+  // Get theme
   String getTheme() {
     return getString(_keyTheme, defaultValue: 'light') ?? 'light';
   }
 
-  /// Save language
+  // Save language
   Future<bool> saveLanguage(String language) async {
     return await setString(_keyLanguage, language);
   }
 
-  /// Get language
+  // Get language
   String getLanguage() {
     return getString(_keyLanguage, defaultValue: 'en') ?? 'en';
   }
 
-  // ==================== UTILITY METHODS ====================
 
-  /// Remove a key
+  // Remove a key
   Future<bool> remove(String key) async {
     return await prefs.remove(key);
   }
 
-  /// Clear all data
+  // Clear all data
   Future<bool> clearAll() async {
     return await prefs.clear();
   }
 
-  /// Check if key exists
+  // Check if key exists
   bool containsKey(String key) {
     return prefs.containsKey(key);
   }
 
-  /// Get all keys
+  // Get all keys
   Set<String> getAllKeys() {
     return prefs.getKeys();
   }

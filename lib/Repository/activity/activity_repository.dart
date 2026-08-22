@@ -7,14 +7,14 @@ import '../../../config/app_url.dart';
 class ActivityRepository {
   final ApiClient _apiClient = ApiClient();
 
-  // ─── List Activities ──────────────────────────────────────────────────────
+  // List Activities
   Future<ApiResponse<List<ActivityModel>>> getActivities({
     int days = 30,
     int limit = 100,
-    String? status,   // 'done' | 'hold' | 'in_progress'
+    String? status,
     String? dateFrom,
     String? dateTo,
-    String? ordering, // e.g. '-datetime'
+    String? ordering,
   }) async {
     try {
       final queryParams = <String, dynamic>{
@@ -55,7 +55,7 @@ class ActivityRepository {
     }
   }
 
-  // ─── Create Activity ──────────────────────────────────────────────────────
+  // Create Activity
   Future<ApiResponse<ActivityModel>> createActivity({
     required String activityName,
     required String datetime,
@@ -101,7 +101,7 @@ class ActivityRepository {
     }
   }
 
-  // ─── Update Activity (PATCH) ──────────────────────────────────────────────
+  // Update Activity (PATCH)
   Future<ApiResponse<ActivityModel>> updateActivity({
     required int activityId,
     String? activityName,
@@ -150,7 +150,7 @@ class ActivityRepository {
     }
   }
 
-  // ─── Delete Activity ──────────────────────────────────────────────────────
+  // Delete Activity
   Future<ApiResponse<bool>> deleteActivity(int activityId) async {
     try {
       final response = await _apiClient.delete<dynamic>(

@@ -30,7 +30,6 @@ class EditActivityController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Get activity from route arguments
     _original = Get.arguments as ActivityModel;
     _prefill();
   }
@@ -102,11 +101,11 @@ class EditActivityController extends GetxController {
       );
       if (image != null) {
         selectedImagePath.value = image.path;
-        existingImageUrl.value = ''; // new image replaces old
+        existingImageUrl.value = '';
       }
     } catch (e) {
       Get.snackbar(
-        'error'.tr, 'failed_pick_image_activity'.tr,  // ✅
+        'error'.tr, 'failed_pick_image_activity'.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -118,7 +117,7 @@ class EditActivityController extends GetxController {
     final name = activityNameController.text.trim();
     if (name.isEmpty) {
       Get.snackbar(
-        'missing_field'.tr, 'activity_name_required'.tr,  // ✅
+        'missing_field'.tr, 'activity_name_required'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
@@ -142,7 +141,7 @@ class EditActivityController extends GetxController {
       Get.back(result: response.data);
     } else {
       Get.snackbar(
-        'error'.tr, response.message,  // ✅
+        'error'.tr, response.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,

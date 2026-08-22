@@ -9,18 +9,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Register LanguageController
     final langController = Get.put(LanguageController());
 
     return Obx(() => GetMaterialApp(
       debugShowCheckedModeBanner: false,
 
-      // ✅ Localization setup
       translations: AppTranslations(),
       locale: langController.currentLocale.value,
       fallbackLocale: const Locale('en', 'US'),
 
-      // ✅ RTL support for Arabic
       builder: (context, child) {
         return Directionality(
           textDirection: langController.isRTL()

@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/contoller/communicator_home_controller.dart
-
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -20,28 +18,21 @@ class CommunicatorHomeController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  // ── State ─────────────────────────────────────────────────────────────────
   final RxBool isLoading = true.obs;
   final RxBool isBuddyMode = false.obs;
   final RxString loadError = ''.obs;
 
-  // ── Data ──────────────────────────────────────────────────────────────────
   final RxList<CommCategoryModel> categories = <CommCategoryModel>[].obs;
   final RxList<CommQuickSpeakModel> quickSpeaks = <CommQuickSpeakModel>[].obs;
 
-  // ── Quick Speak bar ───────────────────────────────────────────────────────
   final RxString quickSpeakText = ''.obs;
   final RxString quickSpeakImage = ''.obs;
   final RxInt selectedQsId = (-1).obs;
 
-  // ── Audio ─────────────────────────────────────────────────────────────────
   final RxInt playingId = (-1).obs;
 
-  // ── Speak button cooldown ─────────────────────────────────────────────────
-  /// true while the 2-second cooldown is running (button disabled)
   final RxBool isSpeakCooldown = false.obs;
 
-  /// countdown display value: 5 → 4 → 3 → 2 → 1 → 0
   final RxInt cooldownCount = 5.obs;
 
   Timer? _cooldownTimer;
@@ -52,7 +43,7 @@ class CommunicatorHomeController extends GetxController {
     loadContent();
   }
 
-  // ── Current language code (en / es / ar) ──────────────────────────────────
+  // Current language code (en / es / ar)
   String get _currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
@@ -61,12 +52,11 @@ class CommunicatorHomeController extends GetxController {
     }
   }
 
-  // ── API call with buddy mode + lang routing ────────────────────────────────
+  // API call with buddy mode + lang routing
   Future<void> loadContent() async {
     isLoading.value = true;
     loadError.value = '';
 
-    // Check buddy_mode from profile
     try {
       final profileRes = await _authRepository.getProfile();
       if (profileRes.isSuccess && profileRes.data != null) {
@@ -77,10 +67,8 @@ class CommunicatorHomeController extends GetxController {
       debugPrint('CommunicatorHomeController: profile fetch error: $e');
     }
 
-    // Current language
     final lang = _currentLang;
 
-    // Hit the endpoint that matches buddy mode
     final res = isBuddyMode.value
         ? await _repo.getBuddyModeContent(lang: lang)
         : await _repo.getContent(lang: lang);
@@ -91,7 +79,6 @@ class CommunicatorHomeController extends GetxController {
       categories.assignAll(res.data!.categories);
       quickSpeaks.assignAll(res.data!.quickSpeaks);
     } else {
-      // Never keep another role/account's stale dashboard after a switch.
       categories.clear();
       quickSpeaks.clear();
       loadError.value = res.message.isNotEmpty
@@ -102,7 +89,7 @@ class CommunicatorHomeController extends GetxController {
 
   Future<void> refresh() => loadContent();
 
-  // ── Quick speak tap ────────────────────────────────────────────────────────
+  // Quick speak tap
   void onQuickSpeakTap(CommQuickSpeakModel qs) {
     if (selectedQsId.value == qs.id) {
       selectedQsId.value = -1;
@@ -115,8 +102,7 @@ class CommunicatorHomeController extends GetxController {
     }
   }
 
-  // ── Speak button ───────────────────────────────────────────────────────────
-  /// Plays audio + calls pressed API + starts 2-second cooldown
+  // Plays audio + calls pressed API + starts 2-second cooldown
   void speakQuickSpeak() {
     if (isSpeakCooldown.value) return;
 
@@ -130,7 +116,6 @@ class CommunicatorHomeController extends GetxController {
     quickSpeaks.firstWhereOrNull((q) => q.id == selectedQsId.value);
     if (selected == null) return;
 
-    // The sentence button must always use native TTS, never an uploaded sound.
     TtsService.to.speak(quickSpeakText.value, lang: _currentLang);
 
     _repo.pressContent(contentType: 'quickspeak', contentId: selected.id);
@@ -145,7 +130,7 @@ class CommunicatorHomeController extends GetxController {
     quickSpeakImage.value = '';
     _cancelCooldown();
   }
-  // ── Cooldown helpers ───────────────────────────────────────────────────────
+  // Cooldown helpers
   void _startCooldown() {
     _cancelCooldown();
 
@@ -158,7 +143,7 @@ class CommunicatorHomeController extends GetxController {
       } else {
         timer.cancel();
         isSpeakCooldown.value = false;
-        cooldownCount.value = 5; // reset for next use
+        cooldownCount.value = 5;
       }
     });
   }
@@ -170,7 +155,7 @@ class CommunicatorHomeController extends GetxController {
     cooldownCount.value = 5;
   }
 
-  // ── Audio ──────────────────────────────────────────────────────────────────
+  // Play Audio Internal
   Future<void> _playAudioInternal(int id, String? audioPath) async {
     final url = AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -194,7 +179,7 @@ class CommunicatorHomeController extends GetxController {
     playingId.value = -1;
   }
 
-  /// Public — sub-screens may call this if they share the same AudioPlayer
+  // Public — sub-screens may call this if they share the same AudioPlayer
   Future<void> playAudio(int id, String? audioPath) async {
     final url = AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -206,7 +191,7 @@ class CommunicatorHomeController extends GetxController {
     await _playAudioInternal(id, audioPath);
   }
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
+  // On Category Tap
   void onCategoryTap(CommCategoryModel category) {
     if (category.subCategories.isEmpty) {
       Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: category);

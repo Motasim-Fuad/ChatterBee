@@ -20,7 +20,7 @@ class SupportScreen extends GetView<SupportController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'support_title'.tr,  // ✅
+          'support_title'.tr,
           style: GoogleFonts.nunito(
             color: Colors.black,
             fontSize: 18,
@@ -35,12 +35,10 @@ class SupportScreen extends GetView<SupportController> {
         ],
       ),
       body: Obx(() {
-        // ── Loading ──
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // ── Error ──
         if (controller.errorMessage.value.isNotEmpty) {
           return Center(
             child: Column(
@@ -54,7 +52,7 @@ class SupportScreen extends GetView<SupportController> {
                   onPressed: controller.fetchSupport,
                   style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor),
-                  child: Text('retry'.tr),  // ✅
+                  child: Text('retry'.tr),
                 ),
               ],
             ),

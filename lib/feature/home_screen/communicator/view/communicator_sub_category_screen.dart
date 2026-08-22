@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/view/communicator_sub_category_screen.dart
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_sub_category_controller.dart';
@@ -8,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -25,9 +22,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  COMMUNICATOR SUB-CATEGORY SCREEN
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommunicatorSubCategoryScreen
     extends GetView<CommunicatorSubCategoryController> {
@@ -100,9 +94,6 @@ class CommunicatorSubCategoryScreen
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  SUB-CATEGORY CARD  (folder shape, no audio icon)
-// ════════════════════════════════════════════════════════════════════════════
 
 class _SubCategoryCard extends StatelessWidget {
   final CommSubCategoryModel sub;
@@ -188,9 +179,6 @@ class _SubCategoryCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  FOLDER PAINTER
-// ════════════════════════════════════════════════════════════════════════════
 
 class _FolderPainter extends CustomPainter {
   final Color cardColor;

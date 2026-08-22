@@ -17,7 +17,6 @@ class AddActivityController extends GetxController {
 
   TimeOfDay? _pickedTime;
 
-  // Status options — key: API value, label key: translation key
   final List<Map<String, String>> statusOptions = [
     {'value': 'in_progress', 'labelKey': 'status_in_progress'},
     {'value': 'done',        'labelKey': 'status_done'},
@@ -32,7 +31,7 @@ class AddActivityController extends GetxController {
     selectedTime.value = _formatTime(now);
   }
 
-  // ─── Time Picker ──────────────────────────────────────────────────────────
+  // Time Picker
   Future<void> selectTime(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
@@ -73,7 +72,7 @@ class AddActivityController extends GetxController {
         .toIso8601String();
   }
 
-  // ─── Image Picker ─────────────────────────────────────────────────────────
+  // Image Picker
   Future<void> pickImage() async {
     if (!ProAccessGate.allowOrPrompt()) return;
     try {
@@ -86,7 +85,7 @@ class AddActivityController extends GetxController {
       if (image != null) selectedImagePath.value = image.path;
     } catch (e) {
       Get.snackbar(
-        'error'.tr, 'failed_pick_image_activity'.tr,  // ✅
+        'error'.tr, 'failed_pick_image_activity'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
@@ -96,12 +95,12 @@ class AddActivityController extends GetxController {
 
   void selectStatus(String value) => selectedStatus.value = value;
 
-  // ─── Save ─────────────────────────────────────────────────────────────────
+  // Save
   Future<void> saveActivity() async {
     final name = activityNameController.text.trim();
     if (name.isEmpty) {
       Get.snackbar(
-        'missing_field'.tr, 'activity_name_required'.tr,  // ✅
+        'missing_field'.tr, 'activity_name_required'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
@@ -124,7 +123,7 @@ class AddActivityController extends GetxController {
       Get.back(result: response.data);
     } else {
       Get.snackbar(
-        'error'.tr, response.message,  // ✅
+        'error'.tr, response.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,

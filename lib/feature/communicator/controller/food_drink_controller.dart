@@ -55,7 +55,6 @@ class FoodDrinkController extends GetxController {
       backgroundColor: const Color(0xFFFFF9C4),
       isCategory: false,
     ),
-    // Categories (with folder-style design)
     FoodItemModel(
       imagePath: ImagesLink.breakfastCapitalImg,
       label: 'Breakfast',
@@ -90,10 +89,8 @@ class FoodDrinkController extends GetxController {
 
   void selectFood(String food, bool isCategory) {
     if (isCategory) {
-      // Navigate to category screen
       navigateToCategory(food);
     } else {
-      // Select food item
       selectedFood.value = food;
     }
   }
@@ -122,7 +119,6 @@ class FoodDrinkController extends GetxController {
 
   void speakFood() {
     if (selectedFood.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedFood.value,

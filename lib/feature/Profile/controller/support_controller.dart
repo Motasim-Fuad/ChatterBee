@@ -11,7 +11,7 @@ class FaqItem {
 
   FaqItem({required this.id, required this.title, required this.content});
 
-  // ✅ Parse from translations.{lang} — falls back to 'en' if lang missing
+  // Parse from translations.{lang} — falls back to 'en' if lang missing
   factory FaqItem.fromJson(Map<String, dynamic> json, String lang) {
     final translations = json['translations'] as Map<String, dynamic>? ?? {};
     final langData = (translations[lang] ?? translations['en']) as Map<String, dynamic>? ?? {};
@@ -39,7 +39,6 @@ class SupportController extends GetxController {
     super.onInit();
     fetchSupport();
 
-    // ✅ Re-fetch whenever language changes
     ever(LanguageController.to.currentLocale, (_) => fetchSupport());
   }
 
@@ -68,7 +67,6 @@ class SupportController extends GetxController {
       isLoading.value   = true;
       errorMessage.value = '';
 
-      // ✅ Pass current lang as query param
       final String lang = LanguageController.to.currentLocale.value.languageCode;
       final response = await _apiClient.get<Map<String, dynamic>>(
         '/api/settings/faq/?lang=$lang',

@@ -1,7 +1,6 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
-//import 'package:chatter_bee/feature/authentication/repository/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,30 +9,24 @@ import 'package:google_fonts/google_fonts.dart';
 class CreateNewPasswordController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
 
-  // Text Controllers
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
-  // Password visibility
   bool _isNewPasswordVisible = false;
   bool get isNewPasswordVisible => _isNewPasswordVisible;
 
   bool _isConfirmPasswordVisible = false;
   bool get isConfirmPasswordVisible => _isConfirmPasswordVisible;
 
-  // Loading state
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  // Navigation state
   bool _isNavigating = false;
   bool _isDisposed = false;
 
-  // Email and OTP from previous screen
   String? email;
   String? otp;
 
-  // Password validation
   bool _hasMinLength = false;
   bool get hasMinLength => _hasMinLength;
   bool get isPasswordValid => _hasMinLength;
@@ -41,7 +34,6 @@ class CreateNewPasswordController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Get email and OTP from arguments
     email = Get.arguments?['email'] ?? '';
     otp = Get.arguments?['otp'] ?? '';
   }
@@ -75,7 +67,6 @@ class CreateNewPasswordController extends GetxController {
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
-    // Validation
     if (newPassword.isEmpty || confirmPassword.isEmpty) {
       _showWarningSnackbar(
         'Empty Fields',
@@ -121,7 +112,6 @@ class CreateNewPasswordController extends GetxController {
     try {
       _setLoading(true);
 
-      // Call reset password API
       final response = await _authRepository.resetPassword(
         email: email!,
         otp: otp!,
@@ -134,19 +124,16 @@ class CreateNewPasswordController extends GetxController {
       if (response.isSuccess) {
         isSuccess = true;
 
-        // Set navigating flag
         _isNavigating = true;
         _setLoading(false);
         update();
 
         await Future.delayed(const Duration(milliseconds: 100));
 
-        // Unfocus all fields
         FocusManager.instance.primaryFocus?.unfocus();
 
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Show success dialog
         Get.dialog(
           WillPopScope(
             onWillPop: () async => false,
@@ -160,14 +147,12 @@ class CreateNewPasswordController extends GetxController {
 
         await Future.delayed(const Duration(milliseconds: 500));
 
-        // Close dialog
         if (Get.isDialogOpen == true) {
           Get.back();
         }
 
         await Future.delayed(const Duration(milliseconds: 300));
 
-        // Navigate to login screen
         Get.offNamed(AppRoutes.SIGNINSCREEN);
       } else {
         _showErrorSnackbar(
@@ -238,7 +223,6 @@ class CreateNewPasswordController extends GetxController {
   }
 }
 
-// Password Reset Success Dialog
 class PasswordResetSuccessDialog extends StatefulWidget {
   final String title;
   final String message;

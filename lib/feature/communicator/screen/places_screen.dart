@@ -32,12 +32,10 @@ class PlacesScreen extends GetView<PlacesController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Display and Action Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -71,7 +69,6 @@ class PlacesScreen extends GetView<PlacesController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakPlace(),
                     child: Container(
@@ -103,7 +100,6 @@ class PlacesScreen extends GetView<PlacesController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearPlace(),
                     child: Container(
@@ -133,7 +129,6 @@ class PlacesScreen extends GetView<PlacesController> {
               ),
             ),
 
-            // Places Grid
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

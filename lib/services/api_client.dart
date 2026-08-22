@@ -9,7 +9,6 @@ class ApiClient {
   late Dio _dio;
   final SecureStorageService _secureStorage = SecureStorageService();
 
-  // Flag to prevent multiple logout calls
   bool _isLoggingOut = false;
   Future<_RefreshResult>? _refreshInFlight;
 
@@ -33,7 +32,6 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          // Add authorization token if available
           final token = await _secureStorage.getAccessToken();
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
@@ -58,19 +56,15 @@ class ApiClient {
               'ERROR[${error.response?.statusCode}] => ${error.requestOptions.uri}');
           LoggerUtils.logError('Error Message: ${error.message}');
 
-          // Handle 401 Unauthorized
           if (error.response?.statusCode == 401) {
-            // Check if this is not a login or token refresh request
             final isAuthRequest = error.requestOptions.path.contains('login') ||
                 error.requestOptions.path.contains('token/refresh');
 
             final alreadyRetried = error.requestOptions.extra['authRetried'] == true;
             if (!isAuthRequest && !alreadyRetried && !_isLoggingOut) {
-              // Try token refresh first
               final refreshResult = await _refreshTokenSingleFlight();
 
               if (refreshResult == _RefreshResult.success) {
-                // Retry the request with new token
                 final options = error.requestOptions;
                 final token = await _secureStorage.getAccessToken();
                 options.headers['Authorization'] = 'Bearer $token';
@@ -88,12 +82,9 @@ class ApiClient {
                   );
                   return handler.resolve(response);
                 } catch (e) {
-                  // A business/server/network failure after refresh must not
-                  // destroy a valid session.
                   return handler.next(error);
                 }
               } else if (refreshResult == _RefreshResult.sessionExpired) {
-                // Logout only when the refresh token itself is rejected.
                 await _handleAutoLogout();
               }
             }
@@ -124,7 +115,6 @@ class ApiClient {
         return _RefreshResult.sessionExpired;
       }
 
-      // Use an interceptor-free client so refresh never recursively refreshes.
       final refreshDio = Dio(BaseOptions(
         baseUrl: AppUrl.baseUrl,
         connectTimeout: const Duration(seconds: 30),
@@ -168,7 +158,6 @@ class ApiClient {
     try {
       LoggerUtils.logWarning('Auto logout triggered due to 401');
 
-      // Create auth repository instance and call handleUnauthorized
       final authRepository = AuthRepository();
       await authRepository.handleUnauthorized();
     } catch (e) {
@@ -178,7 +167,6 @@ class ApiClient {
     }
   }
 
-  // ==================== GET REQUEST ====================
   Future<ApiResponse<T>> get<T>(
       String url, {
         Map<String, dynamic>? queryParameters,
@@ -201,7 +189,6 @@ class ApiClient {
     }
   }
 
-  // ==================== POST REQUEST ====================
   Future<ApiResponse<T>> post<T>(
       String url, {
         dynamic data,
@@ -226,7 +213,6 @@ class ApiClient {
     }
   }
 
-  // ==================== PUT REQUEST ====================
   Future<ApiResponse<T>> put<T>(
       String url, {
         dynamic data,
@@ -251,7 +237,6 @@ class ApiClient {
     }
   }
 
-  // ==================== DELETE REQUEST ====================
   Future<ApiResponse<T>> delete<T>(
       String url, {
         dynamic data,
@@ -276,7 +261,6 @@ class ApiClient {
     }
   }
 
-  // ==================== MULTIPART POST (File Upload) ====================
   Future<ApiResponse<T>> multipartPost<T>(
       String url, {
         required FormData formData,
@@ -304,7 +288,6 @@ class ApiClient {
     }
   }
 
-  // ==================== MULTIPART PUT (File Upload) ====================
   Future<ApiResponse<T>> multipartPut<T>(
       String url, {
         required FormData formData,
@@ -332,7 +315,6 @@ class ApiClient {
     }
   }
 
-  // ==================== RESPONSE HANDLER ====================
   ApiResponse<T> _handleResponse<T>(Response response) {
     final statusCode = response.statusCode ?? 500;
 
@@ -355,7 +337,6 @@ class ApiClient {
     }
   }
 
-  // ==================== ERROR HANDLER ====================
   ApiResponse<T> _handleError<T>(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -424,7 +405,6 @@ class ApiClient {
 
 enum _RefreshResult { success, sessionExpired, temporaryFailure }
 
-// ==================== API RESPONSE MODEL ====================
 class ApiResponse<T> {
   final bool success;
   final int statusCode;
@@ -483,7 +463,6 @@ class ApiResponse<T> {
   }
 }
 
-// ==================== ERROR TYPES ====================
 enum ErrorType {
   network,
   timeout,

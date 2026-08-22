@@ -31,7 +31,7 @@ class ProfileController extends GetxController {
     loadUserProfile();
   }
 
-  // ==================== LOAD PROFILE FROM API ====================
+  // Load User Profile
   Future<void> loadUserProfile() async {
     try {
       isLoading.value = true;
@@ -52,11 +52,11 @@ class ProfileController extends GetxController {
           switchableUsers.clear();
         }
       } else {
-        Get.snackbar('error'.tr, response.message,   // ✅
+        Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_load_profile'.tr,   // ✅
+      Get.snackbar('error'.tr, 'failed_load_profile'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;
@@ -114,17 +114,12 @@ class ProfileController extends GetxController {
           : switched.user.email;
       await CommunicatorSessionService.to.setSelected(id, name);
 
-      // A switch is an explicit identity transition. Do not start Home with
-      // controllers created for the previous role; finish Profile Setup first.
       Get.offAllNamed(
         role == 'caregiver'
             ? AppRoutes.CAREGIVERPROFILE
             : AppRoutes.COMMUNICATORPROFILE,
       );
     } else if (response.statusCode == 404) {
-      // Older production backends may not expose token switching yet.
-      // Keep the caregiver authenticated and switch the active communicator
-      // session so content/settings can still be managed without logout.
       final name = (user['full_name'] ?? user['email'] ?? 'Communicator')
           .toString();
       await CommunicatorSessionService.to.setSelected(id, name);
@@ -134,7 +129,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  // ==================== PICK PROFILE IMAGE ====================
+  // Pick Image
   Future<void> pickImage() async {
     try {
       await Get.bottomSheet(
@@ -150,12 +145,12 @@ class ProfileController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('choose_profile_picture'.tr,   // ✅
+              Text('choose_profile_picture'.tr,
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
               const SizedBox(height: 20),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: Text('camera'.tr),   // ✅
+                title: Text('camera'.tr),
                 onTap: () async {
                   Get.back();
                   await _pickImageFromSource(ImageSource.camera);
@@ -163,7 +158,7 @@ class ProfileController extends GetxController {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: Text('gallery'.tr),   // ✅
+                title: Text('gallery'.tr),
                 onTap: () async {
                   Get.back();
                   await _pickImageFromSource(ImageSource.gallery);
@@ -172,7 +167,7 @@ class ProfileController extends GetxController {
               if (profileImage.value != null)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: Text('remove_photo'.tr,   // ✅
+                  title: Text('remove_photo'.tr,
                       style: const TextStyle(color: Colors.red)),
                   onTap: () {
                     Get.back();
@@ -184,7 +179,7 @@ class ProfileController extends GetxController {
         ),
       );
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_open_picker'.tr,   // ✅
+      Get.snackbar('error'.tr, 'failed_open_picker'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -202,7 +197,7 @@ class ProfileController extends GetxController {
         await _uploadAvatar(File(image.path));
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_pick_image'.tr,   // ✅
+      Get.snackbar('error'.tr, 'failed_pick_image'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -211,25 +206,25 @@ class ProfileController extends GetxController {
     try {
       final response = await _authRepository.updateProfile(avatar: file);
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'profile_picture_updated'.tr,   // ✅
+        Get.snackbar('success'.tr, 'profile_picture_updated'.tr,
             snackPosition: SnackPosition.BOTTOM);
       } else {
-        Get.snackbar('error'.tr, response.message,   // ✅
+        Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_upload_picture'.tr,   // ✅
+      Get.snackbar('error'.tr, 'failed_upload_picture'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
 
   void removeProfileImage() {
     profileImage.value = null;
-    Get.snackbar('success'.tr, 'profile_picture_removed'.tr,   // ✅
+    Get.snackbar('success'.tr, 'profile_picture_removed'.tr,
         snackPosition: SnackPosition.BOTTOM);
   }
 
-  // ==================== NAVIGATION ====================
+  // On Subscription Tap
   void onSubscriptionTap() => Get.toNamed(AppRoutes.SUBSCRIPTION);
 
   void onEditPersonalInfo() {
@@ -245,7 +240,7 @@ class ProfileController extends GetxController {
   void onPrivacyPolicyTap() => Get.toNamed(AppRoutes.PRIVACYPOLICY);
   void onSupportTap() => Get.toNamed(AppRoutes.SUPPORT);
 
-  // ==================== DELETE ACCOUNT ====================
+  // On Delete Account Tap
   void onDeleteAccountTap() {
     Get.bottomSheet(
       Container(
@@ -260,13 +255,13 @@ class ProfileController extends GetxController {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('delete'.tr,   // ✅
+            Text('delete'.tr,
                 style: GoogleFonts.nunito(
                     fontSize: 30,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryColor)),
             const SizedBox(height: 24),
-            Text('delete_confirm'.tr,   // ✅
+            Text('delete_confirm'.tr,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.nunito(
                     fontSize: 18,
@@ -284,7 +279,7 @@ class ProfileController extends GetxController {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       side: BorderSide(color: AppColors.primaryColor, width: 1.5),
                     ),
-                    child: Text('cancel'.tr,   // ✅
+                    child: Text('cancel'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -304,7 +299,7 @@ class ProfileController extends GetxController {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
-                    child: Text('yes_delete'.tr,   // ✅
+                    child: Text('yes_delete'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -322,7 +317,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  // ==================== LOGOUT ====================
+  // On Logout Tap
   void onLogoutTap() {
     Get.bottomSheet(
       Container(
@@ -337,13 +332,13 @@ class ProfileController extends GetxController {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('logout'.tr,   // ✅
+            Text('logout'.tr,
                 style: GoogleFonts.nunito(
                     fontSize: 30,
                     fontWeight: FontWeight.w600,
                     color: AppColors.primaryColor)),
             const SizedBox(height: 24),
-            Text('logout_confirm'.tr,   // ✅
+            Text('logout_confirm'.tr,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.nunito(
                     fontSize: 18,
@@ -361,7 +356,7 @@ class ProfileController extends GetxController {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       side: BorderSide(color: AppColors.primaryColor, width: 1.5),
                     ),
-                    child: Text('cancel'.tr,   // ✅
+                    child: Text('cancel'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -381,7 +376,7 @@ class ProfileController extends GetxController {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,
                     ),
-                    child: Text('yes_logout'.tr,   // ✅
+                    child: Text('yes_logout'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -399,7 +394,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  // ==================== API: DELETE ACCOUNT ====================
+  // Delete Account
   Future<void> deleteAccount() async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
@@ -409,22 +404,22 @@ class ProfileController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'account_deleted'.tr,   // ✅
+        Get.snackbar('success'.tr, 'account_deleted'.tr,
             snackPosition: SnackPosition.BOTTOM);
         await Future.delayed(const Duration(milliseconds: 500));
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       } else {
-        Get.snackbar('error'.tr, response.message,   // ✅
+        Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      Get.snackbar('error'.tr, 'failed_delete_account'.tr,   // ✅
+      Get.snackbar('error'.tr, 'failed_delete_account'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
 
-  // ==================== API: LOGOUT ====================
+  // Logout
   Future<void> logout() async {
     try {
       Get.dialog(const Center(child: CircularProgressIndicator()),
@@ -434,7 +429,7 @@ class ProfileController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'logged_out'.tr,   // ✅
+        Get.snackbar('success'.tr, 'logged_out'.tr,
             snackPosition: SnackPosition.BOTTOM);
         await Future.delayed(const Duration(milliseconds: 500));
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);

@@ -23,7 +23,7 @@ class ProfileScreen extends GetView<ProfileController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'profile_setup'.tr,  // ✅
+          'profile_setup'.tr,
           style: GoogleFonts.nunito(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
         actions: [
@@ -43,7 +43,6 @@ class ProfileScreen extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Profile Avatar ──
                 Center(
                   child: Stack(
                     children: [
@@ -72,18 +71,16 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 const SizedBox(height: 30),
 
-                // ── Subscription ──
                 _buildSubscription(context),
                 const SizedBox(height: 16),
 
-                // ── Switch User (caregiver only) ──
                 if (controller.canSwitchUser) Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('switch_user'.tr,  // ✅
+                      Text('switch_user'.tr,
                           style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black)),
                       const SizedBox(height: 12),
                       Obx(() => controller.switchableUsers.isEmpty
@@ -103,7 +100,6 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 if (controller.canSwitchUser) const SizedBox(height: 16),
 
-                // ── Personal Information ──
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
@@ -113,7 +109,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('personal_information'.tr,  // ✅
+                          Text('personal_information'.tr,
                               style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black)),
                           IconButton(
                             icon: SvgPicture.asset(ImagesLink.edit),
@@ -145,47 +141,46 @@ class ProfileScreen extends GetView<ProfileController> {
                 ),
                 const SizedBox(height: 16),
 
-                // ── Settings ──
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('settings'.tr,  // ✅
+                      Text('settings'.tr,
                           style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black)),
                       const SizedBox(height: 12),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.clarityLanguage),
-                        title: 'language'.tr,  // ✅
+                        title: 'language'.tr,
                         onTap: () => Get.to(() => const LanguageSelector()),
                         trailing: const Icon(Icons.chevron_right),
                       ),
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.lockIcon),
-                        title: 'change_password'.tr,  // ✅
+                        title: 'change_password'.tr,
                         onTap: controller.onChangePasswordTap,
                         trailing: const Icon(Icons.chevron_right),
                       ),
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.privacy),
-                        title: 'privacy_policy'.tr,  // ✅
+                        title: 'privacy_policy'.tr,
                         onTap: controller.onPrivacyPolicyTap,
                         trailing: const Icon(Icons.chevron_right),
                       ),
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.support),
-                        title: 'support'.tr,  // ✅
+                        title: 'support'.tr,
                         onTap: controller.onSupportTap,
                         trailing: const Icon(Icons.chevron_right),
                       ),
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.logout),
-                        title: 'logout'.tr,  // ✅
+                        title: 'logout'.tr,
                         onTap: controller.onLogoutTap,
                         textColor: Colors.red,
                       ),
@@ -239,7 +234,7 @@ class ProfileScreen extends GetView<ProfileController> {
         onTap: controller.onSubscriptionTap,
         child: Row(
           children: [
-            Expanded(child: Text('subscription'.tr,  // ✅
+            Expanded(child: Text('subscription'.tr,
                 style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black))),
             const Icon(Icons.chevron_right),
           ],

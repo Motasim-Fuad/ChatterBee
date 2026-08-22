@@ -30,7 +30,6 @@ class PlacesController extends GetxController {
 
   void speakPlace() {
     if (selectedPlace.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedPlace.value,

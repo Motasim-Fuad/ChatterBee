@@ -99,12 +99,12 @@ class CaregiverInvitationController extends GetxController {
   Future<void> sendInvitation() async {
     final email = emailController.text.trim();
     if (email.isEmpty) {
-      Get.snackbar('error'.tr, 'enter_email'.tr,  // ✅
+      Get.snackbar('error'.tr, 'enter_email'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'valid_email'.tr,  // ✅
+      Get.snackbar('error'.tr, 'valid_email'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
@@ -117,8 +117,8 @@ class CaregiverInvitationController extends GetxController {
         emailController.clear();
         Get.back();
         Get.snackbar(
-          'invitation_sent_title'.tr,  // ✅
-          '${'invitation_sent_msg'.tr} $email',  // ✅
+          'invitation_sent_title'.tr,
+          '${'invitation_sent_msg'.tr} $email',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFFE8F5E9),
           duration: const Duration(seconds: 3),
@@ -132,12 +132,12 @@ class CaregiverInvitationController extends GetxController {
               ? firstError.first.toString()
               : firstError.toString();
         }
-        Get.snackbar('error'.tr, errorMsg,  // ✅
+        Get.snackbar('error'.tr, errorMsg,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       debugPrint('Send invitation error: $e');
-      Get.snackbar('error'.tr, 'profile_update_failed'.tr,  // ✅
+      Get.snackbar('error'.tr, 'profile_update_failed'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isSendingInvitation.value = false;
@@ -159,17 +159,17 @@ class CaregiverInvitationController extends GetxController {
           connection.communicatorName,
         );
         Get.snackbar(
-          'switched'.tr,  // ✅
-          '${'now_viewing'.tr} ${connection.communicatorName}${'profile_suffix'.tr}',  // ✅
+          'switched'.tr,
+          '${'now_viewing'.tr} ${connection.communicatorName}${'profile_suffix'.tr}',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFFE8F5E9),
         );
       } else {
-        Get.snackbar('error'.tr, response.message,  // ✅
+        Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_switch'.tr,  // ✅
+      Get.snackbar('error'.tr, 'failed_switch'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isSwitchingTo.value = -1;
@@ -180,18 +180,18 @@ class CaregiverInvitationController extends GetxController {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('disconnect_confirm_title'.tr),  // ✅
+        title: Text('disconnect_confirm_title'.tr),
         content: Text(
-          '${'disconnect_confirm_msg'.tr} ${connection.communicatorName}?',  // ✅
+          '${'disconnect_confirm_msg'.tr} ${connection.communicatorName}?',
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: Text('cancel'.tr),  // ✅
+            child: Text('cancel'.tr),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
-            child: Text('disconnect'.tr,  // ✅
+            child: Text('disconnect'.tr,
                 style: const TextStyle(color: Colors.red)),
           ),
         ],
@@ -209,16 +209,16 @@ class CaregiverInvitationController extends GetxController {
           selectedConnectionId.value = -1;
         }
         Get.snackbar(
-          'disconnected'.tr,  // ✅
-          '${connection.communicatorName} ${'has_been_disconnected'.tr}',  // ✅
+          'disconnected'.tr,
+          '${connection.communicatorName} ${'has_been_disconnected'.tr}',
           snackPosition: SnackPosition.BOTTOM,
         );
       } else {
-        Get.snackbar('error'.tr, response.message,  // ✅
+        Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_disconnect'.tr,  // ✅
+      Get.snackbar('error'.tr, 'failed_disconnect'.tr,
           snackPosition: SnackPosition.BOTTOM);
     }
   }
@@ -251,12 +251,12 @@ class CaregiverInvitationController extends GetxController {
               ),
             ),
             const SizedBox(height: 20),
-            Text('invite_communicator'.tr,  // ✅
+            Text('invite_communicator'.tr,
                 style: const TextStyle(
                     fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Text(
-              'invite_communicator_hint'.tr,  // ✅
+              'invite_communicator_hint'.tr,
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 20),
@@ -299,7 +299,7 @@ class CaregiverInvitationController extends GetxController {
                     width: 20, height: 20,
                     child: CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.black))
-                    : Text('send_invitation'.tr,  // ✅
+                    : Text('send_invitation'.tr,
                     style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.w700,

@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/view/communicator_item_screen.dart
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
@@ -10,7 +8,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -27,9 +24,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  COMMUNICATOR ITEM SCREEN
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
   const CommunicatorItemScreen({super.key});
@@ -57,7 +51,6 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
       ),
       body: Column(
         children: [
-          // ── Speak Bar ────────────────────────────────────────────────────
           Obx(() => Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: _SpeakBar(
@@ -75,7 +68,6 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
 
           const SizedBox(height: 14),
 
-          // ── Items Grid ───────────────────────────────────────────────────
           Expanded(
             child: Obx(() => controller.items.isEmpty
                 ? Center(
@@ -132,9 +124,6 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ITEM CARD  (folder shape — NO audio icon, tap only)
-// ════════════════════════════════════════════════════════════════════════════
 
 class _ItemCard extends StatelessWidget {
   final CommItemModel item;
@@ -217,7 +206,6 @@ class _ItemCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Selection check badge
                 if (isSelected)
                   Positioned(
                     top: tabH - 8,
@@ -240,12 +228,6 @@ class _ItemCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  SPEAK BAR — local to item screen
-//
-//  isCooldown    → disables speak btn, shows countdown badge
-//  cooldownCount → number in badge: 2 → 1 → 0
-// ════════════════════════════════════════════════════════════════════════════
 
 class _SpeakBar extends StatelessWidget {
   final String text;
@@ -274,7 +256,6 @@ class _SpeakBar extends StatelessWidget {
 
     return Row(
       children: [
-        // ── Text display ──────────────────────────────────────────
         Expanded(
           child: Container(
             height: 52,
@@ -332,7 +313,6 @@ class _SpeakBar extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // ── Speak button with cooldown overlay ────────────────────
         _SpeakBtn(
           isCooldown: isCooldown,
           cooldownCount: cooldownCount,
@@ -340,7 +320,6 @@ class _SpeakBar extends StatelessWidget {
         ),
         const SizedBox(width: 10),
 
-        // ── Clear button — always active, stops audio too ─────────
         _BarBtn(
           color: const Color(0xFFE57373),
           onTap: onClear,
@@ -351,7 +330,6 @@ class _SpeakBar extends StatelessWidget {
   }
 }
 
-// ── Speak button with countdown badge ────────────────────────────────────────
 
 class _SpeakBtn extends StatelessWidget {
   final bool isCooldown;
@@ -371,7 +349,6 @@ class _SpeakBtn extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Base button
           Container(
             height: 46,
             width: 46,
@@ -400,7 +377,6 @@ class _SpeakBtn extends StatelessWidget {
             ),
           ),
 
-          // Countdown badge — shown only during cooldown
           if (isCooldown)
             Positioned(
               top: -8,
@@ -477,9 +453,6 @@ class _BarBtn extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  FOLDER PAINTER
-// ════════════════════════════════════════════════════════════════════════════
 
 class _FolderPainter extends CustomPainter {
   final Color cardColor;

@@ -1,5 +1,3 @@
-// lib/services/tts_service.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
@@ -39,7 +37,7 @@ class TtsService extends GetxService {
     isSpeaking.value = false;
   }
 
-  /// app language code → TTS locale
+  // app language code → TTS locale
   String _mapLang(String lang) {
     switch (lang) {
       case 'es': return 'es-ES';

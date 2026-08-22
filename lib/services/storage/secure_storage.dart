@@ -1,9 +1,6 @@
-// lib/services/storage/secure_storage.dart
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
-  // Singleton instance
   static final SecureStorageService _instance = SecureStorageService._internal();
   factory SecureStorageService() => _instance;
   SecureStorageService._internal();
@@ -17,17 +14,15 @@ class SecureStorageService {
     ),
   );
 
-  // ==================== STORAGE KEYS ====================
   static const String _keyAccessToken = 'access_token';
   static const String _keyRefreshToken = 'refresh_token';
   static const String _keyUserId = 'user_id';
   static const String _keyUserEmail = 'user_email';
   static const String _keyUserRole = 'user_role';
 
-  // FCM token id key
   static const String _keyFcmTokenId = 'fcm_token_id';
 
-  // ==================== TOKEN METHODS ====================
+  // Save Access Token
 
   Future<void> saveAccessToken(String token) async {
     await _storage.write(key: _keyAccessToken, value: token);
@@ -53,9 +48,6 @@ class SecureStorageService {
     await _storage.write(key: _keyRefreshToken, value: refreshToken);
   }
 
-  /// Replaces the complete authenticated identity together. This prevents
-  /// requests from seeing tokens for one account and metadata for another
-  /// while login/account-switch navigation is in progress.
   Future<void> saveAuthSession({
     required String accessToken,
     required String refreshToken,
@@ -70,7 +62,7 @@ class SecureStorageService {
     await _storage.write(key: _keyUserRole, value: role);
   }
 
-  // ==================== USER DATA METHODS ====================
+  // Save User Id
 
   Future<void> saveUserId(String userId) async {
     await _storage.write(key: _keyUserId, value: userId);
@@ -96,24 +88,23 @@ class SecureStorageService {
     return await _storage.read(key: _keyUserRole);
   }
 
-  // ==================== ✅ FCM TOKEN METHODS ====================
 
-  /// Save FCM token ID returned by the backend
+  // Save FCM token ID returned by the backend
   Future<void> saveFcmTokenId(String tokenId) async {
     await _storage.write(key: _keyFcmTokenId, value: tokenId);
   }
 
-  /// Get FCM Token ID
+  // Get FCM Token ID
   Future<String?> getFcmTokenId() async {
     return await _storage.read(key: _keyFcmTokenId);
   }
 
-  /// Delete FCM Token ID
+  // Delete FCM Token ID
   Future<void> deleteFcmTokenId() async {
     await _storage.delete(key: _keyFcmTokenId);
   }
 
-  // ==================== CLEAR METHODS ====================
+  // Clear All
 
   Future<void> clearAll() async {
     await _storage.deleteAll();
@@ -129,7 +120,7 @@ class SecureStorageService {
     await _storage.delete(key: key);
   }
 
-  // ==================== CUSTOM KEY-VALUE ====================
+  // Save
 
   Future<void> save(String key, String value) async {
     await _storage.write(key: key, value: value);

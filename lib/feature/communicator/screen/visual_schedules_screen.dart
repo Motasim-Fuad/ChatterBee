@@ -32,7 +32,6 @@ class VisualSchedulesScreen extends GetView<VisualSchedulesController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Today's Schedule Section
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -106,7 +105,6 @@ class VisualSchedulesScreen extends GetView<VisualSchedulesController> {
               ),
             ),
 
-            // Add Activity Button
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: SizedBox(
@@ -185,7 +183,6 @@ class _ScheduleItemCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Image
           Container(
             width: 48,
             height: 48,
@@ -211,7 +208,6 @@ class _ScheduleItemCard extends StatelessWidget {
           ),
           const SizedBox(width: 16),
 
-          // Title and Time
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +233,6 @@ class _ScheduleItemCard extends StatelessWidget {
             ),
           ),
 
-          // Menu Button
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'delete') {

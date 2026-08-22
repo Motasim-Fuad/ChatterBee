@@ -30,7 +30,6 @@ class HealthController extends GetxController {
 
   void speakHealth() {
     if (selectedHealth.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedHealth.value,

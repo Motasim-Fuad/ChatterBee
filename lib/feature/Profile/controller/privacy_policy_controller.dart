@@ -16,7 +16,6 @@ class PrivacyPolicyController extends GetxController {
     super.onInit();
     fetchPrivacyPolicy();
 
-    // ✅ Re-fetch whenever language changes
     ever(LanguageController.to.currentLocale, (_) => fetchPrivacyPolicy());
   }
 
@@ -25,7 +24,6 @@ class PrivacyPolicyController extends GetxController {
       isLoading.value = true;
       LoggerUtils.logInfo('=== GET PRIVACY POLICY ===');
 
-      // ✅ Pass current lang as query param
       final String lang = LanguageController.to.currentLocale.value.languageCode;
       final response = await _apiClient.get<Map<String, dynamic>>(
         '${AppUrl.privacyPolicy}?lang=$lang',

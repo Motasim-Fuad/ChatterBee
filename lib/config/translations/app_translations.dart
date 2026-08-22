@@ -4,7 +4,6 @@ class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
     'en_US': {
-      // ── Common ──
       'app_name': 'Chatter Bee',
       'hello': 'Hello',
       'welcome': 'Welcome',
@@ -23,7 +22,6 @@ class AppTranslations extends Translations {
       'continue_btn': 'Continue',
       'done': 'Done',
 
-      // ── Profile Screen ──
       'profile_setup': 'Profile Setup',
       'subscription': 'Subscription',
       'switch_user': 'Switch User',
@@ -35,20 +33,17 @@ class AppTranslations extends Translations {
       'support': 'Support',
       'delete_account': 'Delete Account',
 
-      // ── Delete / Logout Bottom Sheet ──
       'delete': 'Delete',
       'delete_confirm': 'Are you sure you want\nto Delete ?',
       'yes_delete': 'Yes, Delete',
       'logout_confirm': 'Are you sure you want\nto log out?',
       'yes_logout': 'Yes, Logout',
 
-      // ── Image Picker ──
       'choose_profile_picture': 'Choose Profile Picture',
       'camera': 'Camera',
       'gallery': 'Gallery',
       'remove_photo': 'Remove Photo',
 
-      // ── Profile Snackbars ──
       'failed_load_profile': 'Failed to load profile',
       'failed_open_picker': 'Failed to open image picker',
       'failed_pick_image': 'Failed to pick image',
@@ -59,7 +54,6 @@ class AppTranslations extends Translations {
       'failed_delete_account': 'Failed to delete account. Please try again.',
       'logged_out': 'Logged out successfully',
 
-      // ── Caregiver & Communicator Profile ──
       'full_name': 'Full Name',
       'enter_full_name': 'Enter your full name',
       'buddy_bee_mode': 'Buddy Bee Mode',
@@ -87,7 +81,6 @@ class AppTranslations extends Translations {
       'voice_upload': 'Voice upload functionality',
       'invitations': 'Invitations',
 
-      // ── Change Password Screen ──
       'old_password': 'Old Password',
       'new_password': 'New Password',
       'confirm_password': 'Confirm Password',
@@ -97,7 +90,6 @@ class AppTranslations extends Translations {
       'passwords_not_match': 'New passwords do not match',
       'password_changed': 'Password changed successfully',
 
-      // ── Subscription Screen ──
       'unlock_pro': 'Unlock ChatterBee Pro',
       'unlock_pro_desc': 'Give your communicator more ways to connect with ChatterBee Pro.',
       'free_plan': 'Free Plan',
@@ -113,22 +105,18 @@ class AppTranslations extends Translations {
       'free_plan_msg': 'You are using the free plan',
       'free_plan_title': 'Free Plan',
 
-      // ── Payment Bottom Sheet ──
       'payment_method': 'Payment Method',
       'confirm_and_pay': 'Confirm and Pay',
       'payment_success': 'Payment\nSuccessfully',
       'payment_success_desc': 'Your payment has been done\nsuccessfully.',
 
-      //── Support ──
       'support_title': 'Support',
       'no_faq_available': 'No FAQ available',
 
-      //── Privacy Policy ──
       'privacy_policy_title': 'Privacy Policy',
       'no_content_available': 'No content available',
       'failed_load_privacy': 'Failed to load privacy policy',
 
-      //── Invitations ──
       'my_communicators': 'My Communicators',
       'invite': 'Invite',
       'connected_profiles': 'Connected Profiles',
@@ -171,7 +159,6 @@ class AppTranslations extends Translations {
       'failed_accept': 'Failed to accept invitation. Try again.',
       'failed_decline': 'Failed to decline invitation. Try again.',
 
-      // ── Activity ──
       'visual_schedules': 'Visual Schedules',
       'todays_schedule': "Today's Schedule",
       'add_activity': 'Add Activity',
@@ -201,13 +188,11 @@ class AppTranslations extends Translations {
       'activity_status': 'Status',
       'deleted': 'Deleted',
 
-      // ── Home Screen — Sections ──
       'quick_speak': 'Quick Speak',
       'tap_to_talk': 'Tap to Talk',
       'explore_more': 'Explore More',
       'my_schedule': 'My Schedule',
 
-      // ── Home Screen — Empty States ──
       'select_quick_speak_hint': 'Select a Quick Speak...',
       'no_quick_speaks_yet': 'No quick speaks yet.',
       'no_quick_speaks_hint': 'No quick speaks yet. Tap Add to create one.',
@@ -218,27 +203,22 @@ class AppTranslations extends Translations {
       'no_sub_categories_available': 'No sub-categories available',
       'no_sub_categories_yet': 'No sub-categories yet',
 
-      // ── Home Screen — Buttons ──
       'add': 'Add',
       'add_category': 'Add Category',
       'add_item': 'Add Item',
       'add_sub_category': 'Add Sub Category',
 
-      // ── Home Screen — Item Screen Bar ──
       'tap_an_item': 'Tap an item...',
 
-      // ── Audio / Speak ──
       'tap_to_speak': 'Tap to speak',
       'no_audio': 'No audio',
       'no_audio_title': 'No Audio',
       'item_has_no_audio': 'This item has no audio',
       'qs_has_no_audio': 'This quick speak has no audio',
 
-      // ── Count Suffixes ──
       'sub_count_suffix': 'sub',
       'items_count_suffix': 'items',
 
-      // ── Form Labels ──
       'category_name_label': 'Category Name',
       'word_label': 'Word / Label',
       'word_hint': 'e.g. I am hungry',
@@ -249,7 +229,6 @@ class AppTranslations extends Translations {
       'choose_image': 'Choose Image',
       'remove': 'Remove',
 
-      // ── Recording ──
       'stop': 'Stop',
       'record': 'Record',
       'play': 'Play',
@@ -258,7 +237,6 @@ class AppTranslations extends Translations {
       'record_voice_hint': 'Record your voice, then tap Play to preview',
       'record_voice_hint2': 'Record voice, then tap Play to preview',
 
-      // ── Controller Snackbars ──
       'permission': 'Permission',
       'mic_permission_required': 'Microphone access required',
       'please_enter_name': 'Please enter a name',
@@ -283,7 +261,6 @@ class AppTranslations extends Translations {
     },
 
     'ar_SA': {
-      // ── Common ──
       'app_name': 'تشاتر بي',
       'hello': 'مرحبا',
       'welcome': 'أهلاً وسهلاً',
@@ -302,7 +279,6 @@ class AppTranslations extends Translations {
       'continue_btn': 'متابعة',
       'done': 'تم',
 
-      // ── Profile Screen ──
       'profile_setup': 'إعداد الملف الشخصي',
       'subscription': 'الاشتراك',
       'switch_user': 'تبديل المستخدم',
@@ -314,20 +290,17 @@ class AppTranslations extends Translations {
       'support': 'الدعم',
       'delete_account': 'حذف الحساب',
 
-      // ── Delete / Logout Bottom Sheet ──
       'delete': 'حذف',
       'delete_confirm': 'هل أنت متأكد أنك تريد\nالحذف ؟',
       'yes_delete': 'نعم، احذف',
       'logout_confirm': 'هل أنت متأكد أنك تريد\nتسجيل الخروج؟',
       'yes_logout': 'نعم، اخرج',
 
-      // ── Image Picker ──
       'choose_profile_picture': 'اختر صورة الملف الشخصي',
       'camera': 'الكاميرا',
       'gallery': 'المعرض',
       'remove_photo': 'إزالة الصورة',
 
-      // ── Profile Snackbars ──
       'failed_load_profile': 'فشل تحميل الملف الشخصي',
       'failed_open_picker': 'فشل فتح منتقي الصور',
       'failed_pick_image': 'فشل اختيار الصورة',
@@ -338,7 +311,6 @@ class AppTranslations extends Translations {
       'failed_delete_account': 'فشل حذف الحساب. حاول مرة أخرى.',
       'logged_out': 'تم تسجيل الخروج بنجاح',
 
-      // ── Caregiver & Communicator Profile ──
       'full_name': 'الاسم الكامل',
       'enter_full_name': 'أدخل اسمك الكامل',
       'buddy_bee_mode': 'وضع بادي بي',
@@ -366,7 +338,6 @@ class AppTranslations extends Translations {
       'voice_upload': 'وظيفة رفع الصوت',
       'invitations': 'الدعوات',
 
-      // ── Change Password Screen ──
       'old_password': 'كلمة المرور القديمة',
       'new_password': 'كلمة المرور الجديدة',
       'confirm_password': 'تأكيد كلمة المرور',
@@ -376,7 +347,6 @@ class AppTranslations extends Translations {
       'passwords_not_match': 'كلمتا المرور الجديدتان غير متطابقتين',
       'password_changed': 'تم تغيير كلمة المرور بنجاح',
 
-      // ── Subscription Screen ──
       'unlock_pro': 'افتح ChatterBee Pro',
       'unlock_pro_desc': 'امنح متواصلك المزيد من طرق التواصل مع ChatterBee Pro.',
       'free_plan': 'الخطة المجانية',
@@ -392,22 +362,18 @@ class AppTranslations extends Translations {
       'free_plan_msg': 'أنت تستخدم الخطة المجانية',
       'free_plan_title': 'خطة مجانية',
 
-      // ── Payment Bottom Sheet ──
       'payment_method': 'طريقة الدفع',
       'confirm_and_pay': 'تأكيد والدفع',
       'payment_success': 'تمت الدفعة\nبنجاح',
       'payment_success_desc': 'تمت عملية الدفع\nبنجاح.',
 
-      //── Support ──
       'support_title': 'الدعم',
       'no_faq_available': 'لا توجد أسئلة شائعة',
 
-      //── Privacy Policy ──
       'privacy_policy_title': 'سياسة الخصوصية',
       'no_content_available': 'لا يوجد محتوى متاح',
       'failed_load_privacy': 'فشل تحميل سياسة الخصوصية',
 
-      //── Invitations ──
       'my_communicators': 'المتواصلون',
       'invite': 'دعوة',
       'connected_profiles': 'الملفات المتصلة',
@@ -450,7 +416,6 @@ class AppTranslations extends Translations {
       'failed_accept': 'فشل قبول الدعوة. حاول مرة أخرى.',
       'failed_decline': 'فشل رفض الدعوة. حاول مرة أخرى.',
 
-      // ── Activity ──
       'visual_schedules': 'الجداول المرئية',
       'todays_schedule': 'جدول اليوم',
       'add_activity': 'إضافة نشاط',
@@ -480,13 +445,11 @@ class AppTranslations extends Translations {
       'activity_status': 'الحالة',
       'deleted': 'تم الحذف',
 
-      // ── Home Screen — Sections ──
       'quick_speak': 'التحدث السريع',
       'tap_to_talk': 'اضغط للتحدث',
       'explore_more': 'استكشف المزيد',
       'my_schedule': 'جدولي',
 
-      // ── Home Screen — Empty States ──
       'select_quick_speak_hint': 'اختر تحدثاً سريعاً...',
       'no_quick_speaks_yet': 'لا يوجد تحدث سريع بعد.',
       'no_quick_speaks_hint': 'لا يوجد تحدث سريع. اضغط إضافة لإنشاء واحد.',
@@ -497,27 +460,22 @@ class AppTranslations extends Translations {
       'no_sub_categories_available': 'لا توجد فئات فرعية متاحة',
       'no_sub_categories_yet': 'لا توجد فئات فرعية بعد',
 
-      // ── Home Screen — Buttons ──
       'add': 'إضافة',
       'add_category': 'إضافة فئة',
       'add_item': 'إضافة عنصر',
       'add_sub_category': 'إضافة فئة فرعية',
 
-      // ── Home Screen — Item Screen Bar ──
       'tap_an_item': 'اضغط على عنصر...',
 
-      // ── Audio / Speak ──
       'tap_to_speak': 'اضغط للتحدث',
       'no_audio': 'لا يوجد صوت',
       'no_audio_title': 'لا يوجد صوت',
       'item_has_no_audio': 'هذا العنصر لا يحتوي على صوت',
       'qs_has_no_audio': 'هذا التحدث السريع لا يحتوي على صوت',
 
-      // ── Count Suffixes ──
       'sub_count_suffix': 'فرعي',
       'items_count_suffix': 'عناصر',
 
-      // ── Form Labels ──
       'category_name_label': 'اسم الفئة',
       'word_label': 'الكلمة / التسمية',
       'word_hint': 'مثال: أنا جائع',
@@ -528,7 +486,6 @@ class AppTranslations extends Translations {
       'choose_image': 'اختر صورة',
       'remove': 'إزالة',
 
-      // ── Recording ──
       'stop': 'إيقاف',
       'record': 'تسجيل',
       'play': 'تشغيل',
@@ -537,7 +494,6 @@ class AppTranslations extends Translations {
       'record_voice_hint': 'سجّل صوتك، ثم اضغط تشغيل للمعاينة',
       'record_voice_hint2': 'سجّل الصوت، ثم اضغط تشغيل للمعاينة',
 
-      // ── Controller Snackbars ──
       'permission': 'إذن',
       'mic_permission_required': 'مطلوب إذن الميكروفون',
       'please_enter_name': 'يرجى إدخال اسم',
@@ -558,7 +514,6 @@ class AppTranslations extends Translations {
     },
 
     'es_ES': {
-      // ── Common ──
       'app_name': 'Chatter Bee',
       'hello': 'Hola',
       'welcome': 'Bienvenido',
@@ -577,7 +532,6 @@ class AppTranslations extends Translations {
       'continue_btn': 'Continuar',
       'done': 'Listo',
 
-      // ── Profile Screen ──
       'profile_setup': 'Configurar Perfil',
       'subscription': 'Suscripción',
       'switch_user': 'Cambiar Usuario',
@@ -589,20 +543,17 @@ class AppTranslations extends Translations {
       'support': 'Soporte',
       'delete_account': 'Eliminar Cuenta',
 
-      // ── Delete / Logout Bottom Sheet ──
       'delete': 'Eliminar',
       'delete_confirm': '¿Estás seguro de que quieres\neliminar?',
       'yes_delete': 'Sí, Eliminar',
       'logout_confirm': '¿Estás seguro de que quieres\ncerrar sesión?',
       'yes_logout': 'Sí, Salir',
 
-      // ── Image Picker ──
       'choose_profile_picture': 'Elegir foto de perfil',
       'camera': 'Cámara',
       'gallery': 'Galería',
       'remove_photo': 'Eliminar foto',
 
-      // ── Profile Snackbars ──
       'failed_load_profile': 'Error al cargar el perfil',
       'failed_open_picker': 'Error al abrir el selector',
       'failed_pick_image': 'Error al seleccionar imagen',
@@ -613,7 +564,6 @@ class AppTranslations extends Translations {
       'failed_delete_account': 'Error al eliminar la cuenta. Inténtalo de nuevo.',
       'logged_out': 'Sesión cerrada exitosamente',
 
-      // ── Caregiver & Communicator Profile ──
       'full_name': 'Nombre Completo',
       'enter_full_name': 'Ingresa tu nombre completo',
       'buddy_bee_mode': 'Modo Buddy Bee',
@@ -641,7 +591,6 @@ class AppTranslations extends Translations {
       'voice_upload': 'Funcionalidad de carga de voz',
       'invitations': 'Invitaciones',
 
-      // ── Change Password Screen ──
       'old_password': 'Contraseña Antigua',
       'new_password': 'Nueva Contraseña',
       'confirm_password': 'Confirmar Contraseña',
@@ -651,7 +600,6 @@ class AppTranslations extends Translations {
       'passwords_not_match': 'Las nuevas contraseñas no coinciden',
       'password_changed': 'Contraseña cambiada exitosamente',
 
-      // ── Subscription Screen ──
       'unlock_pro': 'Desbloquear ChatterBee Pro',
       'unlock_pro_desc': 'Dale a tu comunicador más formas de conectar con ChatterBee Pro.',
       'free_plan': 'Plan Gratuito',
@@ -667,22 +615,18 @@ class AppTranslations extends Translations {
       'free_plan_msg': 'Estás usando el plan gratuito',
       'free_plan_title': 'Plan Gratuito',
 
-      // ── Payment Bottom Sheet ──
       'payment_method': 'Método de Pago',
       'confirm_and_pay': 'Confirmar y Pagar',
       'payment_success': 'Pago\nExitoso',
       'payment_success_desc': 'Tu pago ha sido realizado\nexitosamente.',
 
-      //── Support ──
       'support_title': 'Soporte',
       'no_faq_available': 'No hay preguntas disponibles',
 
-      //── Privacy Policy ──
       'privacy_policy_title': 'Política de Privacidad',
       'no_content_available': 'No hay contenido disponible',
       'failed_load_privacy': 'Error al cargar la política de privacidad',
 
-      //── Invitations ──
       'my_communicators': 'Mis Comunicadores',
       'invite': 'Invitar',
       'connected_profiles': 'Perfiles Conectados',
@@ -725,7 +669,6 @@ class AppTranslations extends Translations {
       'failed_accept': 'Error al aceptar. Inténtalo de nuevo.',
       'failed_decline': 'Error al rechazar. Inténtalo de nuevo.',
 
-      // ── Activity ──
       'visual_schedules': 'Horarios Visuales',
       'todays_schedule': 'Horario de Hoy',
       'add_activity': 'Agregar Actividad',
@@ -755,13 +698,11 @@ class AppTranslations extends Translations {
       'activity_status': 'Estado',
       'deleted': 'Eliminado',
 
-      // ── Home Screen — Sections ──
       'quick_speak': 'Habla Rápida',
       'tap_to_talk': 'Toca para Hablar',
       'explore_more': 'Explorar Más',
       'my_schedule': 'Mi Horario',
 
-      // ── Home Screen — Empty States ──
       'select_quick_speak_hint': 'Selecciona una Habla Rápida...',
       'no_quick_speaks_yet': 'Sin hablas rápidas aún.',
       'no_quick_speaks_hint': 'Sin hablas rápidas. Toca Agregar para crear una.',
@@ -772,27 +713,22 @@ class AppTranslations extends Translations {
       'no_sub_categories_available': 'No hay subcategorías disponibles',
       'no_sub_categories_yet': 'Sin subcategorías aún',
 
-      // ── Home Screen — Buttons ──
       'add': 'Agregar',
       'add_category': 'Agregar Categoría',
       'add_item': 'Agregar Elemento',
       'add_sub_category': 'Agregar Subcategoría',
 
-      // ── Home Screen — Item Screen Bar ──
       'tap_an_item': 'Toca un elemento...',
 
-      // ── Audio / Speak ──
       'tap_to_speak': 'Toca para hablar',
       'no_audio': 'Sin audio',
       'no_audio_title': 'Sin Audio',
       'item_has_no_audio': 'Este elemento no tiene audio',
       'qs_has_no_audio': 'Esta habla rápida no tiene audio',
 
-      // ── Count Suffixes ──
       'sub_count_suffix': 'sub',
       'items_count_suffix': 'elementos',
 
-      // ── Form Labels ──
       'category_name_label': 'Nombre de Categoría',
       'word_label': 'Palabra / Etiqueta',
       'word_hint': 'ej. Tengo hambre',
@@ -803,7 +739,6 @@ class AppTranslations extends Translations {
       'choose_image': 'Elegir Imagen',
       'remove': 'Eliminar',
 
-      // ── Recording ──
       'stop': 'Detener',
       'record': 'Grabar',
       'play': 'Reproducir',
@@ -812,7 +747,6 @@ class AppTranslations extends Translations {
       'record_voice_hint': 'Graba tu voz, luego toca Reproducir para previsualizar',
       'record_voice_hint2': 'Graba la voz, luego toca Reproducir para previsualizar',
 
-      // ── Controller Snackbars ──
       'permission': 'Permiso',
       'mic_permission_required': 'Se requiere acceso al micrófono',
       'please_enter_name': 'Por favor ingresa un nombre',

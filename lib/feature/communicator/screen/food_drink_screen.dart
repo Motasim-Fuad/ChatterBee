@@ -11,7 +11,6 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
 
   @override
   Widget build(BuildContext context) {
-    // Separate food items and categories
     final foodItems = controller.foodItems.where((item) => !item.isCategory).toList();
     final categories = controller.foodItems.where((item) => item.isCategory).toList();
 
@@ -36,12 +35,10 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Display and Action Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -75,7 +72,6 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakFood(),
                     child: Container(
@@ -107,7 +103,6 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearFood(),
                     child: Container(
@@ -137,14 +132,12 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
               ),
             ),
 
-            // Food & Drink Grid with separated sections
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Regular Food Items Grid
                     if (foodItems.isNotEmpty)
                       GridView.builder(
                         shrinkWrap: true,
@@ -167,11 +160,9 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
                         },
                       ),
 
-                    // 32px spacing between items and categories
                     if (foodItems.isNotEmpty && categories.isNotEmpty)
                       const SizedBox(height: 32),
 
-                    // Category Folders Grid
                     if (categories.isNotEmpty)
                       GridView.builder(
                         shrinkWrap: true,
@@ -193,7 +184,6 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
                         },
                       ),
 
-                    // Bottom padding
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -206,7 +196,6 @@ class FoodDrinkScreen extends GetView<FoodDrinkController> {
   }
 }
 
-// Regular food card
 class _FoodCard extends StatelessWidget {
   final String imagePath;
   final String label;
@@ -261,7 +250,6 @@ class _FoodCard extends StatelessWidget {
   }
 }
 
-// Folder-style card for categories (like home screen)
 class _FolderFoodCard extends StatelessWidget {
   final String imagePath;
   final String label;
@@ -316,7 +304,6 @@ class _FolderFoodCard extends StatelessWidget {
   }
 }
 
-// Folder shape painter (same as home screen)
 class _FolderShapePainter extends CustomPainter {
   final bool isSelected;
 

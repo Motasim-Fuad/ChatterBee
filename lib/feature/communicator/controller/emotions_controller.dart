@@ -46,7 +46,6 @@ class EmotionsController extends GetxController {
 
   void speakEmotion() {
     if (selectedEmotion.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         'I feel ${selectedEmotion.value.toLowerCase()}',

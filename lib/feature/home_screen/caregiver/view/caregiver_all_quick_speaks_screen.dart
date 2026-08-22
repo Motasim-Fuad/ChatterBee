@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/view/caregiver_all_quick_speaks_screen.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
@@ -23,10 +21,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ALL QUICK SPEAKS SCREEN
-//  — Full grid, card-lift dialog on tap, edit mode preserved
-// ════════════════════════════════════════════════════════════════════════════
 
 class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
   const CaregiverAllQuickSpeaksScreen({super.key});
@@ -51,7 +45,6 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF1A1A1A))),
         actions: [
-          // Edit / Done toggle
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -78,7 +71,6 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
               ),
             ),
           )),
-          // Add button
           Obx(() => !controller.isQsEditMode.value
               ? Padding(
             padding: const EdgeInsets.only(right: 12),

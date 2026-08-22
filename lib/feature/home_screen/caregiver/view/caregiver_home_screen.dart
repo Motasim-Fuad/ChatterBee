@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/view/caregiver_home_screen.dart
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
@@ -12,7 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -44,9 +41,6 @@ class _ExploreItem {
   });
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  CAREGIVER HOME SCREEN
-// ════════════════════════════════════════════════════════════════════════════
 
 class CaregiverHomeScreen extends StatelessWidget {
   const CaregiverHomeScreen({super.key});
@@ -83,7 +77,6 @@ class CaregiverHomeScreen extends StatelessWidget {
               color: const Color(0xFFFFC857),
               child: CustomScrollView(
                 slivers: [
-                  // ── Header ─────────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -125,7 +118,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ── Quick Speak Header ──────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
@@ -149,8 +141,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // Caregiver uses the same select-then-speak TTS flow as the
-                  // communicator. The selected image and text stay visible.
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -165,7 +155,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ── Quick Speak Grid (max 8 + See All) ─────────────────
                   Obx(() {
                     if (controller.quickSpeaks.isEmpty) {
                       return SliverToBoxAdapter(
@@ -226,7 +215,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     );
                   }),
 
-                  // ── Tap to Talk Header ──────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -251,7 +239,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // ── Category Grid (max 8 + See All) ────────────────────
                   Obx(() {
                     if (controller.categories.isEmpty) {
                       return SliverToBoxAdapter(
@@ -334,7 +321,6 @@ class CaregiverHomeScreen extends StatelessWidget {
                     );
                   }),
 
-                  // ── Explore More ────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 24, 20, 10),
@@ -454,9 +440,7 @@ class _CgBarAction extends StatelessWidget {
   );
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  CARD LIFT DIALOG  (caregiver tap behaviour — audio plays from dialog)
-// ════════════════════════════════════════════════════════════════════════════
+// Show Cg Card Lift Dialog
 
 void showCgCardLiftDialog({
   required BuildContext context,
@@ -592,11 +576,7 @@ class _CaregiverBarButton extends StatelessWidget {
   );
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  SHARED WIDGETS  (exported — used by all caregiver screens)
-// ════════════════════════════════════════════════════════════════════════════
 
-/// Uniform folder card — no audio icon, optional edit pencil badge
 class CgFolderCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -690,7 +670,6 @@ class CgFolderCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Edit pencil badge
             if (showEditBtn)
               Positioned(
                 top: tabH - 9,
@@ -707,7 +686,6 @@ class CgFolderCard extends StatelessWidget {
                   ),
                 ),
               ),
-            // Selection checkmark
             if (isSelected)
               Positioned(
                 top: tabH - 9,
@@ -728,7 +706,6 @@ class CgFolderCard extends StatelessWidget {
   }
 }
 
-/// "See All" folder card
 class CgSeeAllCard extends StatelessWidget {
   final VoidCallback onTap;
   const CgSeeAllCard({super.key, required this.onTap});
@@ -780,7 +757,6 @@ class CgSeeAllCard extends StatelessWidget {
   }
 }
 
-/// Section header
 class CgSectionHeader extends StatelessWidget {
   final String title;
   const CgSectionHeader({super.key, required this.title});
@@ -805,7 +781,6 @@ class CgSectionHeader extends StatelessWidget {
   }
 }
 
-/// Edit / Done toggle button
 class _EditToggleBtn extends StatelessWidget {
   final bool isEdit;
   final VoidCallback onTap;
@@ -832,7 +807,6 @@ class _EditToggleBtn extends StatelessWidget {
   }
 }
 
-/// Add (+) button
 class _AddBtn extends StatelessWidget {
   final VoidCallback onTap;
   const _AddBtn({required this.onTap});
@@ -860,9 +834,6 @@ class _AddBtn extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  FOLDER PAINTER
-// ════════════════════════════════════════════════════════════════════════════
 
 class CgFolderPainter extends CustomPainter {
   final Color cardColor;
@@ -940,9 +911,6 @@ class CgFolderPainter extends CustomPainter {
           old.isSelected != isSelected;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  DASHED CIRCLE PAINTER
-// ════════════════════════════════════════════════════════════════════════════
 
 class CgDashedCirclePainter extends CustomPainter {
   final Color color;

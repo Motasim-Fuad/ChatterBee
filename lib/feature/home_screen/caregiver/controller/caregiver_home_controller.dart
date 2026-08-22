@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/controller/caregiver_home_controller.dart
-
 import 'dart:io';
 import 'package:chatter_bee/Repository/caregiver_repository/caregiver_customization_repository.dart';
 import 'package:chatter_bee/config/app_url.dart';
@@ -104,7 +102,7 @@ class CaregiverHomeController extends GetxController {
     }
   }
 
-  // ✅ FIX: toLanguageTag() → "en-US" → normalize → "en"
+  // Normalize Lang
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -345,7 +343,6 @@ class CaregiverHomeController extends GetxController {
         await _soundPlayer!.stopPlayer();
         qsIsPlayingAudio.value = false;
       }
-      // Persist audio in the app documents directory, not temp.
       final dir = await getApplicationDocumentsDirectory();
       final path =
           '${dir.path}/qs_audio_${DateTime.now().millisecondsSinceEpoch}.aac';
@@ -447,9 +444,6 @@ class CaregiverHomeController extends GetxController {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  _SheetWrapper
-// ════════════════════════════════════════════════════════════════
 
 class _SheetWrapper extends StatelessWidget {
   final Widget child;
@@ -473,9 +467,6 @@ class _SheetWrapper extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  CATEGORY BOTTOM SHEET
-// ════════════════════════════════════════════════════════════════
 
 class _CategorySheet extends StatefulWidget {
   final CaregiverHomeController controller;
@@ -549,9 +540,6 @@ class _CategorySheetState extends State<_CategorySheet> {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  QUICKSPEAK BOTTOM SHEET
-// ════════════════════════════════════════════════════════════════
 
 class _QuickSpeakSheet extends StatefulWidget {
   final CaregiverHomeController controller;
@@ -614,8 +602,6 @@ class _QuickSpeakSheetState extends State<_QuickSpeakSheet> {
           Obx(() => c.qsImageFile.value != null
               ? _ImagePreview(file: c.qsImageFile.value!, onRemove: c.removeQsImage)
               : _PickImageBtn(onTap: c.pickQsImage)),
-          // Quick Speak now uses native TTS only. Legacy record/upload controls
-          // stay out of the caregiver UI and no audio file is submitted.
           if (false) ...[
           const SizedBox(height: 16),
           Text('voice_audio_speak'.tr,
@@ -699,9 +685,6 @@ class _QuickSpeakSheetState extends State<_QuickSpeakSheet> {
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-//  SHARED SMALL WIDGETS
-// ════════════════════════════════════════════════════════════════
 
 class _SheetHandle extends StatelessWidget {
   @override

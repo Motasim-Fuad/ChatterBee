@@ -28,7 +28,7 @@ class CommunicatorProfileController extends GetxController {
     {'type': 'female_child', 'key': 'female_child', 'icon': ImagesLink.femaleChild},
   ];
 
-  // ✅ Pro check helper
+  // Pro check helper
   bool get _isPro => ProStatusController.to.isProUser.value;
 
   @override
@@ -71,7 +71,7 @@ class CommunicatorProfileController extends GetxController {
   void selectVoiceType(String key) => selectedVoiceType.value = key;
   void selectLanguage(String language) => selectedLanguage.value = language;
 
-  // ✅ Shared Pro upgrade dialog
+  // Shared Pro upgrade dialog
   void _showProUpgradeDialog(String featureName) {
     ProAccessGate.show(featureName: featureName);
   }

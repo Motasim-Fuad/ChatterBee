@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator_home_screen.dart
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/app_url.dart';
@@ -13,7 +11,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -45,9 +42,6 @@ class _ExploreItem {
   });
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  COMMUNICATOR HOME SCREEN
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
   const CommunicatorHomeScreen({super.key});
@@ -90,7 +84,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
               color: const Color(0xFFFFC857),
               child: CustomScrollView(
                 slivers: [
-                  // ── Header ─────────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -132,7 +125,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     ),
                   ),
 
-                  // ── Speak Bar ───────────────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
@@ -148,7 +140,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     ),
                   ),
 
-                  // ── Quick Speak Header ──────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
@@ -156,7 +147,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     ),
                   ),
 
-                  // ── Quick Speak Grid (max 8 + See All) ─────────────────
                   Obx(() {
                     if (controller.quickSpeaks.isEmpty) {
                       return SliverToBoxAdapter(
@@ -210,7 +200,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     );
                   }),
 
-                  // ── Tap to Talk Header ──────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
@@ -218,7 +207,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     ),
                   ),
 
-                  // ── Category Grid (max 8 + See All) ────────────────────
                   Obx(() {
                     if (controller.categories.isEmpty) {
                       return SliverToBoxAdapter(
@@ -283,7 +271,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     );
                   }),
 
-                  // ── Explore More Header ─────────────────────────────────
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
@@ -360,11 +347,7 @@ class _DashboardLoadError extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  SHARED WIDGETS  (exported — used by all communicator screens)
-// ════════════════════════════════════════════════════════════════════════════
 
-/// Uniform folder-shaped card — no audio icon anywhere
 class CommCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -473,7 +456,6 @@ class CommCard extends StatelessWidget {
   }
 }
 
-/// "See All" folder card
 class CommSeeAllCard extends StatelessWidget {
   final VoidCallback onTap;
   const CommSeeAllCard({super.key, required this.onTap});
@@ -531,13 +513,6 @@ class CommSeeAllCard extends StatelessWidget {
   }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  SPEAK BAR  — shared across all communicator screens
-//
-//  NEW params:
-//    isCooldown    → disables speak btn, shows countdown overlay
-//    cooldownCount → number displayed in overlay (2 → 1 → 0)
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommSpeakBar extends StatelessWidget {
   final String text;
@@ -546,10 +521,8 @@ class CommSpeakBar extends StatelessWidget {
   final VoidCallback onSpeak;
   final VoidCallback onClear;
 
-  /// When true the speak button is disabled and shows a countdown badge
   final bool isCooldown;
 
-  /// Current countdown value shown in the badge (2, 1, 0)
   final int cooldownCount;
 
   const CommSpeakBar({
@@ -567,7 +540,6 @@ class CommSpeakBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasText = text.isNotEmpty;
     return Row(children: [
-      // ── Text display ────────────────────────────────────────────
       Expanded(
         child: Container(
           height: 52,
@@ -614,7 +586,6 @@ class CommSpeakBar extends StatelessWidget {
       ),
       const SizedBox(width: 10),
 
-      // ── Speak button (with cooldown overlay) ────────────────────
       _SpeakBtn(
         isCooldown: isCooldown,
         cooldownCount: cooldownCount,
@@ -622,7 +593,6 @@ class CommSpeakBar extends StatelessWidget {
       ),
       const SizedBox(width: 10),
 
-      // ── Clear / cancel button ───────────────────────────────────
       _BarBtn(
         color: const Color(0xFFE57373),
         onTap: onClear,
@@ -632,7 +602,6 @@ class CommSpeakBar extends StatelessWidget {
   }
 }
 
-// ── Speak button with countdown overlay ──────────────────────────────────────
 
 class _SpeakBtn extends StatelessWidget {
   final bool isCooldown;
@@ -652,7 +621,6 @@ class _SpeakBtn extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Base button
           Container(
             height: 46,
             width: 46,
@@ -681,7 +649,6 @@ class _SpeakBtn extends StatelessWidget {
             ),
           ),
 
-          // Countdown badge — shown only during cooldown
           if (isCooldown)
             Positioned(
               top: -8,
@@ -757,7 +724,6 @@ class _BarBtn extends StatelessWidget {
   }
 }
 
-/// Section header with yellow left bar
 class CommSectionHeader extends StatelessWidget {
   final String title;
   const CommSectionHeader({super.key, required this.title});
@@ -782,7 +748,6 @@ class CommSectionHeader extends StatelessWidget {
   }
 }
 
-/// Folder-shape painter — shared
 class CommFolderPainter extends CustomPainter {
   final Color cardColor;
   final Color tabColor;
@@ -859,7 +824,6 @@ class CommFolderPainter extends CustomPainter {
           old.isSelected != isSelected;
 }
 
-/// Dashed circle painter for profile avatar
 class DashedCirclePainter extends CustomPainter {
   final Color color;
   final double strokeWidth;

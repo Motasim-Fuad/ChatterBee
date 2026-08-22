@@ -31,7 +31,6 @@ class NavigationScreen extends GetView<NavigationController> {
     return Scaffold(
       body: Stack(
         children: [
-          // Main content
           Obx(() => IndexedStack(
             index: controller.selectedIndex.value,
             children: [
@@ -42,7 +41,6 @@ class NavigationScreen extends GetView<NavigationController> {
             ],
           )),
 
-          // Floating bottom navigation
           Positioned(
             bottom: 30,
             left: screenWidth > 400 ? 80 : 65,

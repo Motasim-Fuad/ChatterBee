@@ -4,8 +4,7 @@ import 'package:chatter_bee/services/api_client.dart';
 class ProfileInvitationRepo {
   final ApiClient _apiClient = ApiClient();
 
-  // ==================== SEND INVITATION (Caregiver → Communicator) ====================
-  /// Caregiver sends an invitation by communicator's email
+  // Caregiver sends an invitation by communicator's email
   Future<ApiResponse<Map<String, dynamic>>> sendInvitation({
     required String email,
   }) async {
@@ -15,8 +14,7 @@ class ProfileInvitationRepo {
     );
   }
 
-  // ==================== ACCEPT INVITATION (Communicator) ====================
-  /// Communicator accepts a received invitation
+  // Communicator accepts a received invitation
   Future<ApiResponse<Map<String, dynamic>>> acceptInvitation({
     required int invitationId,
   }) async {
@@ -26,8 +24,7 @@ class ProfileInvitationRepo {
     );
   }
 
-  // ==================== REJECT INVITATION (Communicator) ====================
-  /// Communicator rejects a received invitation
+  // Communicator rejects a received invitation
   Future<ApiResponse<Map<String, dynamic>>> rejectInvitation({
     required int invitationId,
   }) async {
@@ -37,11 +34,10 @@ class ProfileInvitationRepo {
     );
   }
 
-  // ==================== LIST INVITATIONS ====================
-  /// List invitations filtered by type (sent/received/all) and status (pending/accepted/rejected)
+  // List invitations filtered by type (sent/received/all) and status (pending/accepted/reje...
   Future<ApiResponse<Map<String, dynamic>>> listInvitations({
-    String type = 'all',      // sent | received | all
-    String? status,            // pending | accepted | rejected (optional)
+    String type = 'all',
+    String? status,
   }) async {
     final Map<String, dynamic> queryParams = {'type': type};
     if (status != null && status.isNotEmpty) {
@@ -53,14 +49,12 @@ class ProfileInvitationRepo {
     );
   }
 
-  // ==================== LIST CONNECTIONS ====================
-  /// Get all active connections for the authenticated user
+  // Get all active connections for the authenticated user
   Future<ApiResponse<Map<String, dynamic>>> listConnections() async {
     return await _apiClient.get<Map<String, dynamic>>(AppUrl.listConnections);
   }
 
-  // ==================== DISCONNECT PROFILE ====================
-  /// Disconnect a communicator from the caregiver's connections
+  // Disconnect a communicator from the caregiver's connections
   Future<ApiResponse<Map<String, dynamic>>> disconnectProfile({
     required int connectionId,
   }) async {
@@ -70,14 +64,12 @@ class ProfileInvitationRepo {
     );
   }
 
-  // ==================== CONNECTION STATISTICS ====================
-  /// Get statistics about connections and invitations
+  // Get statistics about connections and invitations
   Future<ApiResponse<Map<String, dynamic>>> getConnectionStats() async {
     return await _apiClient.get<Map<String, dynamic>>(AppUrl.connectionStats);
   }
 
-  // ==================== COPY DEFAULT CONTENT ====================
-  /// Called when caregiver selects a communicator — copies default content to that profile
+  // Called when caregiver selects a communicator — copies default content to that profile
   Future<ApiResponse<Map<String, dynamic>>> copyDefaultContent({
     required int targetUserId,
   }) async {

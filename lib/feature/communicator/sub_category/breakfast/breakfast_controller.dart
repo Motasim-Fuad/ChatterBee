@@ -54,7 +54,6 @@ class BreakfastController extends GetxController {
 
   void speakFood() {
     if (selectedFood.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedFood.value,

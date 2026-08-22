@@ -1,4 +1,3 @@
-// notification_controller.dart
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
@@ -6,9 +5,6 @@ import 'package:chatter_bee/services/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// ---------------------------------------------------------------------------
-// Notification Model  (matches GET /api/notification/list/ response)
-// ---------------------------------------------------------------------------
 class NotificationModel {
   final int id;
   final String title;
@@ -60,7 +56,7 @@ class NotificationModel {
         action.contains('schedule'))    return ImagesLink.textToSpeakImg;
     if (action.contains('break'))       return ImagesLink.breakImg;
     if (action.contains('help'))        return ImagesLink.helpMeImg;
-    return ImagesLink.textToSpeakImg; // default
+    return ImagesLink.textToSpeakImg;
   }
 
   Color get iconBg {
@@ -82,25 +78,18 @@ class NotificationModel {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Notification Controller
-// ---------------------------------------------------------------------------
 class NotificationControllerdamo extends GetxController {
   final ApiClient _apiClient = ApiClient();
 
-  // ── Pro check ──────────────────────────────────────────────────────────────
+  // Pro check
   bool get _isPro => ProStatusController.to.isProUser.value;
 
-  // ── Alert / preference state ───────────────────────────────────────────────
-  // push_enabled is ALWAYS true; only the three below are user-editable (pro)
   var buttonAlerts          = false.obs;
   var sentenceBuilderAlerts = false.obs;
   var myScheduleAlerts      = false.obs;
 
-  // ── Notification list ──────────────────────────────────────────────────────
   var notifications = <NotificationModel>[].obs;
 
-  // ── UI state ───────────────────────────────────────────────────────────────
   var selectedTab = 0.obs;
   var isLoading   = false.obs;
 
@@ -111,12 +100,10 @@ class NotificationControllerdamo extends GetxController {
     loadSettings();
   }
 
-  // ── Tab ────────────────────────────────────────────────────────────────────
+  // Change Tab
   void changeTab(int index) => selectedTab.value = index;
 
-  // ---------------------------------------------------------------------------
-  // FETCH  GET /api/notification/list/
-  // ---------------------------------------------------------------------------
+  // Loads the notification list
   Future<void> loadNotifications() async {
     isLoading.value = true;
     try {
@@ -137,9 +124,7 @@ class NotificationControllerdamo extends GetxController {
 
   Future<void> refreshNotifications() => loadNotifications();
 
-  // ---------------------------------------------------------------------------
-  // LOAD PREFERENCES  GET /api/notification/preferences/
-  // ---------------------------------------------------------------------------
+  // Loads notification preferences
   Future<void> loadSettings() async {
     try {
       final response =
@@ -155,16 +140,13 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // SAVE PREFERENCES  PUT /api/notification/preferences/
-  // push_enabled is always true
-  // ---------------------------------------------------------------------------
+  // push enabled is always true
   Future<void> _saveSettings() async {
     try {
       await _apiClient.put<dynamic>(
         '/api/notification/preferences/',
         data: {
-          'push_enabled':     true,                         // always true
+          'push_enabled':     true,
           'button_alerts':    buttonAlerts.value,
           'sentence_alerts':  sentenceBuilderAlerts.value,
           'schedule_alerts':  myScheduleAlerts.value,
@@ -175,7 +157,7 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // ── Toggle helpers (pro-gated) ─────────────────────────────────────────────
+  // Toggle helpers (pro-gated)
   void toggleButtonAlerts(bool value) {
     if (!_isPro) { _showProDialog('Button Alerts'); return; }
     buttonAlerts.value = value;
@@ -194,9 +176,7 @@ class NotificationControllerdamo extends GetxController {
     _saveSettings();
   }
 
-  // ---------------------------------------------------------------------------
-  // MARK AS READ
-  // ---------------------------------------------------------------------------
+  // Mark As Read
   Future<void> markAsRead(NotificationModel notification) async {
     try {
       final response = await _apiClient.post<dynamic>(
@@ -216,9 +196,7 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // DELETE (local only; extend with API if backend supports it)
-  // ---------------------------------------------------------------------------
+  // Removes a notification locally
   void deleteNotification(NotificationModel notification) {
     notifications.remove(notification);
     Get.snackbar(
@@ -233,9 +211,7 @@ class NotificationControllerdamo extends GetxController {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // NOTIFICATION TAP → bottom sheet
-  // ---------------------------------------------------------------------------
+  // Opens the notification detail sheet
   void onNotificationTap(NotificationModel notification) =>
       _showNotificationDialog(notification);
 
@@ -252,7 +228,6 @@ class NotificationControllerdamo extends GetxController {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
             Container(
               margin: const EdgeInsets.only(top: 12),
               width: 40, height: 4,
@@ -269,7 +244,6 @@ class NotificationControllerdamo extends GetxController {
                   Image.asset(ImagesLink.success, height: 100),
                   const SizedBox(height: 20),
 
-                  // Title
                   Text(
                     notification.title,
                     style: const TextStyle(
@@ -281,7 +255,6 @@ class NotificationControllerdamo extends GetxController {
                   ),
                   const SizedBox(height: 8),
 
-                  // Message
                   Text(
                     notification.message,
                     style: const TextStyle(
@@ -303,7 +276,6 @@ class NotificationControllerdamo extends GetxController {
                   ),
                   const SizedBox(height: 24),
 
-                  // Action buttons
                   Row(
                     children: [
                       Expanded(
@@ -364,9 +336,7 @@ class NotificationControllerdamo extends GetxController {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Date-grouped getters
-  // ---------------------------------------------------------------------------
+  // Notifications received today
   List<NotificationModel> get todayNotifications {
     final now = DateTime.now();
     return notifications.where((n) {
@@ -391,13 +361,10 @@ class NotificationControllerdamo extends GetxController {
         .toList();
   }
 
-  // ── Counts ─────────────────────────────────────────────────────────────────
+  // Notification Count
   int get notificationCount => notifications.length;
   int get unreadCount => notifications.where((n) => !n.isRead).length;
 
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
   void _showError(String msg) {
     Get.snackbar('Error', msg,
         snackPosition: SnackPosition.BOTTOM,

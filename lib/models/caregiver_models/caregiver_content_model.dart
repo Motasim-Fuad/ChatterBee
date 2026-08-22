@@ -1,5 +1,3 @@
-// lib/models/caregiver_models/caregiver_content_model.dart
-
 // Helper: resolve name/word/speak from translations
 String _resolveName(Map<String, dynamic> json, String lang) {
   final translations = json['translations'];
@@ -17,13 +15,11 @@ String? _resolveWord(Map<String, dynamic> json, String lang) {
   if (translations is Map) {
     final langData = translations[lang];
     if (langData is Map) {
-      // Prefer 'word', then fall back to 'name'
       final word = langData['word'];
       if (word != null && (word as String).isNotEmpty) return word;
       final name = langData['name'];
       if (name != null && (name as String).isNotEmpty) return name as String;
     }
-    // Fall back to English if the requested language is missing
     final enData = translations['en'];
     if (enData is Map) {
       return (enData['word'] ?? enData['name']) as String?;
@@ -43,7 +39,6 @@ String? _resolveSpeak(Map<String, dynamic> json, String lang) {
   return json['speak'];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 class UserContentModel {
   final bool isCustomized;

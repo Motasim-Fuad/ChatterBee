@@ -1,4 +1,3 @@
-// notification_screen.dart
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +5,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'notification_controller.dart';
 
-// ---------------------------------------------------------------------------
-// Custom animated switch (unchanged)
-// ---------------------------------------------------------------------------
 class CustomSwitch extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -85,9 +81,6 @@ class _CustomSwitchState extends State<CustomSwitch>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
 
@@ -100,7 +93,6 @@ class NotificationScreen extends StatelessWidget {
       body: Column(
         children: [
           const SizedBox(height: 45),
-          // ── Tab bar ────────────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Obx(() => Row(children: [
@@ -116,7 +108,6 @@ class NotificationScreen extends StatelessWidget {
               ),
             ])),
           ),
-          // ── Content ────────────────────────────────────────────────────────
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -132,7 +123,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // ── Tab widget ─────────────────────────────────────────────────────────────
+  // Tab widget
   Widget _buildTab(String text, bool isActive, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -153,7 +144,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // ── Notification list ──────────────────────────────────────────────────────
+  // Notification list
   Widget _buildNotificationContent(NotificationControllerdamo controller) {
     if (controller.notifications.isEmpty) {
       return Center(
@@ -224,7 +215,6 @@ class NotificationScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              // Unread = slightly tinted background
               color: n.isRead ? Colors.white : const Color(0xFFFFFBEE),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
@@ -235,7 +225,6 @@ class NotificationScreen extends StatelessWidget {
               ],
             ),
             child: Row(children: [
-              // Icon circle
               Container(
                 width: 48, height: 48,
                 decoration: BoxDecoration(
@@ -268,7 +257,6 @@ class NotificationScreen extends StatelessWidget {
                               fontSize: 13, color: Colors.grey[600])),
                     ]),
               ),
-              // Unread dot
               if (!n.isRead)
                 Container(
                   width: 10, height: 10,
@@ -283,12 +271,11 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // ── Alert Settings ─────────────────────────────────────────────────────────
+  // Alert Settings
   Widget _buildAlertSettingsContent(NotificationControllerdamo controller) {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        // Pro banner if not subscribed
         Obx(() {
           final isPro = ProStatusController.to.isProUser.value;
           if (isPro) return const SizedBox.shrink();

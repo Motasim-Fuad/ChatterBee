@@ -317,8 +317,6 @@ final List<GetPage> routes = [
   GetPage(
   name: AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS,
   page: () => const CommunicatorAllQuickSpeaksScreen(),
-  // CommunicatorHomeController is usually already registered from home.
-  // Keep this binding for deep-link / cold-start navigation.
   binding: BindingsBuilder(() {
     if (!Get.isRegistered<CommunicatorHomeController>()) {
       Get.put(CommunicatorHomeController());
@@ -340,7 +338,6 @@ GetPage(
   GetPage(
   name: AppRoutes.CAREGIVER_ALL_QUICK_SPEAKS,
   page: () => const CaregiverAllQuickSpeaksScreen(),
-  // CaregiverHomeController already registered from home screen
   binding: BindingsBuilder(() {
     if (!Get.isRegistered<CaregiverHomeController>()) {
       Get.lazyPut(() => CaregiverHomeController());
@@ -405,10 +402,8 @@ class AppRoutes {
   static const String EDIT_BUTTON = '/edit-button';
   static const String EDITACTIVITY = '/edit-activity';
 
-  //===============Invitations Routes===============
   static const String CAREGIVER_CONNECTIONS = '/caregiver-connections';
   static const String COMMUNICATOR_INVITATIONS = '/communicator-invitations';
-  //===============Communicator Routes===============
   static const String COMMUNICATOR_SUB_CATEGORY = '/communicator-sub-category';
   static const String COMMUNICATOR_ITEM = '/communicator-item';
 

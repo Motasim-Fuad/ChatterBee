@@ -1,5 +1,3 @@
-// lib/feature/notification/controller/notification_controller.dart
-
 import 'package:chatter_bee/Repository/notification/notification_repo.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';

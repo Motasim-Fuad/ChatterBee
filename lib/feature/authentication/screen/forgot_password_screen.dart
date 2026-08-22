@@ -26,7 +26,6 @@ class ForgotPasswordScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    // Back Button
                     GestureDetector(
                       onTap: () => Get.back(),
                       child: Container(
@@ -40,13 +39,11 @@ class ForgotPasswordScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 40),
 
-                    // Logo Section
                     Center(
                       child: Image.asset(ImagesLink.logo, height: 95,),
                     ),
                     const SizedBox(height: 60),
 
-                    // Title and Subtitle
                     Center(
                       child: Column(
                         children: [
@@ -72,12 +69,10 @@ class ForgotPasswordScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    // Form Section
                     GetBuilder<ForgotPasswordController>(
                       builder: (controller) => Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Email Field
                           Text(
                             'Email address',
                             style: GoogleFonts.nunito(
@@ -129,7 +124,6 @@ class ForgotPasswordScreen extends StatelessWidget {
 
                     const Spacer(),
 
-                    // Continue Button
                     GetBuilder<ForgotPasswordController>(
                       builder: (controller) => SizedBox(
                         width: double.infinity,

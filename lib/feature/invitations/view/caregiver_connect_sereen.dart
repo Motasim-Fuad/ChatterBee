@@ -20,7 +20,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
         leading: IconButton(
             onPressed: () => Get.back(),
             icon: const Icon(Icons.arrow_back)),
-        title: Text('my_communicators'.tr,  // ✅
+        title: Text('my_communicators'.tr,
             style: GoogleFonts.nunito(
                 color: Colors.black,
                 fontSize: 18,
@@ -40,7 +40,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
                 children: [
                   const Icon(Icons.add, size: 16, color: Colors.black),
                   const SizedBox(width: 4),
-                  Text('invite'.tr,  // ✅
+                  Text('invite'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
@@ -69,13 +69,13 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
                 if (controller.connections.isEmpty)
                   _buildEmptyState()
                 else ...[
-                  Text('connected_profiles'.tr,  // ✅
+                  Text('connected_profiles'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                           color: Colors.black)),
                   const SizedBox(height: 4),
-                  Text('tap_to_switch'.tr,  // ✅
+                  Text('tap_to_switch'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 13,
                           color: const Color(0xFF636F85))),
@@ -88,7 +88,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
 
                 if (controller.sentInvitations.isNotEmpty) ...[
                   const SizedBox(height: 32),
-                  Text('pending_invitations'.tr,  // ✅
+                  Text('pending_invitations'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -134,12 +134,12 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('select_active_communicator'.tr,  // ✅
+                Text('select_active_communicator'.tr,
                     style: GoogleFonts.nunito(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: Colors.black)),
-                Text('tap_profile_below'.tr,  // ✅
+                Text('tap_profile_below'.tr,
                     style: GoogleFonts.nunito(
                         fontSize: 12,
                         color: const Color(0xFF636F85))),
@@ -167,13 +167,13 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
                   size: 48, color: Color(0xFFFFC857)),
             ),
             const SizedBox(height: 20),
-            Text('no_communicators_yet'.tr,  // ✅
+            Text('no_communicators_yet'.tr,
                 style: GoogleFonts.nunito(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     color: Colors.black)),
             const SizedBox(height: 8),
-            Text('invite_communicator_desc'.tr,  // ✅
+            Text('invite_communicator_desc'.tr,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.nunito(
                     fontSize: 14,
@@ -189,7 +189,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
                   color: const Color(0xFFFFC857),
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: Text('send_invitation'.tr,  // ✅
+                child: Text('send_invitation'.tr,
                     style: GoogleFonts.nunito(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -203,7 +203,6 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
   }
 }
 
-// ==================== COMMUNICATOR CARD ====================
 class _CommunicatorCard extends StatelessWidget {
   final ConnectionModel connection;
   final CaregiverInvitationController controller;
@@ -307,7 +306,7 @@ class _CommunicatorCard extends StatelessWidget {
                         connection.profileType != null
                             ? (connection.profileType![0].toUpperCase() +
                             connection.profileType!.substring(1))
-                            : 'communicator'.tr,  // ✅
+                            : 'communicator'.tr,
                         style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -343,7 +342,7 @@ class _CommunicatorCard extends StatelessWidget {
                           const Icon(Icons.check,
                               size: 12, color: Colors.white),
                           const SizedBox(width: 4),
-                          Text('active'.tr,  // ✅
+                          Text('active'.tr,
                               style: GoogleFonts.nunito(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
@@ -380,7 +379,6 @@ class _CommunicatorCard extends StatelessWidget {
   }
 }
 
-// ==================== PENDING INVITATION CARD ====================
 class _PendingInvitationCard extends StatelessWidget {
   final InvitationModel invitation;
   const _PendingInvitationCard({required this.invitation});
@@ -416,7 +414,7 @@ class _PendingInvitationCard extends StatelessWidget {
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: Colors.black)),
-                Text('invitation_pending'.tr,  // ✅
+                Text('invitation_pending'.tr,
                     style: GoogleFonts.nunito(
                         fontSize: 12, color: Colors.grey[500])),
               ],
@@ -429,7 +427,7 @@ class _PendingInvitationCard extends StatelessWidget {
               color: const Color(0xFFFFF3CC),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text('pending'.tr,  // ✅
+            child: Text('pending'.tr,
                 style: GoogleFonts.nunito(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,

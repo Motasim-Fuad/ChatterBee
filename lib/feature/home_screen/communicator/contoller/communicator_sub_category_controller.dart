@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/contoller/communicator_sub_category_controller.dart
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:chatter_bee/Repository/communicator_repository/communicator_repository.dart';
 import 'package:chatter_bee/config/app_url.dart';
@@ -27,7 +25,7 @@ class CommunicatorSubCategoryController extends GetxController {
     subCategories.value = parentCategory.subCategories;
   }
 
-  // ── Current language ──────────────────────────────────────────
+  // Current language
   String get _currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
@@ -58,7 +56,6 @@ class CommunicatorSubCategoryController extends GetxController {
           .firstWhereOrNull((c) => c.id == parentCategory.id);
       if (updated != null) subCategories.value = updated.subCategories;
 
-      // Also refresh the home controller
       if (Get.isRegistered<CommunicatorHomeController>()) {
         Get.find<CommunicatorHomeController>().loadContent();
       }

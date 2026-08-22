@@ -16,7 +16,5 @@ class NavigationBinding extends Bindings {
     } else {
       Get.lazyPut<CaregiverHomeController>(() => CaregiverHomeController());
     }
-    // Get.lazyPut<CaregiverSubCategoryController>(() => CaregiverSubCategoryController());
-    // Get.lazyPut<CaregiverItemController>(() => CaregiverItemController());
   }
 }

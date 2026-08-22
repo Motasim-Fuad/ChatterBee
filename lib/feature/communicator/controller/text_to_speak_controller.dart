@@ -8,7 +8,6 @@ class TextToSpeakController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Listen to text changes
     textController.addListener(() {
       text.value = textController.text;
     });
@@ -20,8 +19,6 @@ class TextToSpeakController extends GetxController {
 
   void speakText() {
     if (text.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
-      // You can use flutter_tts package here
       Get.snackbar(
         'Speaking',
         text.value,

@@ -38,7 +38,6 @@ class QuestionController extends GetxController {
 
   void speakQuestion() {
     if (selectedQuestion.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedQuestion.value,

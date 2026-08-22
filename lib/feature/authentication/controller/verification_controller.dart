@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
-//import 'package:chatter_bee/feature/authentication/repository/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,22 +10,18 @@ import 'package:google_fonts/google_fonts.dart';
 class VerificationController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
 
-  // OTP Controllers and Focus Nodes
   List<TextEditingController> otpControllers = [];
   List<FocusNode> focusNodes = [];
 
-  // OTP Code
   String _otpCode = '';
   String get otpCode => _otpCode;
 
-  // Loading state
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   bool _isNavigating = false;
   bool get isNavigating => _isNavigating;
 
-  // Resend functionality
   bool _canResend = false;
   bool get canResend => _canResend;
 
@@ -35,24 +30,19 @@ class VerificationController extends GetxController {
 
   Timer? _timer;
 
-  // Email parameter (passed from signup)
   String? email;
   String role = '';
 
-  // Track if controller is disposed
   bool _isDisposed = false;
 
   @override
   void onInit() {
     super.onInit();
-    // Get email from arguments
     email = Get.arguments?['email'] ?? '';
     role = (Get.arguments?['role'] ?? '').toString().toLowerCase();
 
-    // Initialize controllers and focus nodes
     _initializeOtpFields();
 
-    // Start resend timer
     _startResendTimer();
   }
 
@@ -60,17 +50,14 @@ class VerificationController extends GetxController {
   void onClose() {
     _isDisposed = true;
 
-    // Cancel timer first
     _timer?.cancel();
 
-    // Unfocus all fields before disposing
     for (var focusNode in focusNodes) {
       if (focusNode.hasFocus) {
         focusNode.unfocus();
       }
     }
 
-    // Dispose controllers and focus nodes
     for (var controller in otpControllers) {
       controller.dispose();
     }
@@ -180,7 +167,6 @@ class VerificationController extends GetxController {
     try {
       _setLoading(true);
 
-      // Call resend OTP API
       final response = await _authRepository.resendOtp(email: email!);
 
       if (_isDisposed) return;
@@ -191,7 +177,6 @@ class VerificationController extends GetxController {
           'Verification code has been sent to your email',
         );
 
-        // Restart timer
         _startResendTimer();
       } else {
         _showErrorSnackbar(
@@ -237,7 +222,6 @@ class VerificationController extends GetxController {
     try {
       _setLoading(true);
 
-      // Call verify email API
       final response = await _authRepository.verifyEmail(
         email: email!,
         otp: _otpCode,
@@ -254,14 +238,12 @@ class VerificationController extends GetxController {
             email: email!,
             role: role,
           );
-          // Set navigating flag
           _isNavigating = true;
           _setLoading(false);
           update();
 
           await Future.delayed(const Duration(milliseconds: 100));
 
-          // Unfocus all fields
           for (var focusNode in focusNodes) {
             if (focusNode.hasFocus) {
               focusNode.unfocus();
@@ -270,7 +252,6 @@ class VerificationController extends GetxController {
 
           await Future.delayed(const Duration(milliseconds: 500));
 
-          // Show success dialog
           Get.dialog(
             WillPopScope(
               onWillPop: () async => false,
@@ -284,14 +265,12 @@ class VerificationController extends GetxController {
 
           await Future.delayed(const Duration(milliseconds: 500));
 
-          // Close dialog
           if (Get.isDialogOpen == true) {
             Get.back();
           }
 
           await Future.delayed(const Duration(milliseconds: 300));
 
-          // Signup only: finish the selected role's profile before Home.
           Get.offAllNamed(
             role == 'caregiver'
                 ? AppRoutes.CAREGIVERPROFILE
@@ -401,7 +380,6 @@ class VerificationController extends GetxController {
   }
 }
 
-// Success Dialog Widget
 class VerificationSuccessDialog extends StatefulWidget {
   final String title;
   final String message;

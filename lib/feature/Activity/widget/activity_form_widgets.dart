@@ -1,4 +1,3 @@
-// lib/feature/activity/view/widgets/activity_form.dart
 import 'dart:io';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +45,6 @@ class ActivityForm extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                // ── Activity Name ───────────────────────────────────────
                 _FieldLabel(label: 'activity_name'.tr),
                 const SizedBox(height: 8),
                 _inputCard(
@@ -55,7 +53,7 @@ class ActivityForm extends StatelessWidget {
                     style: GoogleFonts.nunito(
                         fontSize: 16, color: Colors.black87),
                     decoration: InputDecoration(
-                      hintText: 'activity_name_hint'.tr,  // ✅
+                      hintText: 'activity_name_hint'.tr,
                       hintStyle: GoogleFonts.nunito(
                           fontSize: 16, color: Colors.grey.shade400),
                       prefixIcon: const Icon(Icons.event_note_outlined,
@@ -68,8 +66,7 @@ class ActivityForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Time ────────────────────────────────────────────────
-                _FieldLabel(label: 'time'.tr),  // ✅
+                _FieldLabel(label: 'time'.tr),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: onSelectTime,
@@ -97,8 +94,7 @@ class ActivityForm extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // ── Status ──────────────────────────────────────────────
-                _FieldLabel(label: 'activity_status'.tr),  // ✅
+                _FieldLabel(label: 'activity_status'.tr),
                 const SizedBox(height: 8),
                 Obx(() => Row(
                   children: statusOptions.map((opt) {
@@ -125,7 +121,7 @@ class ActivityForm extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            opt['labelKey']!.tr,  // ✅
+                            opt['labelKey']!.tr,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.nunito(
                               fontSize: 12,
@@ -144,8 +140,7 @@ class ActivityForm extends StatelessWidget {
                 )),
                 const SizedBox(height: 24),
 
-                // ── Image ───────────────────────────────────────────────
-                _FieldLabel(label: 'upload_image_icon'.tr),  // ✅
+                _FieldLabel(label: 'upload_image_icon'.tr),
                 const SizedBox(height: 8),
                 GestureDetector(
                   onTap: onPickImage,
@@ -164,13 +159,13 @@ class ActivityForm extends StatelessWidget {
                               ? _imagePreview(
                             FileImage(
                                 File(selectedImagePath.value)),
-                            'tap_to_change'.tr,  // ✅
+                            'tap_to_change'.tr,
                           )
                               : hasExisting
                               ? _imagePreview(
                             NetworkImage(
                                 "${AppUrl.baseUrl}${existingImageUrl.value}"),
-                            'tap_to_change'.tr,  // ✅
+                            'tap_to_change'.tr,
                           )
                               : _uploadPlaceholder(),
                         ),
@@ -183,7 +178,6 @@ class ActivityForm extends StatelessWidget {
           ),
         ),
 
-        // ── Save Button ─────────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.all(20.0),
           child: Obx(() => SizedBox(
@@ -249,13 +243,13 @@ class ActivityForm extends StatelessWidget {
         Icon(Icons.file_upload_outlined,
             size: 48, color: Colors.grey.shade500),
         const SizedBox(height: 12),
-        Text('upload_image'.tr,  // ✅
+        Text('upload_image'.tr,
             style: GoogleFonts.nunito(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.grey.shade700)),
         const SizedBox(height: 4),
-        Text('upload_image_desc'.tr,  // ✅
+        Text('upload_image_desc'.tr,
             textAlign: TextAlign.center,
             style: GoogleFonts.nunito(
                 fontSize: 12,

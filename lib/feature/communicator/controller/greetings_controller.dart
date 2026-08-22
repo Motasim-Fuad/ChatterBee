@@ -30,7 +30,6 @@ class GreetingsController extends GetxController {
 
   void speakGreeting() {
     if (greetingText.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         greetingText.value,

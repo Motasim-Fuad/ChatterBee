@@ -8,35 +8,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SignUpController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
 
-  // Text editing controllers
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
-  // Observable variables
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   final RxString emailError = ''.obs;
 
-  // Getters
+  // Is Password Visible
   bool get isPasswordVisible => _isPasswordVisible;
   bool get isLoading => _isLoading;
 
-  // User role
   String _userRole = 'communicator';
   String get userRole => _userRole;
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize text controllers
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
 
-    // Get role from storage
     _loadUserRole();
 
     print('=== SIGNUP SCREEN ===');
@@ -163,7 +158,6 @@ class SignUpController extends GetxController {
       print('=== CALLING ${_userRole.toUpperCase()} REGISTER API ===');
       print('Email: $email');
 
-      // Call appropriate register method based on role
       ApiResponse response;
 
       if (_userRole == 'communicator') {
@@ -184,7 +178,6 @@ class SignUpController extends GetxController {
         );
       }
 
-      // Handle response
       if (response.isSuccess) {
         print('=== REGISTRATION SUCCESSFUL ===');
         print('Status Code: ${response.statusCode}');
@@ -196,10 +189,8 @@ class SignUpController extends GetxController {
               : 'Verification code sent! Please check your email.',
         );
 
-        // Clear form
         _clearForm();
 
-        // Navigate to verification screen
         Get.toNamed(
           AppRoutes.VERIFICATIONSCREEN,
           arguments: {
@@ -208,7 +199,6 @@ class SignUpController extends GetxController {
           },
         );
       } else {
-        // Handle error
         print('=== REGISTRATION FAILED ===');
         print('Status Code: ${response.statusCode}');
         print('Message: ${response.message}');
@@ -220,7 +210,6 @@ class SignUpController extends GetxController {
         } else if (emailErrors is String) {
           emailError.value = emailErrors;
         }
-        // Show non-email validation errors if available
         if (response.errors != null) {
           final otherErrors = Map<String, dynamic>.from(response.errors!)..remove('email');
           _showValidationErrors(otherErrors);

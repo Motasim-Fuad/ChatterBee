@@ -60,7 +60,6 @@ class CoreWordsController extends GetxController {
 
   void speakCoreWords() {
     if (coreWordsText.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         coreWordsText.value,

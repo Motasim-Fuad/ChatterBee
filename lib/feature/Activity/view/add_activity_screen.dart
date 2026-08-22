@@ -20,7 +20,7 @@ class AddActivityScreen extends GetView<AddActivityController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'add_activity'.tr,  // ✅
+          'add_activity'.tr,
           style: GoogleFonts.nunito(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -40,7 +40,7 @@ class AddActivityScreen extends GetView<AddActivityController> {
           onPickImage: controller.pickImage,
           onStatusChanged: controller.selectStatus,
           onSave: controller.saveActivity,
-          saveButtonLabel: 'save'.tr,  // ✅
+          saveButtonLabel: 'save'.tr,
           statusOptions: controller.statusOptions,
         ),
       ),

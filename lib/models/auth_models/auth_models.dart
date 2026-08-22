@@ -1,5 +1,3 @@
-// ==================== REGISTER MODELS ====================
-
 class RegisterResponse {
   final String message;
   final String? email;
@@ -20,7 +18,6 @@ class RegisterResponse {
   }
 }
 
-// ==================== LOGIN MODELS ====================
 
 class LoginResponse {
   final String accessToken;
@@ -45,7 +42,6 @@ class LoginResponse {
   }
 }
 
-// ==================== USER DATA MODEL ====================
 
 class UserData {
   final String id;

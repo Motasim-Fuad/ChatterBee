@@ -37,7 +37,6 @@ class MealsScreen extends GetView<MealsController> {
     return SafeArea(
       child: Column(
         children: [
-          // Text Display and Action Buttons
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -124,7 +123,6 @@ class MealsScreen extends GetView<MealsController> {
             ),
           ),
 
-          // Grid Items
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

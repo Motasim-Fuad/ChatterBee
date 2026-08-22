@@ -1,20 +1,17 @@
-// lib/controllers/pro_status_controller.dart
-
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class ProStatusController extends GetxController {
-  // ── Singleton access ───────────────────────────────────────
+  // Shared controller instance
   static ProStatusController get to => Get.find();
 
   static const String _entitlementId = 'ChaterBee_Pro';
 
-  // ── Reactive state ─────────────────────────────────────────
   final isProUser    = false.obs;
-  final isChecking   = true.obs;   // initial load spinner
+  final isChecking   = true.obs;
 
-  // ── Lifecycle ──────────────────────────────────────────────
+  // On Init
   @override
   void onInit() {
     super.onInit();
@@ -35,7 +32,6 @@ class ProStatusController extends GetxController {
     }
   }
 
-  // ── 2. RevenueCat stream → auto update ────────────────────
   // RevenueCat calls this listener when a subscription expires
   void _listenToStream() {
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
@@ -46,12 +42,11 @@ class ProStatusController extends GetxController {
     _updateStatus(info, source: 'STREAM');
   }
 
-  // ── Core update logic ──────────────────────────────────────
+  // Update Status
   void _updateStatus(CustomerInfo info, {required String source}) {
     final active = info.entitlements.active.containsKey(_entitlementId);
     isProUser.value = active;
 
-    // ── Console log ────────────────────────────────────────
     debugPrint('');
     debugPrint('┌────────────────────────────────────────┐');
     debugPrint('│  [PRO STATUS] source: $source');
@@ -73,7 +68,6 @@ class ProStatusController extends GetxController {
   // Manual refresh (pull-to-refresh or debug)
   Future<void> refresh() => _initStatus();
 
-  // ── Cleanup ────────────────────────────────────────────────
   // With permanent: true this is rarely called; kept as a safety net
   @override
   void onClose() {

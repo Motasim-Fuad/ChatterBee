@@ -37,7 +37,6 @@ class DrinksScreen extends GetView<DrinksController> {
     return SafeArea(
       child: Column(
         children: [
-          // Text Display and Action Buttons
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -124,7 +123,6 @@ class DrinksScreen extends GetView<DrinksController> {
             ),
           ),
 
-          // Grid Items
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

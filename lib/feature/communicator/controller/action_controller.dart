@@ -54,7 +54,6 @@ class ActionController extends GetxController {
 
   void speakAction() {
     if (selectedAction.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedAction.value,

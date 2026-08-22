@@ -8,7 +8,7 @@ class RevenueCatService {
   RevenueCatService._();
   static final RevenueCatService instance = RevenueCatService._();
 
-  // ── Init (call once in main.dart) ──────────────────────────
+  // Init (call once in main.dart)
   Future<void> init() async {
     final androidKey = const String.fromEnvironment('RC_ANDROID_PUBLIC_KEY');
     final iosKey = const String.fromEnvironment('RC_IOS_PUBLIC_KEY');
@@ -26,7 +26,7 @@ class RevenueCatService {
     await Purchases.configure(PurchasesConfiguration(apiKey));
   }
 
-  // ── Get available packages ─────────────────────────────────
+  // Get available packages
   Future<List<Package>> getOfferings() async {
     try {
       final offerings = await Purchases.getOfferings();
@@ -37,7 +37,7 @@ class RevenueCatService {
     }
   }
 
-  // ── Purchase ───────────────────────────────────────────────
+  // Purchase
   Future<bool> purchase(Package package) async {
     try {
       final result = await Purchases.purchasePackage(package);
@@ -52,7 +52,7 @@ class RevenueCatService {
     }
   }
 
-  // ── Restore ────────────────────────────────────────────────
+  // Restore
   Future<bool> restorePurchases() async {
     try {
       final info = await Purchases.restorePurchases();
@@ -63,7 +63,7 @@ class RevenueCatService {
     }
   }
 
-  // ── Check pro status ───────────────────────────────────────
+  // Check pro status
   Future<bool> isProUser() async {
     try {
       final info = await Purchases.getCustomerInfo();

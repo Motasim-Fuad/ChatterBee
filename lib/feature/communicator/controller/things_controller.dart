@@ -58,7 +58,6 @@ class ThingsController extends GetxController {
 
   void speakThing() {
     if (selectedThing.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedThing.value,

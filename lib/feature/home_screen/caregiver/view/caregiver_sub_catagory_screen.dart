@@ -1,5 +1,3 @@
-// lib/feature/home_screen/caregiver/view/caregiver_sub_category_screen.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_sub_catagory_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
@@ -23,10 +21,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  CAREGIVER SUB-CATEGORY SCREEN
-//  — Folder cards, responsive grid, edit mode, add button
-// ════════════════════════════════════════════════════════════════════════════
 
 class CaregiverSubCategoryScreen extends StatelessWidget {
   const CaregiverSubCategoryScreen({super.key});
@@ -53,7 +47,6 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
               color: const Color(0xFF1A1A1A)),
         ),
         actions: [
-          // Edit / Done
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -80,7 +73,6 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
               ),
             ),
           )),
-          // Add button
           Obx(() => !controller.isEditMode.value
               ? Padding(
             padding: const EdgeInsets.only(right: 12),

@@ -16,7 +16,6 @@ class FruitsController extends GetxController {
     ItemModel(imagePath: ImagesLink.blueberryImag, label: 'Blueberry'),
     ItemModel(imagePath: ImagesLink.strawberryImg, label: 'Strawberry'),
 
-    // Add more fruit items as needed
   ];
 
   void selectItem(String item) => selectedItem.value = item;

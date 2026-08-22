@@ -17,7 +17,6 @@ class RoleSelectionScreen extends GetView<RoleSelectionController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back button
               IconButton(
                 onPressed: controller.backToLogin,
                 icon: const Icon(Icons.arrow_back),
@@ -27,7 +26,6 @@ class RoleSelectionScreen extends GetView<RoleSelectionController> {
 
               const SizedBox(height: 40),
 
-              // Title
               Text(
                 'Select Your Role',
                 style: GoogleFonts.nunito(
@@ -49,10 +47,8 @@ class RoleSelectionScreen extends GetView<RoleSelectionController> {
 
               const SizedBox(height: 60),
 
-              // Role options
               Obx(() => Column(
                 children: [
-                  // Communicator option
                   _buildRoleCard(
                     title: 'Communicator',
                     description: 'I need help with communication',
@@ -64,7 +60,6 @@ class RoleSelectionScreen extends GetView<RoleSelectionController> {
 
                   const SizedBox(height: 20),
 
-                  // Caregiver option
                   _buildRoleCard(
                     title: 'Caregiver',
                     description: 'I am helping someone communicate',
@@ -78,7 +73,6 @@ class RoleSelectionScreen extends GetView<RoleSelectionController> {
 
               const Spacer(),
 
-              // Continue button
               Obx(() => SizedBox(
                 width: double.infinity,
                 height: 48,

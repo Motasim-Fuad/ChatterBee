@@ -23,22 +23,17 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkAuth() async {
-    // Wait for 2 seconds
     await Future.delayed(const Duration(seconds: 2));
 
     try {
-      // Get token from secure storage
       final token = await _secureStorage.getAccessToken();
 
-      // Get role from secure storage
       final role = await _secureStorage.getUserRole();
 
-      // Get login status from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
 
       if (token != null && token.isNotEmpty && isLoggedIn) {
-        // ✅ Token exists → Navigate based on role
 
         if (role == "caregiver") {
           Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
@@ -47,12 +42,10 @@ class _SplashScreenState extends State<SplashScreen> {
           Get.offAllNamed(AppRoutes.COMMUNICATORHOMESCREEN);
         }
         else {
-          // Unknown or missing role → sign in
           Get.offAllNamed(AppRoutes.SIGNINSCREEN);
         }
 
       } else {
-        // ❌ No token → Sign In
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       }
     } catch (e) {

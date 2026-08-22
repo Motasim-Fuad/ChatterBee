@@ -1,4 +1,3 @@
-
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +8,9 @@ class ForgotPasswordController extends GetxController {
 
   late TextEditingController emailController;
 
-  // Loading state
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  // Email validation
   String? _emailError;
   String? get emailError => _emailError;
 
@@ -72,7 +69,6 @@ class ForgotPasswordController extends GetxController {
 
   // Send reset password email
   Future<void> sendResetPasswordEmail() async {
-    // Validate email first
     if (!validateEmail()) {
       return;
     }
@@ -80,13 +76,11 @@ class ForgotPasswordController extends GetxController {
     try {
       _setLoading(true);
 
-      // Call forgot password API
       final response = await _authRepository.forgotPasswordRequest(
         email: emailController.text.trim(),
       );
 
       if (response.isSuccess) {
-        // Show success message
         Get.snackbar(
           'Success',
           'Password reset code sent to your email',
@@ -96,7 +90,6 @@ class ForgotPasswordController extends GetxController {
           duration: const Duration(seconds: 2),
         );
 
-        // Navigate to verification screen
         Get.toNamed(
           AppRoutes.FORGOTOTPSCREEN,
           arguments: {
@@ -104,7 +97,6 @@ class ForgotPasswordController extends GetxController {
           },
         );
       } else {
-        // Show error message
         Get.snackbar(
           'Error',
           response.message,

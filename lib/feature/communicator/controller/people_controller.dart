@@ -34,7 +34,6 @@ class PeopleController extends GetxController {
 
   void speakPerson() {
     if (selectedPerson.value.isNotEmpty) {
-      // TODO: Implement text-to-speech functionality
       Get.snackbar(
         'Speaking',
         selectedPerson.value,

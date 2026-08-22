@@ -15,7 +15,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    // Create invitation controller if it is not already registered
     if (!Get.isRegistered<CaregiverInvitationController>()) {
       Get.put(CaregiverInvitationController());
     }
@@ -40,7 +39,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Profile Avatar with upload ──
                 Center(
                   child: Stack(
                     children: [
@@ -73,7 +71,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 ),
                 const SizedBox(height: 30),
 
-                // ── Full Name ──
                 Text('full_name'.tr,
                     style: GoogleFonts.nunito(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
                 const SizedBox(height: 6),
@@ -98,15 +95,12 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 const SizedBox(height: 20),
 
 
-
-                // ── Buddy Bee Mode ──
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('buddy_bee_mode'.tr, style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600)),
                     Obx(() => CustomSwitch(
                       value: controller.isBuddyBeeMode.value,
-                      // onChanged: (val) { controller.isBuddyBeeMode.value = val; controller.toggleBuddyBeeMode(val); },
                       onChanged: (val) => controller.toggleBuddyBeeMode(val),
                     )),
                   ],
@@ -115,7 +109,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                     style: GoogleFonts.nunito(fontSize: 14, color: const Color(0xFF636F85))),
                 const SizedBox(height: 20),
 
-                // ── Linked Accounts ──
                 GestureDetector(
                   onTap: () => Get.toNamed(AppRoutes.CAREGIVER_CONNECTIONS),
                   child: Row(
@@ -130,7 +123,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 ),
                 const SizedBox(height: 12),
 
-                // ── Connected Communicators Horizontal List ──
                 Obx(() {
                   if (invCtrl.isLoadingConnections.value) {
                     return const SizedBox(
@@ -140,10 +132,8 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                   }
 
                   if (invCtrl.connections.isEmpty) {
-                    // Empty state — dashed add button
                     return GestureDetector(
                       onTap: () {
-                        // Free users can add when count is 0; blocked at 1+
                         if (controller.canAddCommunicator(invCtrl.connections.length)) {
                           invCtrl.showInviteDialog();
                         }
@@ -175,9 +165,8 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                     height: 90,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: invCtrl.connections.length + 1, // +1 for add button
+                      itemCount: invCtrl.connections.length + 1,
                       itemBuilder: (context, index) {
-                        // Last item = Add button
                         if (index == invCtrl.connections.length) {
                           return GestureDetector(
                             onTap: () {
@@ -230,7 +219,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                                       backgroundColor: isSelected
                                           ? const Color(0xFFE8F5E9)
                                           : Colors.grey[200],
-                                      // Use NetworkImage only when the URL is valid
                                       backgroundImage: _hasValidUrl(connection.communicatorAvatar)
                                           ?CachedNetworkImageProvider("${AppUrl.baseUrl}${connection.communicatorAvatar}")
                                           : null,
@@ -258,9 +246,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 }),
                 const SizedBox(height: 20),
 
-                // Voice Type was retired by the release-readiness contract.
                 if (false) ...[
-                // ── Voice Type Grid ──
                 Text('voice_type'.tr, style: GoogleFonts.nunito(fontSize: 18, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 12),
                 GridView.builder(
@@ -303,7 +289,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                   },
                 ),
 
-                // ── Preview Voice ──
                 Center(
                   child: TextButton.icon(
                     onPressed: () => Get.snackbar('Preview', 'Voice preview would play here',
@@ -327,7 +312,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 const SizedBox(height: 30),
                 ],
 
-                // ── Continue Button ──
                 Obx(() => SizedBox(
                   width: double.infinity,
                   height: 48,
@@ -364,7 +348,6 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
   }
 }
 
-// ── CustomSwitch ──
 class CustomSwitch extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
@@ -429,7 +412,6 @@ class _CustomSwitchState extends State<CustomSwitch> with SingleTickerProviderSt
   }
 }
 
-// ── DashedCirclePainter ──
 class DashedCirclePainter extends CustomPainter {
   final Color color;
   final double strokeWidth;

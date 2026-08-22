@@ -1,5 +1,3 @@
-// lib/models/communicator_models/communicator_content_model.dart
-
 class CommunicatorContentModel {
   final List<CommCategoryModel> categories;
   final List<CommQuickSpeakModel> quickSpeaks;
@@ -62,13 +60,11 @@ String? _resolveWord(Map<String, dynamic> json, String lang) {
   if (translations is Map) {
     final langData = translations[lang];
     if (langData is Map) {
-      // Prefer 'word', then fall back to 'name'
       final word = langData['word'];
       if (word != null && (word as String).isNotEmpty) return word;
       final name = langData['name'];
       if (name != null && (name as String).isNotEmpty) return name as String;
     }
-    // Fall back to English if the requested language is missing
     final enData = translations['en'];
     if (enData is Map) {
       return (enData['word'] ?? enData['name']) as String?;
@@ -77,7 +73,6 @@ String? _resolveWord(Map<String, dynamic> json, String lang) {
   return json['word'] ?? json['name'];
 }
 
-// ── Category ──────────────────────────────────────────────────────────────────
 
 class CommCategoryModel {
   final int id;
@@ -131,7 +126,6 @@ class CommCategoryModel {
   }
 }
 
-// ── SubCategory ───────────────────────────────────────────────────────────────
 
 class CommSubCategoryModel {
   final int id;
@@ -181,7 +175,6 @@ class CommSubCategoryModel {
   }
 }
 
-// ── Item ──────────────────────────────────────────────────────────────────────
 
 class CommItemModel {
   final int id;
@@ -221,7 +214,6 @@ class CommItemModel {
   }
 }
 
-// ── QuickSpeak ────────────────────────────────────────────────────────────────
 
 class CommQuickSpeakModel {
   final int id;

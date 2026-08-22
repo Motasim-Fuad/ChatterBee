@@ -24,19 +24,19 @@ class ChangePasswordController extends GetxController {
     final confirmPassword = confirmPasswordController.text.trim();
 
     if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
-      Get.snackbar('error'.tr, 'fill_all_fields'.tr,  // ✅
+      Get.snackbar('error'.tr, 'fill_all_fields'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
     if (newPassword.length < 8) {
-      Get.snackbar('error'.tr, 'password_min_length'.tr,  // ✅
+      Get.snackbar('error'.tr, 'password_min_length'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
     if (newPassword != confirmPassword) {
-      Get.snackbar('error'.tr, 'passwords_not_match'.tr,  // ✅
+      Get.snackbar('error'.tr, 'passwords_not_match'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
@@ -56,7 +56,7 @@ class ChangePasswordController extends GetxController {
 
       if (response.isSuccess) {
         Get.snackbar(
-          'success'.tr, 'password_changed'.tr,  // ✅
+          'success'.tr, 'password_changed'.tr,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: const Color(0xFFE8F5E9),
         );
@@ -66,12 +66,12 @@ class ChangePasswordController extends GetxController {
         final oldPassError = response.getFieldError('old_password');
         final newPassError = response.getFieldError('new_password');
         final errorMsg = oldPassError ?? newPassError ?? response.message;
-        Get.snackbar('error'.tr, errorMsg,  // ✅
+        Get.snackbar('error'.tr, errorMsg,
             snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      Get.snackbar('error'.tr, 'profile_update_failed'.tr,  // ✅
+      Get.snackbar('error'.tr, 'profile_update_failed'.tr,
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       isLoading.value = false;

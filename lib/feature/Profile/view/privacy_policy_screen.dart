@@ -20,7 +20,7 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'privacy_policy_title'.tr,  // ✅
+          'privacy_policy_title'.tr,
           style: GoogleFonts.nunito(
             color: Colors.black,
             fontSize: 18,
@@ -35,19 +35,17 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
         ],
       ),
       body: Obx(() {
-        // ── Loading ──
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // ── Empty / Error ──
         if (controller.policyContent.value.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'no_content_available'.tr,  // ✅
+                  'no_content_available'.tr,
                   style: GoogleFonts.nunito(
                     fontSize: 16,
                     color: const Color(0xFF636F85),
@@ -58,7 +56,7 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
                   onPressed: controller.fetchPrivacyPolicy,
                   icon: const Icon(Icons.refresh),
                   label: Text(
-                    'retry'.tr,  // ✅
+                    'retry'.tr,
                     style: GoogleFonts.nunito(color: AppColors.primaryColor),
                   ),
                 ),
@@ -67,7 +65,6 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
           );
         }
 
-        // Content from backend (not translated locally)
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),

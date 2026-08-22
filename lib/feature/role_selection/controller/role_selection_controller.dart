@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RoleSelectionController extends GetxController {
-  final RxString selectedRole = ''.obs; // 'communicator' or 'caregiver'
+  final RxString selectedRole = ''.obs;
 
   // Select role
   void selectRole(String role) {
@@ -24,14 +24,12 @@ class RoleSelectionController extends GetxController {
       return;
     }
 
-    // Save role to SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_role', selectedRole.value);
 
     print('=== ROLE SAVED ===');
     print('Selected Role: ${selectedRole.value}');
 
-    // Navigate to signup
     Get.toNamed(AppRoutes.SIGNUPSCREEN);
   }
 

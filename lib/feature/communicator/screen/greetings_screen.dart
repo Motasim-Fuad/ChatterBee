@@ -32,12 +32,10 @@ class GreetingsScreen extends GetView<GreetingsController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Display and Action Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -71,7 +69,6 @@ class GreetingsScreen extends GetView<GreetingsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakGreeting(),
                     child: Container(
@@ -103,7 +100,6 @@ class GreetingsScreen extends GetView<GreetingsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearGreeting(),
                     child: Container(
@@ -133,7 +129,6 @@ class GreetingsScreen extends GetView<GreetingsController> {
               ),
             ),
 
-            // Greetings Words Grid
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

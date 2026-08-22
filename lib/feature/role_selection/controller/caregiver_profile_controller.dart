@@ -27,7 +27,7 @@ class CaregiverProfileController extends GetxController {
     {'type': 'female_child', 'key': 'female_child', 'icon': ImagesLink.femaleChild},
   ];
 
-  // ✅ Pro check helper
+  // Pro check helper
   bool get _isPro => ProStatusController.to.isProUser.value;
 
   @override
@@ -62,8 +62,7 @@ class CaregiverProfileController extends GetxController {
     isBuddyBeeMode.value = value;
   }
 
-  // Free caregivers can connect only 1 communicator
-  /// [currentCount] = invCtrl.connections.length
+  // Checks if another communicator can be added
   bool canAddCommunicator(int currentCount) {
     if (_isPro) return true;
     if (currentCount >= 1) {
@@ -76,7 +75,7 @@ class CaregiverProfileController extends GetxController {
   void selectVoiceType(String key) => selectedVoiceType.value = key;
   void selectLanguage(String language) => selectedLanguage.value = language;
 
-  // ✅ Pro upgrade dialog
+  // Pro upgrade dialog
   void _showProUpgradeDialog(String featureName) {
     ProAccessGate.show(featureName: featureName);
   }

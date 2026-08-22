@@ -1,5 +1,3 @@
-// lib/Repository/communicator_repository/communicator_repository.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:chatter_bee/services/api_client.dart';
@@ -8,31 +6,27 @@ import 'package:flutter/material.dart';
 class CommunicatorRepository {
   final ApiClient _client = ApiClient();
 
-  // ── Normal mode content ───────────────────────────────────────────────────
-  /// GET /api/communicator/content/?lang={lang}
+  // Get Content
   Future<ApiResponse<CommunicatorContentModel>> getContent(
       {String lang = 'en'}) async {
     return _fetchContent(AppUrl.getCommunicatorContent(lang: lang), lang: lang);
   }
 
-  // ── Buddy mode content ────────────────────────────────────────────────────
-  /// GET /api/communicator/content/buddy-mode/?lang={lang}
+  // Get Buddy Mode Content
   Future<ApiResponse<CommunicatorContentModel>> getBuddyModeContent(
       {String lang = 'en'}) async {
     return _fetchContent(AppUrl.getCommunicatorBuddyModeContent(lang: lang),
         lang: lang);
   }
 
-  // ── Press / tap tracking ──────────────────────────────────────────────────
-  /// POST /api/communicator/content/pressed/
-  /// body: { "content_type": "item" | "quickspeak", "content_id": id }
+  // Records that an item or quick speak was pressed
   Future<void> pressContent({
-    required String contentType, // "item" or "quickspeak"
+    required String contentType,
     required int contentId,
   }) async {
     try {
       await _client.post<Map<String, dynamic>>(
-        AppUrl.pressContent, // add this constant to AppUrl
+        AppUrl.pressContent,
         data: {
           'content_type': contentType,
           'content_id': contentId,
@@ -43,7 +37,7 @@ class CommunicatorRepository {
     }
   }
 
-  // ── Shared fetch logic ────────────────────────────────────────────────────
+  // Shared fetch logic
   Future<ApiResponse<CommunicatorContentModel>> _fetchContent(String url,
       {String lang = 'en'}) async {
     try {
@@ -52,10 +46,6 @@ class CommunicatorRepository {
       if (response.isSuccess && response.data != null) {
         final body = response.data as Map<String, dynamic>;
 
-        // Backend versions in the wild return either {success, data},
-        // {data}, or the content object directly. A successful HTTP response
-        // must not be discarded only because the optional `success` flag is
-        // absent.
         final rawData = body['data'] ?? body;
         if (rawData is Map && body['success'] != false) {
           final model = CommunicatorContentModel.fromJson(

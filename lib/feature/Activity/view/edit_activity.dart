@@ -21,7 +21,7 @@ class EditActivityScreen extends GetView<EditActivityController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'edit_activity'.tr,  // ✅
+          'edit_activity'.tr,
           style: GoogleFonts.nunito(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -41,7 +41,7 @@ class EditActivityScreen extends GetView<EditActivityController> {
           onPickImage: controller.pickImage,
           onStatusChanged: controller.selectStatus,
           onSave: controller.saveActivity,
-          saveButtonLabel: 'save'.tr,  // ✅
+          saveButtonLabel: 'save'.tr,
           statusOptions: controller.statusOptions,
         ),
       ),

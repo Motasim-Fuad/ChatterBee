@@ -1,4 +1,3 @@
-// lib/Repository/caregiver_repository/caregiver_customization_repository.dart
 import 'dart:io';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
@@ -8,9 +7,7 @@ import 'package:dio/dio.dart';
 class CaregiverCustomizationRepository {
   final ApiClient _apiClient = ApiClient();
 
-  // ============================================================
-  // GET USER CONTENT — Normal mode
-  // ============================================================
+  // Loads user content in normal mode
   Future<ApiResponse<UserContentModel>> getUserContent(
       int communicatorId, {
         String lang = 'en',
@@ -21,9 +18,7 @@ class CaregiverCustomizationRepository {
     );
   }
 
-  // ============================================================
-  // GET USER CONTENT — Buddy mode
-  // ============================================================
+  // Loads user content in buddy mode
   Future<ApiResponse<UserContentModel>> getUserBuddyModeContent(
       int communicatorId, {
         String lang = 'en',
@@ -54,9 +49,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // CREATE MAIN CATEGORY
-  // ============================================================
+  // Create Category
   Future<ApiResponse<dynamic>> createCategory({
     required String name,
     required String color,
@@ -83,9 +76,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // UPDATE MAIN CATEGORY
-  // ============================================================
+  // Update Category
   Future<ApiResponse<dynamic>> updateCategory({
     required int categoryId,
     required String name,
@@ -109,9 +100,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // CREATE SUB CATEGORY
-  // ============================================================
+  // Create Sub Category
   Future<ApiResponse<dynamic>> createSubCategory({
     required String name,
     required String color,
@@ -140,9 +129,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // UPDATE SUB CATEGORY
-  // ============================================================
+  // Update Sub Category
   Future<ApiResponse<dynamic>> updateSubCategory({
     required int subCategoryId,
     required String name,
@@ -166,9 +153,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // CREATE ITEM
-  // ============================================================
+  // Create Item
   Future<ApiResponse<dynamic>> createItem({
     required int categoryId,
     required String word,
@@ -189,7 +174,6 @@ class CaregiverCustomizationRepository {
           'image_icon': await MultipartFile.fromFile(imageFile.path,
               filename: imageFile.path.split('/').last),
         if (audioFile != null)
-        // Recorded files are .aac, not audio/mpeg
           'speak': await MultipartFile.fromFile(audioFile.path,
               filename: '${DateTime.now().millisecondsSinceEpoch}.aac',
               contentType: DioMediaType('audio', 'aac')),
@@ -201,9 +185,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // UPDATE ITEM
-  // ============================================================
+  // Update Item
   Future<ApiResponse<dynamic>> updateItem({
     required int itemId,
     required String word,
@@ -221,7 +203,6 @@ class CaregiverCustomizationRepository {
           'image_icon': await MultipartFile.fromFile(imageFile.path,
               filename: imageFile.path.split('/').last),
         if (audioFile != null)
-        // ✅ FIX: audio/mpeg → audio/aac
           'speak': await MultipartFile.fromFile(audioFile.path,
               filename: '${DateTime.now().millisecondsSinceEpoch}.aac',
               contentType: DioMediaType('audio', 'aac')),
@@ -233,9 +214,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // CREATE QUICK SPEAK
-  // ============================================================
+  // Create Quick Speak
   Future<ApiResponse<dynamic>> createQuickSpeak({
     required String word,
     required String color,
@@ -254,7 +233,6 @@ class CaregiverCustomizationRepository {
           'image_icon': await MultipartFile.fromFile(imageFile.path,
               filename: imageFile.path.split('/').last),
         if (audioFile != null)
-        // ✅ FIX: audio/mpeg → audio/aac
           'speak': await MultipartFile.fromFile(audioFile.path,
               filename: '${DateTime.now().millisecondsSinceEpoch}.aac',
               contentType: DioMediaType('audio', 'aac')),
@@ -266,9 +244,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ============================================================
-  // UPDATE QUICK SPEAK
-  // ============================================================
+  // Update Quick Speak
   Future<ApiResponse<dynamic>> updateQuickSpeak({
     required int quickSpeakId,
     required String word,
@@ -286,7 +262,6 @@ class CaregiverCustomizationRepository {
           'image_icon': await MultipartFile.fromFile(imageFile.path,
               filename: imageFile.path.split('/').last),
         if (audioFile != null)
-        // ✅ FIX: audio/mpeg → audio/aac
           'speak': await MultipartFile.fromFile(audioFile.path,
               filename: '${DateTime.now().millisecondsSinceEpoch}.aac',
               contentType: DioMediaType('audio', 'aac')),

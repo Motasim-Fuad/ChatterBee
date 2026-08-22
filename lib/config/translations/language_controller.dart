@@ -23,7 +23,6 @@ class LanguageController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // React when Pro status changes
     ever(proController.isProUser, (_) {
       _handleProChange();
     });
@@ -38,14 +37,12 @@ class LanguageController extends GetxController {
 
   void _handleProChange() {
     if (!isPro) {
-      // Force English if Pro expires
       currentLocale.value = const Locale('en', 'US');
       Get.updateLocale(currentLocale.value);
     }
   }
 
   Future<void> changeLanguage(String langCode) async {
-    // ❗ Free user restriction
     if (!isPro && langCode != 'en') {
       Get.snackbar(
         "Premium Feature",

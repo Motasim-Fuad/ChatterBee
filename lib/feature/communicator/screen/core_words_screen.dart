@@ -32,7 +32,6 @@ class CoreWordsScreen extends GetView<CoreWordsController> {
           IconButton(
             icon: const Icon(Icons.grid_view, color: Colors.black87),
             onPressed: () {
-              // TODO: Implement grid view toggle or settings
             },
           ),
         ],
@@ -40,12 +39,10 @@ class CoreWordsScreen extends GetView<CoreWordsController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Display and Action Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -79,7 +76,6 @@ class CoreWordsScreen extends GetView<CoreWordsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakCoreWords(),
                     child: Container(
@@ -111,7 +107,6 @@ class CoreWordsScreen extends GetView<CoreWordsController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearCoreWords(),
                     child: Container(
@@ -141,7 +136,6 @@ class CoreWordsScreen extends GetView<CoreWordsController> {
               ),
             ),
 
-            // Core Words Grid
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

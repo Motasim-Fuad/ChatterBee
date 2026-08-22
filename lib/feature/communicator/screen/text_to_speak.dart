@@ -32,12 +32,10 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Input Section with Speak and Cancel Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Input Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -79,7 +77,6 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakText(),
                     child: Container(
@@ -111,7 +108,6 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel/Clear Button
                   GestureDetector(
                     onTap: () => controller.clearText(),
                     child: Container(
@@ -141,7 +137,6 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
               ),
             ),
 
-            // Keyboard will appear here automatically when TextField is focused
             const Spacer(),
           ],
         ),

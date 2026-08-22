@@ -16,7 +16,7 @@ class ActivityModel {
     required this.activityName,
     required this.datetime,
     this.imageIcon,
-    this.status,  // ✅
+    this.status,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -29,7 +29,7 @@ class ActivityModel {
       activityName: json['activity_name'] ?? '',
       datetime: json['datetime'] ?? '',
       imageIcon: json['image_icon'],
-      status: json['status'] ?? 'in_progress',  // ✅
+      status: json['status'] ?? 'in_progress',
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );
@@ -43,7 +43,7 @@ class ActivityModel {
       'activity_name': activityName,
       'datetime': datetime,
       'image_icon': imageIcon,
-      'status': status,  // ✅
+      'status': status,
       'created_at': createdAt,
       'updated_at': updatedAt,
     };

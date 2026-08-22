@@ -1,4 +1,3 @@
-// ==================== REGISTER RESPONSE MODEL ====================
 class RegisterResponse {
   final String message;
   final String email;
@@ -17,7 +16,6 @@ class RegisterResponse {
   }
 }
 
-// ==================== LOGIN RESPONSE MODEL (UPDATED) ====================
 class LoginResponse {
   final String accessToken;
   final String refreshToken;
@@ -30,7 +28,6 @@ class LoginResponse {
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
-    // Handle nested 'data' structure
     final data = json['data'] ?? json;
 
     return LoginResponse(
@@ -41,12 +38,11 @@ class LoginResponse {
   }
 }
 
-// ==================== USER DATA MODEL (UPDATED) ====================
 class UserData {
   final String id;
   final String email;
   final String fullName;
-  final String? role; // Nullable because API might return null
+  final String? role;
   final bool isVerified;
   final bool isProfileCompleted;
   final bool isPro;
@@ -68,7 +64,7 @@ class UserData {
       id: json['id']?.toString() ?? '',
       email: json['email'] ?? '',
       fullName: json['full_name'] ?? json['name'] ?? '',
-      role: json['role'], // Can be null
+      role: json['role'],
       isVerified: json['is_verified'] ?? json['email_verified'] ?? false,
       isProfileCompleted: json['is_profile_completed'] ?? false,
       isPro: json['is_pro'] ?? false,
@@ -98,7 +94,6 @@ class UserData {
   }
 }
 
-// ==================== VERIFY EMAIL RESPONSE ====================
 class VerifyEmailResponse {
   final String message;
   final bool isVerified;
@@ -124,7 +119,6 @@ class VerifyEmailResponse {
   }
 }
 
-// ==================== FORGOT PASSWORD RESPONSE ====================
 class ForgotPasswordResponse {
   final String message;
   final String email;
@@ -142,7 +136,6 @@ class ForgotPasswordResponse {
   }
 }
 
-// ==================== RESET PASSWORD RESPONSE ====================
 class ResetPasswordResponse {
   final String message;
 

@@ -1,6 +1,5 @@
 import 'package:chatter_bee/feature/Notification/notification_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
-//import 'package:chatter_bee/feature/authentication/repository/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,18 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LoginController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
 
-  // Text editing controllers
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  // Observable variables
   final RxBool isPasswordVisible = false.obs;
   final RxBool rememberMe = false.obs;
   final RxBool isLoading = false.obs;
   final RxString emailError = ''.obs;
   final RxString passwordError = ''.obs;
 
-  // Focus nodes
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
 
@@ -113,7 +109,6 @@ class LoginController extends GetxController {
     try {
       isLoading.value = true;
 
-      // Call login API
       final response = await _authRepository.login(
         email: emailController.text.trim(),
         password: passwordController.text,
@@ -122,7 +117,6 @@ class LoginController extends GetxController {
       if (response.isSuccess && response.data != null) {
         await _persistRememberedEmail();
 
-        // Show success message
         Get.snackbar(
           'Success',
           'Login successful!',
@@ -132,13 +126,9 @@ class LoginController extends GetxController {
           duration: const Duration(seconds: 2),
         );
 
-        // Every normal sign-in goes directly home. Profile Setup is reserved
-        // for signup completion and an explicit account switch.
         Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
       } else {
-        // Handle specific error codes
         if (response.statusCode == 403) {
-          // 403 means email not verified or account disabled
           Get.snackbar(
             'Email Not Verified',
             'Please verify your email before logging in. Check your inbox for verification code.',
@@ -148,13 +138,7 @@ class LoginController extends GetxController {
             duration: const Duration(seconds: 4),
           );
 
-          // Optionally navigate to verification screen
-          // Get.toNamed(
-          //   AppRoutes.VERIFICATIONSCREEN,
-          //   arguments: {'email': emailController.text.trim()},
-          // );
         } else {
-          // Other errors
           Get.snackbar(
             'Login Failed',
             response.message,

@@ -1,9 +1,8 @@
-// ==================== INVITATION MODEL ====================
 class InvitationModel {
   final int id;
   final String email;
-  final String status; // pending, accepted, rejected
-  final String type;   // sent, received
+  final String status;
+  final String type;
   final String? caregiverName;
   final String? caregiverEmail;
   final String? caregiverAvatar;
@@ -40,11 +39,10 @@ class InvitationModel {
   }
 }
 
-// ==================== CONNECTION MODEL ====================
 
 class ConnectionModel {
-  final int id;             // connection record id
-  final int communicatorId; // communicator user id (API field: communicator_id)
+  final int id;
+  final int communicatorId;
   final String communicatorName;
   final String? communicatorAvatar;
   final String? profileType;
@@ -62,16 +60,6 @@ class ConnectionModel {
   });
 
   factory ConnectionModel.fromJson(Map<String, dynamic> json) {
-    // API connection payload can arrive in two shapes:
-    //
-    // Format 1 (flat):
-    //   {"id": 1, "communicator_id": 130, "communicator_name": "...", ...}
-    //
-    // Format 2 (nested communicator object):
-    //   {"id": 1, "communicator": {"id": 130, "full_name": "..."}, ...}
-    //
-    // Format 3 (communicator as integer FK):
-    //   {"id": 1, "communicator": 130, "communicator_name": "...", ...}
 
     final dynamic communicatorField = json['communicator'];
     final bool isNestedObject = communicatorField is Map;
@@ -83,14 +71,11 @@ class ConnectionModel {
     String? profileType;
 
     if (isNestedObject) {
-      // Nested object — Format 2
       commId = communicatorField['id'] ?? 0;
       commName = communicatorField['full_name'] ?? communicatorField['name'] ?? '';
       commAvatar = communicatorField['avatar'];
       profileType = communicatorField['profile_type'];
     } else {
-      // Flat or integer FK — Format 1 & 3
-      // Prefer communicator_id over an integer FK
       commId = json['communicator_id'] ??
           (isIntId ? communicatorField : 0);
       commName = json['communicator_name'] ?? json['full_name'] ?? '';
@@ -122,7 +107,6 @@ class ConnectionModel {
   }
 }
 
-// ==================== CONNECTION STATS MODEL ====================
 class ConnectionStatsModel {
   final int totalConnections;
   final int pendingInvitations;

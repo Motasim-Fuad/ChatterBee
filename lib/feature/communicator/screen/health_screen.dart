@@ -32,12 +32,10 @@ class HealthScreen extends GetView<HealthController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Text Display and Action Buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  // Text Display Field
                   Expanded(
                     child: Container(
                       height: 52,
@@ -71,7 +69,6 @@ class HealthScreen extends GetView<HealthController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Speak Button
                   GestureDetector(
                     onTap: () => controller.speakHealth(),
                     child: Container(
@@ -103,7 +100,6 @@ class HealthScreen extends GetView<HealthController> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Cancel Button
                   GestureDetector(
                     onTap: () => controller.clearHealth(),
                     child: Container(
@@ -133,7 +129,6 @@ class HealthScreen extends GetView<HealthController> {
               ),
             ),
 
-            // Health Items Grid
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

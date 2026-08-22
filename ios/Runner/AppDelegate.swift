@@ -11,7 +11,6 @@ import UserNotifications
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
 
-    // 🔊 Audio setup
     do {
       try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker])
       try AVAudioSession.sharedInstance().setActive(true)
@@ -19,7 +18,6 @@ import UserNotifications
       print("Audio session error")
     }
 
-    // 🔔 Notification delegate
     UNUserNotificationCenter.current().delegate = self
 
     GeneratedPluginRegistrant.register(with: self)

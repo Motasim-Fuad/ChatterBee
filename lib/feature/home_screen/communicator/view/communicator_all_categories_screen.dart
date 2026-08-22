@@ -1,5 +1,3 @@
-// lib/feature/home_screen/communicator/view/communicator_all_categories_screen.dart
-
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +21,6 @@ int _crossAxisCount(BuildContext context) {
   return 3;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-//  ALL CATEGORIES SCREEN
-//  — Search bar at top, no speak bar, full category grid
-// ════════════════════════════════════════════════════════════════════════════
 
 class CommunicatorAllCategoriesScreen
     extends GetView<CommunicatorHomeController> {
@@ -34,7 +28,6 @@ class CommunicatorAllCategoriesScreen
 
   @override
   Widget build(BuildContext context) {
-    // Local search query — no separate controller needed
     final searchQuery = ''.obs;
 
     return Scaffold(
@@ -57,7 +50,6 @@ class CommunicatorAllCategoriesScreen
       ),
       body: Column(
         children: [
-          // ── Search Bar ───────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: Container(
@@ -101,7 +93,6 @@ class CommunicatorAllCategoriesScreen
 
           const SizedBox(height: 14),
 
-          // ── Grid ─────────────────────────────────────────────────────────
           Expanded(
             child: Obx(() {
               final query = searchQuery.value;

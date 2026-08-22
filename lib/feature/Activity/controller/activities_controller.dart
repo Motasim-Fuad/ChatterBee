@@ -17,7 +17,7 @@ class ActivitiesController extends GetxController {
     fetchActivities();
   }
 
-  // ─── Fetch ───────────────────────────────────────────────────────────────
+  // Fetch
   Future<void> fetchActivities() async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -30,13 +30,13 @@ class ActivitiesController extends GetxController {
         errorMessage.value = response.message;
       }
     } catch (e) {
-      errorMessage.value = 'profile_update_failed'.tr;  // ✅
+      errorMessage.value = 'profile_update_failed'.tr;
     } finally {
       isLoading.value = false;
     }
   }
 
-  // ─── Today's Activities ──────────────────────────────────────────────────
+  // Today's Activities
   List<ActivityModel> get todayActivities {
     final now = DateTime.now();
     return activities.where((a) {
@@ -51,14 +51,14 @@ class ActivitiesController extends GetxController {
     }).toList();
   }
 
-  // ─── Add Optimistic ──────────────────────────────────────────────────────
+  // Add Optimistic
   void onActivityAdded(ActivityModel activity) {
     activities.add(activity);
 
     _sortActivities();
   }
 
-  // ─── Update Optimistic ───────────────────────────────────────────────────
+  // Update Optimistic
   void onActivityUpdated(ActivityModel updated) {
     final idx = activities.indexWhere((a) => a.id == updated.id);
     if (idx != -1) {
@@ -67,14 +67,14 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // ─── Go To Add ───────────────────────────────────────────────────────────
+  // Go To Add
   Future<void> goToAddActivity() async {
     final result = await Get.toNamed('/add-activity');
     if (result != null && result is ActivityModel) {
       onActivityAdded(result);
       Get.snackbar(
-        'success'.tr,  // ✅
-        '${result.activityName} ${'activity_added'.tr}',  // ✅
+        'success'.tr,
+        '${result.activityName} ${'activity_added'.tr}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
@@ -85,7 +85,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // ─── Go To Edit ──────────────────────────────────────────────────────────
+  // Go To Edit
   Future<void> goToEditActivity(ActivityModel activity) async {
     final result = await Get.toNamed(
       '/edit-activity',
@@ -94,8 +94,8 @@ class ActivitiesController extends GetxController {
     if (result != null && result is ActivityModel) {
       onActivityUpdated(result);
       Get.snackbar(
-        'success'.tr,  // ✅
-        '${result.activityName} ${'activity_updated'.tr}',  // ✅
+        'success'.tr,
+        '${result.activityName} ${'activity_updated'.tr}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
@@ -104,7 +104,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // ─── Delete ──────────────────────────────────────────────────────────────
+  // Delete
   Future<void> deleteActivity(ActivityModel activity) async {
     final confirmed = await _showDeleteConfirmation(activity.activityName);
     if (!confirmed) return;
@@ -116,8 +116,8 @@ class ActivitiesController extends GetxController {
     if (response.isSuccess) {
       activities.removeWhere((a) => a.id == activity.id);
       Get.snackbar(
-        'deleted'.tr,  // ✅
-        '${activity.activityName} ${'activity_deleted'.tr}',  // ✅
+        'deleted'.tr,
+        '${activity.activityName} ${'activity_deleted'.tr}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
@@ -125,7 +125,7 @@ class ActivitiesController extends GetxController {
       );
     } else {
       Get.snackbar(
-        'error'.tr, response.message,  // ✅
+        'error'.tr, response.message,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
@@ -156,23 +156,23 @@ class ActivitiesController extends GetxController {
     });
   }
 
-  // ─── Confirm Delete Dialog ───────────────────────────────────────────────
+  // Confirm Delete Dialog
   Future<bool> _showDeleteConfirmation(String name) async {
     final result = await Get.dialog<bool>(
       AlertDialog(
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('delete_activity'.tr),  // ✅
-        content: Text('${'delete_activity_confirm'.tr} "$name"?'),  // ✅
+        title: Text('delete_activity'.tr),
+        content: Text('${'delete_activity_confirm'.tr} "$name"?'),
         actions: [
           TextButton(
             onPressed: () => Get.back(result: false),
-            child: Text('cancel'.tr),  // ✅
+            child: Text('cancel'.tr),
           ),
           TextButton(
             onPressed: () => Get.back(result: true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('delete'.tr),  // ✅
+            child: Text('delete'.tr),
           ),
         ],
       ),

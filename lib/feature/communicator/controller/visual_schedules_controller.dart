@@ -75,7 +75,6 @@ class VisualSchedulesController extends GetxController {
     print('📊 Current controller instance: ${hashCode}');
     print('📊 Current items count BEFORE navigation: ${scheduleItems.length}');
 
-    // Navigate to Add Activity screen and wait for result
     final result = await Get.toNamed(AppRoutes.ADD_ACTIVITY);
 
     print('🔙 Returned from Add Activity screen');
@@ -83,7 +82,6 @@ class VisualSchedulesController extends GetxController {
     print('🔍 Result received: $result');
     print('🔍 Result type: ${result.runtimeType}');
 
-    // If result is returned, add the new activity to the schedule
     if (result != null && result is Map<String, dynamic>) {
       print('✅ Valid result received');
       print('📝 Activity name: ${result['name']}');
@@ -108,17 +106,15 @@ class VisualSchedulesController extends GetxController {
     }
   }
 
-  // NEW: Edit activity method
+  // On Edit Activity Tap
   Future<void> onEditActivityTap(String scheduleId) async {
     print('✏️ Edit Activity button tapped for id: $scheduleId');
 
-    // Find the item to edit
     final item = scheduleItems.firstWhere((item) => item.id == scheduleId);
 
     print('📊 Current controller instance: ${hashCode}');
     print('📝 Editing: ${item.title}');
 
-    // Navigate to Add Activity screen with existing data
     final result = await Get.toNamed(
       AppRoutes.ADD_ACTIVITY,
       arguments: {
@@ -134,7 +130,6 @@ class VisualSchedulesController extends GetxController {
     print('🔙 Returned from Edit Activity screen');
     print('🔍 Result received: $result');
 
-    // If result is returned, update the activity
     if (result != null && result is Map<String, dynamic>) {
       print('✅ Valid result received');
       updateActivity(
@@ -154,28 +149,24 @@ class VisualSchedulesController extends GetxController {
     print('➕ addActivity called');
     print('📊 Controller instance: ${hashCode}');
 
-    // Generate a unique ID
     final newId = DateTime.now().millisecondsSinceEpoch.toString();
 
-    // Create new schedule item
     final newItem = ScheduleItemModel(
       id: newId,
       imagePath: imagePath,
       title: name,
       time: time,
-      isAsset: false, // This is a file path, not an asset
+      isAsset: false,
     );
 
     print('🆕 New item created: ${newItem.toString()}');
     print('📊 Items before insert: ${scheduleItems.length}');
 
-    // Add to the beginning of the list
     scheduleItems.insert(0, newItem);
 
     print('📊 Items after insert: ${scheduleItems.length}');
     print('✅ Activity added to list');
 
-    // Show success message
     Get.snackbar(
       'Success',
       'Activity added to schedule',
@@ -186,7 +177,7 @@ class VisualSchedulesController extends GetxController {
     );
   }
 
-  // NEW: Update activity method
+  // Update Activity
   void updateActivity({
     required String id,
     required String name,
@@ -196,31 +187,27 @@ class VisualSchedulesController extends GetxController {
     print('🔄 updateActivity called for id: $id');
     print('📊 Controller instance: ${hashCode}');
 
-    // Find the index of the item
     final index = scheduleItems.indexWhere((item) => item.id == id);
 
     if (index != -1) {
       final oldItem = scheduleItems[index];
 
-      // Create updated item
       final updatedItem = ScheduleItemModel(
         id: id,
         imagePath: imagePath,
         title: name,
         time: time,
-        isAsset: oldItem.isAsset, // Keep the original isAsset value
+        isAsset: oldItem.isAsset,
       );
 
       print('🔄 Updating item at index: $index');
       print('📝 Old: ${oldItem.toString()}');
       print('📝 New: ${updatedItem.toString()}');
 
-      // Update the item
       scheduleItems[index] = updatedItem;
 
       print('✅ Activity updated in list');
 
-      // Show success message
       Get.snackbar(
         'Updated',
         'Activity updated successfully',

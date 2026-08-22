@@ -52,7 +52,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // ── Already Pro Banner ─────────────────
                     if (ProStatusController.to.isProUser.value)
                       Container(
                         margin: const EdgeInsets.only(bottom: 16),
@@ -81,7 +80,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                         ),
                       ),
 
-                    // ── Header ─────────────────────────────
                     Text(
                       'unlock_pro'.tr,
                       textAlign: TextAlign.center,
@@ -99,7 +97,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                     ),
                     const SizedBox(height: 24),
 
-                    // ── Free Plan (non-selectable) ─────────────
                     Container(
                       margin: const EdgeInsets.only(bottom: 20),
                       decoration: BoxDecoration(
@@ -113,14 +110,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                         children: [
                           Row(
                             children: [
-                              // Container(
-                              //   width: 20,
-                              //   height: 20,
-                              //   decoration: BoxDecoration(
-                              //     shape: BoxShape.circle,
-                              //     border: Border.all(color: Colors.grey.shade400, width: 2),
-                              //   ),
-                              // ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -141,7 +130,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          // Limitations list
                           ...[
                             'free_feature_1'.tr,
                             'free_feature_2'.tr,
@@ -163,7 +151,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                       ),
                     ),
 
-                    // ── Monthly Plan ───────────────────────
                     _buildPlanCard(
                       planType: 'monthly',
                       title: 'ChatterBee Pro',
@@ -180,7 +167,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ── Annually Plan ──────────────────────
                     Stack(
                       clipBehavior: Clip.none,
                       children: [
@@ -198,7 +184,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                             'pro_feature_5'.tr,
                           ],
                         ),
-                        // Best Value badge
                         Positioned(
                           top: -10,
                           right: 16,
@@ -223,7 +208,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
 
                     const SizedBox(height: 16),
 
-                    // ── Restore ────────────────────────────
                     TextButton(
                       onPressed: controller.restorePurchases,
                       child: Text(
@@ -237,10 +221,8 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                     ),
 
 
-                    // ── Legal Footer ────────────────────────────
                     const SizedBox(height: 8),
 
-// Auto-renewal disclaimer
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Platform.isIOS
@@ -261,7 +243,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
 
                     const SizedBox(height: 12),
 
-// Terms of Use + Privacy Policy links
                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -309,7 +290,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
               ),
             ),
 
-            // ── Continue Button ────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Obx(() => SizedBox(
@@ -341,7 +321,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
     );
   }
 
-  // ── Plan Card ──────────────────────────────────────────────
+  // Build Plan Card
   Widget _buildPlanCard({
     required String planType,
     required String title,
@@ -379,11 +359,9 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Title + Price row ──────────────────────
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Radio button
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Container(
@@ -413,7 +391,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                   ),
                   const SizedBox(width: 12),
 
-                  // Title + Trial badge
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +403,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                               color: Colors.black),
                         ),
                         const SizedBox(height: 4),
-                        // ── Free Trial Badge ───────────────
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
@@ -448,7 +424,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                     ),
                   ),
 
-                  // Price
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -471,7 +446,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
 
               const SizedBox(height: 16),
 
-              // ── Features ───────────────────────────────
               ...features.map(
                     (f) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),

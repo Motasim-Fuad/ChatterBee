@@ -21,7 +21,7 @@ class ChangePasswordScreen extends GetView<ChangePasswordController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'change_password'.tr,  // ✅
+          'change_password'.tr,
           style: GoogleFonts.nunito(
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.w600),
         ),
@@ -40,7 +40,7 @@ class ChangePasswordScreen extends GetView<ChangePasswordController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('old_password'.tr,  // ✅
+                  Text('old_password'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -53,7 +53,7 @@ class ChangePasswordScreen extends GetView<ChangePasswordController> {
                   )),
                   const SizedBox(height: 20),
 
-                  Text('new_password'.tr,  // ✅
+                  Text('new_password'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -66,7 +66,7 @@ class ChangePasswordScreen extends GetView<ChangePasswordController> {
                   )),
                   const SizedBox(height: 20),
 
-                  Text('confirm_password'.tr,  // ✅
+                  Text('confirm_password'.tr,
                       style: GoogleFonts.nunito(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -95,7 +95,7 @@ class ChangePasswordScreen extends GetView<ChangePasswordController> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'confirm_changes'.tr,  // ✅
+                  'confirm_changes'.tr,
                   style: GoogleFonts.nunito(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
