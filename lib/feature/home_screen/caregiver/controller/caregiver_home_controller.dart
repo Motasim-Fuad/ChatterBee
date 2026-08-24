@@ -111,7 +111,7 @@ class CaregiverHomeController extends GetxController {
     try {
       final raw = LanguageController.to.currentLocale.value.toLanguageTag();
       final normalized = _normalizeLang(raw);
-      debugPrint('🌐 lang raw=$raw normalized=$normalized');
+      debugPrint('lang raw=$raw normalized=$normalized');
       return normalized;
     } catch (_) {
       return 'en';
@@ -333,9 +333,9 @@ class CaregiverHomeController extends GetxController {
         if (await file.exists()) {
           qsAudioFile.value = file;
           qsAudioFileName.value = 'recorded_audio.aac';
-          debugPrint('✅ QS Audio saved: $path');
+          debugPrint('QS Audio saved: $path');
         } else {
-          debugPrint('❌ QS Audio not found: $path');
+          debugPrint('QS Audio not found: $path');
         }
       }
     } else {

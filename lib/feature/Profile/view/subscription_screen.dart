@@ -70,7 +70,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'You have an active Pro subscription 🐝',
+                                'You have an active Pro subscription',
                                 style: GoogleFonts.nunito(
                                     fontWeight: FontWeight.w600,
                                     color: Colors.black),
@@ -195,7 +195,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              'Best Value 🐝',
+                              'Best Value',
                               style: GoogleFonts.nunito(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
@@ -262,7 +262,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                           ),
                         ),
                         Text(
-                          '  |  ',
+                          ' |  ',
                           style: GoogleFonts.nunito(fontSize: 12, color: Colors.grey[400]),
                         ),
                         GestureDetector(
@@ -413,7 +413,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                                 color: Colors.green.shade300, width: 1),
                           ),
                           child: Text(
-                            '🎉 $trialText',
+                            '$trialText',
                             style: GoogleFonts.nunito(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,

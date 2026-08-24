@@ -27,13 +27,13 @@ class SubscriptionController extends GetxController {
   String get monthlyTrialText {
     final days =
         _monthlyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
-    return days != null ? '$days-day free trial' : '3-day free trial';
+    return days != null ? '$days-day free trial': '3-day free trial';
   }
 
   String get annuallyTrialText {
     final days =
         _annuallyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
-    return days != null ? '$days-week free trial' : '1-week free trial';
+    return days != null ? '$days-week free trial': '1-week free trial';
   }
 
   // Continue Button Text
@@ -48,7 +48,7 @@ class SubscriptionController extends GetxController {
   void selectPlan(String plan)     => selectedPlan.value = plan;
 
   Package? get selectedPackage =>
-      selectedPlan.value == 'monthly' ? _monthlyPackage : _annuallyPackage;
+      selectedPlan.value == 'monthly'? _monthlyPackage : _annuallyPackage;
 
   // On Init
   @override
@@ -65,16 +65,16 @@ class SubscriptionController extends GetxController {
       for (final pkg in list) {
         if (pkg.packageType == PackageType.monthly) {
           _monthlyPackage = pkg;
-          debugPrint('[RC] ✅ Monthly: ${pkg.storeProduct.priceString}');
+          debugPrint('[RC] Monthly: ${pkg.storeProduct.priceString}');
         }
         if (pkg.packageType == PackageType.annual) {
           _annuallyPackage = pkg;
-          debugPrint('[RC] ✅ Annual: ${pkg.storeProduct.priceString}');
+          debugPrint('[RC] Annual: ${pkg.storeProduct.priceString}');
         }
       }
 
       if (_monthlyPackage == null && _annuallyPackage == null) {
-        debugPrint('[RC] ⚠️ No packages found!');
+        debugPrint('[RC] No packages found!');
       }
     } catch (e) {
       debugPrint('[RC] _loadOfferings error: $e');
@@ -86,7 +86,7 @@ class SubscriptionController extends GetxController {
   // Continue
   void onContinuePressed() {
     if (isProUser) {
-      Get.snackbar('Already Pro 🐝', 'You have an active subscription.',
+      Get.snackbar('Already Pro', 'You have an active subscription.',
           snackPosition: SnackPosition.TOP);
       return;
     }
@@ -124,7 +124,7 @@ class SubscriptionController extends GetxController {
       final restored = await RevenueCatService.instance.restorePurchases();
       if (restored) {
         ProStatusController.to.isProUser.value = true;
-        Get.snackbar('Restored! 🐝', 'Your subscription has been restored.',
+        Get.snackbar('Restored!', 'Your subscription has been restored.',
             snackPosition: SnackPosition.TOP,
             backgroundColor: Colors.green.shade100);
       } else {

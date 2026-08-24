@@ -8,7 +8,7 @@ class LoggerUtils {
       errorMethodCount: 5,
       lineLength: 50,
       colors: true,
-      printEmojis: true,
+      printEmojis: false,
       printTime: true,
     ),
   );
@@ -44,14 +44,14 @@ class LoggerUtils {
   // Success log - Success messages
   static void logSuccess(String message) {
     if (kDebugMode) {
-      _logger.i('✅ $message');
+      _logger.i('$message');
     }
   }
 
   // API log - API related logs
   static void logApi(String message) {
     if (kDebugMode) {
-      _logger.i('🌐 API: $message');
+      _logger.i('API: $message');
     }
   }
 }

@@ -20,7 +20,7 @@ class FcmTokenRepository {
       };
 
       if (kDebugMode) {
-        developer.log('📤 Registering FCM token', name: 'FcmTokenRepo');
+        developer.log('Registering FCM token', name: 'FcmTokenRepo');
         developer.log('URL: $url', name: 'FcmTokenRepo');
         developer.log('Data: $data', name: 'FcmTokenRepo');
       }
@@ -28,14 +28,14 @@ class FcmTokenRepository {
       final response = await _apiClient.post(url, data: data);
 
       if (kDebugMode) {
-        developer.log('✅ FCM Token response: ${response.statusCode}', name: 'FcmTokenRepo');
+        developer.log('FCM Token response: ${response.statusCode}', name: 'FcmTokenRepo');
         developer.log('Response data: ${response.data}', name: 'FcmTokenRepo');
       }
 
       return response;
     } catch (e) {
       if (kDebugMode) {
-        developer.log('❌ FCM registration failed: $e', name: 'FcmTokenRepo');
+        developer.log('FCM registration failed: $e', name: 'FcmTokenRepo');
       }
       return ApiResponse.error(
         statusCode: 500,
@@ -50,8 +50,8 @@ class FcmTokenRepository {
       final String url = "${AppUrl.baseUrl}/api/notification/fcm-tokens/$tokenId/";
 
       if (kDebugMode) {
-        developer.log('🗑️ Deleting FCM token', name: 'FcmTokenRepo');
-        developer.log('DELETE 👉 $url', name: 'FcmTokenRepo');
+        developer.log('Deleting FCM token', name: 'FcmTokenRepo');
+        developer.log('DELETE $url', name: 'FcmTokenRepo');
       }
 
       final response = await _apiClient.delete(url);
@@ -62,12 +62,12 @@ class FcmTokenRepository {
 
       if (response.isSuccess || response.statusCode == 204) {
         if (kDebugMode) {
-          developer.log('✅ FCM Token deleted successfully', name: 'FcmTokenRepo');
+          developer.log('FCM Token deleted successfully', name: 'FcmTokenRepo');
         }
         return response;
       } else {
         final errorMsg = "Delete failed with status: ${response.statusCode}";
-        if (kDebugMode) developer.log('❌ $errorMsg', name: 'FcmTokenRepo');
+        if (kDebugMode) developer.log('$errorMsg', name: 'FcmTokenRepo');
         return ApiResponse.error(
           statusCode: response.statusCode,
           message: errorMsg,
@@ -75,7 +75,7 @@ class FcmTokenRepository {
       }
     } catch (e) {
       if (kDebugMode) {
-        developer.log('❌ FCM delete failed: $e', name: 'FcmTokenRepo');
+        developer.log('FCM delete failed: $e', name: 'FcmTokenRepo');
       }
       return ApiResponse.error(
         statusCode: 500,

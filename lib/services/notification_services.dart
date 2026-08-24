@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint(' [BG] Message received: ${message.messageId}');
+  debugPrint('[BG] Message received: ${message.messageId}');
 }
 
 class NotificationPayload {
@@ -61,7 +61,7 @@ class NotificationService extends GetxService {
     _listenBackgroundTap();
     await _handleTerminatedLaunch();
 
-    debugPrint('✅ NotificationService ready (foreground + background)');
+    debugPrint('NotificationService ready (foreground + background)');
     return this;
   }
 
@@ -75,7 +75,7 @@ class NotificationService extends GetxService {
       criticalAlert: false,
       provisional: false,
     );
-    debugPrint('🔐 Permission: ${settings.authorizationStatus}');
+    debugPrint('Permission: ${settings.authorizationStatus}');
   }
 
   Future<void> _initLocalNotifications() async {
@@ -118,22 +118,22 @@ class NotificationService extends GetxService {
     try {
       final token = await _fcm.getToken();
       fcmToken.value = token;
-      debugPrint(' FCM Token: ${token ?? "null"}');
+      debugPrint('FCM Token: ${token ?? "null"}');
     } catch (e) {
-      debugPrint(' FCM getToken() failed: $e');
+      debugPrint('FCM getToken() failed: $e');
     }
   }
 
   void _listenForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint(' [FG] ${message.notification?.title}');
+      debugPrint('[FG] ${message.notification?.title}');
       _showLocalNotification(message);
     });
   }
 
   void _listenBackgroundTap() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint(' [BG Tap] ${message.messageId}');
+      debugPrint('[BG Tap] ${message.messageId}');
       _handlePayload(NotificationPayload.fromRemoteMessage(message));
     });
   }
@@ -141,7 +141,7 @@ class NotificationService extends GetxService {
   Future<void> _handleTerminatedLaunch() async {
     final message = await _fcm.getInitialMessage();
     if (message != null) {
-      debugPrint(' [Terminated] ${message.messageId}');
+      debugPrint('[Terminated] ${message.messageId}');
       Future.delayed(const Duration(milliseconds: 500), () {
         _handlePayload(NotificationPayload.fromRemoteMessage(message));
       });
@@ -176,7 +176,7 @@ class NotificationService extends GetxService {
         ),
       );
     } catch (e) {
-      debugPrint(' Local notification error: $e');
+      debugPrint('Local notification error: $e');
     }
   }
 

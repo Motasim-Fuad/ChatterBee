@@ -16,7 +16,7 @@ class RevenueCatService {
     final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
     if (apiKey.isEmpty) {
-      debugPrint('[RC] ❌ API key is empty! Use --dart-define to pass it.');
+      debugPrint('[RC] API key is empty! Use --dart-define to pass it.');
       return;
     }
     await Purchases.setLogLevel(

@@ -24,9 +24,9 @@ class NotificationControllerFCM extends GetxController {
     try {
       final token = await _fcm.getToken();
       fcmToken.value = token ?? '';
-      if (kDebugMode) print(' Current FCM Token: ${fcmToken.value}');
+      if (kDebugMode) print('Current FCM Token: ${fcmToken.value}');
     } catch (e) {
-      if (kDebugMode) print(' Get token error: $e');
+      if (kDebugMode) print('Get token error: $e');
     }
   }
 
@@ -38,13 +38,13 @@ class NotificationControllerFCM extends GetxController {
       }
 
       if (fcmToken.value.isEmpty) {
-        if (kDebugMode) print(' No FCM token available');
+        if (kDebugMode) print('No FCM token available');
         return false;
       }
 
       final existingId = await _secureStorage.getFcmTokenId();
       if (existingId != null && existingId.isNotEmpty) {
-        if (kDebugMode) print(' FCM token already registered with ID: $existingId');
+        if (kDebugMode) print('FCM token already registered with ID: $existingId');
         isTokenRegistered.value = true;
         return true;
       }
@@ -61,17 +61,17 @@ class NotificationControllerFCM extends GetxController {
           await _secureStorage.saveFcmTokenId(tokenId);
           isTokenRegistered.value = true;
           if (kDebugMode) {
-            print(' FCM Token registered successfully');
-            print(' Token ID: $tokenId');
+            print('FCM Token registered successfully');
+            print('Token ID: $tokenId');
           }
           return true;
         }
       }
 
-      if (kDebugMode) print(' FCM registration failed: ${response.message}');
+      if (kDebugMode) print('FCM registration failed: ${response.message}');
       return false;
     } catch (e) {
-      if (kDebugMode) print(' registerFcmToken error: $e');
+      if (kDebugMode) print('registerFcmToken error: $e');
       return false;
     }
   }
@@ -81,7 +81,7 @@ class NotificationControllerFCM extends GetxController {
       final tokenId = await _secureStorage.getFcmTokenId();
 
       if (tokenId == null || tokenId.isEmpty) {
-        if (kDebugMode) print(' No FCM token ID found to delete');
+        if (kDebugMode) print('No FCM token ID found to delete');
         isTokenRegistered.value = false;
         return true;
       }
@@ -91,14 +91,14 @@ class NotificationControllerFCM extends GetxController {
       if (response.isSuccess || response.statusCode == 204) {
         await _secureStorage.deleteFcmTokenId();
         isTokenRegistered.value = false;
-        if (kDebugMode) print(' FCM token deleted successfully');
+        if (kDebugMode) print('FCM token deleted successfully');
         return true;
       } else {
-        if (kDebugMode) print('❌ Delete failed: ${response.message}');
+        if (kDebugMode) print('Delete failed: ${response.message}');
         return false;
       }
     } catch (e) {
-      if (kDebugMode) print('❌ deleteFcmToken error: $e');
+      if (kDebugMode) print('deleteFcmToken error: $e');
       return false;
     }
   }

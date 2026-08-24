@@ -9,7 +9,7 @@ class VisualSchedulesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('🟢 VisualSchedulesController initialized - Instance: ${hashCode}');
+    print('VisualSchedulesController initialized - Instance: ${hashCode}');
     _loadScheduleItems();
   }
 
@@ -44,11 +44,11 @@ class VisualSchedulesController extends GetxController {
         isAsset: true,
       ),
     ];
-    print('📋 Initial schedule items loaded: ${scheduleItems.length}');
+    print('Initial schedule items loaded: ${scheduleItems.length}');
   }
 
   void onScheduleMenuTap(String scheduleId) {
-    print('🔘 Menu tapped for schedule: $scheduleId');
+    print('Menu tapped for schedule: $scheduleId');
     Get.dialog(
       AlertDialog(
         title: const Text('Delete Activity'),
@@ -71,23 +71,23 @@ class VisualSchedulesController extends GetxController {
   }
 
   Future<void> onAddActivityTap() async {
-    print('➕ Add Activity button tapped');
-    print('📊 Current controller instance: ${hashCode}');
-    print('📊 Current items count BEFORE navigation: ${scheduleItems.length}');
+    print('Add Activity button tapped');
+    print('Current controller instance: ${hashCode}');
+    print('Current items count BEFORE navigation: ${scheduleItems.length}');
 
     final result = await Get.toNamed(AppRoutes.ADD_ACTIVITY);
 
-    print('🔙 Returned from Add Activity screen');
-    print('📊 Current controller instance AFTER navigation: ${hashCode}');
-    print('🔍 Result received: $result');
-    print('🔍 Result type: ${result.runtimeType}');
+    print('Returned from Add Activity screen');
+    print('Current controller instance AFTER navigation: ${hashCode}');
+    print('Result received: $result');
+    print('Result type: ${result.runtimeType}');
 
     if (result != null && result is Map<String, dynamic>) {
-      print('✅ Valid result received');
-      print('📝 Activity name: ${result['name']}');
+      print('Valid result received');
+      print('Activity name: ${result['name']}');
       print('⏰ Activity time: ${result['time']}');
-      print('📸 Activity image: ${result['imagePath']}');
-      print('📊 Current items count BEFORE adding: ${scheduleItems.length}');
+      print('Activity image: ${result['imagePath']}');
+      print('Current items count BEFORE adding: ${scheduleItems.length}');
 
       addActivity(
         name: result['name'],
@@ -95,25 +95,25 @@ class VisualSchedulesController extends GetxController {
         imagePath: result['imagePath'],
       );
 
-      print('📊 Current items count AFTER adding: ${scheduleItems.length}');
+      print('Current items count AFTER adding: ${scheduleItems.length}');
     } else {
-      print('❌ No result or invalid result type');
+      print('No result or invalid result type');
       if (result == null) {
-        print('❌ Result is null');
+        print('Result is null');
       } else {
-        print('❌ Result type is: ${result.runtimeType}');
+        print('Result type is: ${result.runtimeType}');
       }
     }
   }
 
   // On Edit Activity Tap
   Future<void> onEditActivityTap(String scheduleId) async {
-    print('✏️ Edit Activity button tapped for id: $scheduleId');
+    print('Edit Activity button tapped for id: $scheduleId');
 
     final item = scheduleItems.firstWhere((item) => item.id == scheduleId);
 
-    print('📊 Current controller instance: ${hashCode}');
-    print('📝 Editing: ${item.title}');
+    print('Current controller instance: ${hashCode}');
+    print('Editing: ${item.title}');
 
     final result = await Get.toNamed(
       AppRoutes.ADD_ACTIVITY,
@@ -127,11 +127,11 @@ class VisualSchedulesController extends GetxController {
       },
     );
 
-    print('🔙 Returned from Edit Activity screen');
-    print('🔍 Result received: $result');
+    print('Returned from Edit Activity screen');
+    print('Result received: $result');
 
     if (result != null && result is Map<String, dynamic>) {
-      print('✅ Valid result received');
+      print('Valid result received');
       updateActivity(
         id: scheduleId,
         name: result['name'],
@@ -146,8 +146,8 @@ class VisualSchedulesController extends GetxController {
     required String time,
     required String imagePath,
   }) {
-    print('➕ addActivity called');
-    print('📊 Controller instance: ${hashCode}');
+    print('addActivity called');
+    print('Controller instance: ${hashCode}');
 
     final newId = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -160,12 +160,12 @@ class VisualSchedulesController extends GetxController {
     );
 
     print('🆕 New item created: ${newItem.toString()}');
-    print('📊 Items before insert: ${scheduleItems.length}');
+    print('Items before insert: ${scheduleItems.length}');
 
     scheduleItems.insert(0, newItem);
 
-    print('📊 Items after insert: ${scheduleItems.length}');
-    print('✅ Activity added to list');
+    print('Items after insert: ${scheduleItems.length}');
+    print('Activity added to list');
 
     Get.snackbar(
       'Success',
@@ -184,8 +184,8 @@ class VisualSchedulesController extends GetxController {
     required String time,
     required String imagePath,
   }) {
-    print('🔄 updateActivity called for id: $id');
-    print('📊 Controller instance: ${hashCode}');
+    print('updateActivity called for id: $id');
+    print('Controller instance: ${hashCode}');
 
     final index = scheduleItems.indexWhere((item) => item.id == id);
 
@@ -200,13 +200,13 @@ class VisualSchedulesController extends GetxController {
         isAsset: oldItem.isAsset,
       );
 
-      print('🔄 Updating item at index: $index');
-      print('📝 Old: ${oldItem.toString()}');
-      print('📝 New: ${updatedItem.toString()}');
+      print('Updating item at index: $index');
+      print('Old: ${oldItem.toString()}');
+      print('New: ${updatedItem.toString()}');
 
       scheduleItems[index] = updatedItem;
 
-      print('✅ Activity updated in list');
+      print('Activity updated in list');
 
       Get.snackbar(
         'Updated',
@@ -217,16 +217,16 @@ class VisualSchedulesController extends GetxController {
         duration: const Duration(seconds: 2),
       );
     } else {
-      print('❌ Item not found with id: $id');
+      print('Item not found with id: $id');
     }
   }
 
   void deleteActivity(String id) {
-    print('🗑️ Delete activity called for id: $id');
+    print('Delete activity called for id: $id');
     final item = scheduleItems.firstWhere((item) => item.id == id);
     scheduleItems.removeWhere((item) => item.id == id);
-    print('✅ Activity deleted: ${item.title}');
-    print('📊 Remaining items: ${scheduleItems.length}');
+    print('Activity deleted: ${item.title}');
+    print('Remaining items: ${scheduleItems.length}');
 
     Get.snackbar(
       'Deleted',
@@ -240,7 +240,7 @@ class VisualSchedulesController extends GetxController {
 
   @override
   void onClose() {
-    print('🔴 VisualSchedulesController disposed - Instance: ${hashCode}');
+    print('VisualSchedulesController disposed - Instance: ${hashCode}');
     super.onClose();
   }
 }

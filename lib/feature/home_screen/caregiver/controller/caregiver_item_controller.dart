@@ -252,7 +252,7 @@ class CaregiverItemController extends GetxController {
     }
     formLoading.value = true;
     final lang = _currentLang;
-    debugPrint('🌐 Item save lang: $lang');
+    debugPrint('Item save lang: $lang');
 
     if (_editingItem != null) {
       final response = await _repo.updateItem(
@@ -342,9 +342,9 @@ class CaregiverItemController extends GetxController {
         if (await file.exists()) {
           formAudioFile.value = file;
           audioFileName.value = 'recorded_audio.aac';
-          debugPrint('✅ Item Audio saved: $path');
+          debugPrint('Item Audio saved: $path');
         } else {
-          debugPrint('❌ Item Audio not found: $path');
+          debugPrint('Item Audio not found: $path');
         }
       }
     } else {

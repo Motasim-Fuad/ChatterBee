@@ -11,7 +11,7 @@ class StorageService {
   // Initialize SharedPreferences - Call this in main.dart before runApp()
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
-    print('✅ StorageService initialized');
+    print('StorageService initialized');
   }
 
   SharedPreferences get prefs {

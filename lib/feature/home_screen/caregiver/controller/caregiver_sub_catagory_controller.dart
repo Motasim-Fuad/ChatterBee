@@ -145,7 +145,7 @@ class CaregiverSubCategoryController extends GetxController {
     }
     formLoading.value = true;
     final lang = _currentLang;
-    debugPrint('🌐 SubCategory save lang: $lang');
+    debugPrint('SubCategory save lang: $lang');
 
     if (_editingSub != null) {
       final res = await _repo.updateSubCategory(

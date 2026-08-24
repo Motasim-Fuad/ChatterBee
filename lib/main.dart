@@ -28,7 +28,7 @@ void main() async {
     Get.put(ProStatusController(), permanent: true);
     runApp(const MyApp());
   } catch (e, stack) {
-    print('❌ ERROR: $e');
+    print('ERROR: $e');
     print(stack);
   }
 }

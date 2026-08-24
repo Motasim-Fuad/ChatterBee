@@ -26,7 +26,7 @@ class ProStatusController extends GetxController {
       final info = await Purchases.getCustomerInfo();
       _updateStatus(info, source: 'INIT');
     } catch (e) {
-      debugPrint('[PRO] ❌ Init check failed: $e');
+      debugPrint('[PRO] Init check failed: $e');
     } finally {
       isChecking.value = false;
     }
@@ -35,7 +35,7 @@ class ProStatusController extends GetxController {
   // RevenueCat calls this listener when a subscription expires
   void _listenToStream() {
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
-    debugPrint('[PRO] ✅ Stream listener attached');
+    debugPrint('[PRO] Stream listener attached');
   }
 
   void _onCustomerInfoUpdated(CustomerInfo info) {
@@ -54,12 +54,12 @@ class ProStatusController extends GetxController {
     debugPrint('│  Entitlement → $_entitlementId');
     if (info.entitlements.active.isNotEmpty) {
       info.entitlements.active.forEach((key, value) {
-        debugPrint('│  ✅ $key');
+        debugPrint('│   $key');
         debugPrint('│     expires : ${value.expirationDate ?? 'lifetime'}');
         debugPrint('│     store   : ${value.store.name}');
       });
     } else {
-      debugPrint('│  ⚠️  No active entitlements');
+      debugPrint('│    No active entitlements');
     }
     debugPrint('└────────────────────────────────────────┘');
     debugPrint('');
