@@ -5,8 +5,11 @@ import 'package:chatter_bee/Repository/communicator_repository/communicator_repo
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/models/aac/sentence_chip.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
+import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +25,7 @@ class CommunicatorItemController extends GetxController {
   final RxList<CommItemModel> items = <CommItemModel>[].obs;
   final RxInt playingId = (-1).obs;
 
+  final RxList<SentenceChip> sentence = <SentenceChip>[].obs;
   final RxString selectedWord = ''.obs;
   final RxInt selectedItemId = (-1).obs;
   final RxString selectedImage = ''.obs;
@@ -93,31 +97,94 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // Item tap → word bar
+  // Item tap — speak and/or add to the sentence bar based on Speech Mode
   void onItemTap(CommItemModel item) {
-    if (selectedItemId.value == item.id) {
-      selectedItemId.value = -1;
-      selectedWord.value = '';
-      selectedImage.value = '';
-    } else {
+    final mode = SpeechModeService.to.currentMode.value;
+    final chip = SentenceChip(
+      id: item.id,
+      word: item.word ?? '',
+      imageUrl: item.imageIcon,
+      color: item.color,
+    );
+
+    if (mode == SpeechMode.speakImmediatelyOnly) {
       selectedItemId.value = item.id;
-      selectedWord.value = item.word ?? '';
-      selectedImage.value = item.imageIcon ?? '';
-      selectedColor.value = item.color;
+      selectedWord.value = chip.word;
+      selectedImage.value = chip.imageUrl ?? '';
+      selectedColor.value = chip.color;
+      _speakNow(chip.word);
+      _repo.pressContent(contentType: 'item', contentId: item.id);
+      BuddyBeeEncouragement.maybeShow();
+      return;
+    }
+
+    sentence.add(chip);
+    _syncSentencePreview();
+
+    if (mode == SpeechMode.speakImmediately) {
+      _speakNow(chip.word);
+      _repo.pressContent(contentType: 'item', contentId: item.id);
     }
   }
 
-  // Plays audio + calls pressed API + starts 2-second cooldown
+  void addTypedText(String text) {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+    sentence.add(SentenceChip(
+      id: DateTime.now().millisecondsSinceEpoch,
+      word: trimmed,
+      isTyped: true,
+    ));
+    _syncSentencePreview();
+    if (SpeechModeService.to.speaksOnTap) {
+      _speakNow(trimmed);
+    }
+  }
+
+  void removeChipAt(int index) {
+    if (index < 0 || index >= sentence.length) return;
+    sentence.removeAt(index);
+    _syncSentencePreview();
+  }
+
+  void _syncSentencePreview() {
+    if (sentence.isEmpty) {
+      selectedItemId.value = -1;
+      selectedWord.value = '';
+      selectedImage.value = '';
+      return;
+    }
+    final last = sentence.last;
+    selectedItemId.value = last.id;
+    selectedWord.value = sentence.map((c) => c.word).join(' ');
+    selectedImage.value = last.imageUrl ?? '';
+    selectedColor.value = last.color;
+  }
+
+  void _speakNow(String text) {
+    TtsService.to.speak(text, lang: _currentLang);
+  }
+
+  // Speak the full sentence (or the last word in immediate-only mode)
   void speakSelected() {
     if (isSpeakCooldown.value) return;
-    if (selectedWord.value.isEmpty) return;
 
-    final item = items.firstWhereOrNull((i) => i.id == selectedItemId.value);
-    if (item == null) return;
+    final mode = SpeechModeService.to.currentMode.value;
+    if (mode == SpeechMode.speakImmediatelyOnly) {
+      if (selectedWord.value.isEmpty) return;
+      _speakNow(selectedWord.value);
+      BuddyBeeEncouragement.maybeShow();
+      _startCooldown();
+      return;
+    }
 
-    TtsService.to.speak(selectedWord.value, lang: _currentLang);
-
-    _repo.pressContent(contentType: 'item', contentId: item.id);
+    if (sentence.isEmpty) return;
+    final spoken = sentence.map((c) => c.word).join(' ');
+    _speakNow(spoken);
+    for (final chip in sentence.where((c) => !c.isTyped)) {
+      _repo.pressContent(contentType: 'item', contentId: chip.id);
+    }
+    BuddyBeeEncouragement.maybeShow();
     _startCooldown();
   }
 
@@ -128,6 +195,7 @@ class CommunicatorItemController extends GetxController {
     selectedItemId.value = -1;
     selectedWord.value = '';
     selectedImage.value = '';
+    sentence.clear();
     _cancelCooldown();
   }
 

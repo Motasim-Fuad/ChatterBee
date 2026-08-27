@@ -4,7 +4,9 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/models/aac/sentence_chip.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,6 +21,8 @@ Color _parseColor(String hex, Color fallback) {
     return fallback;
   }
 }
+
+Color _hex(String hex) => _parseColor(hex, const Color(0xFFFFD700));
 
 int _crossAxisCount(BuildContext context) {
   final w = MediaQuery.of(context).size.width;
@@ -52,6 +56,12 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
       icon: Icons.calendar_month_outlined,
       color: Color(0xFFFDD268),
       route: AppRoutes.ACTIVITIES,
+    ),
+    _ExploreItem(
+      labelKey: 'text_to_speak',
+      icon: Icons.keyboard_voice_outlined,
+      color: Color(0xFFB5CFD1),
+      route: AppRoutes.TEXT_TO_SPEAK,
     ),
   ];
 
@@ -91,6 +101,12 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Image.asset(ImagesLink.logo, height: 47),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.search, color: Color(0xFF1A1A1A)),
+                                onPressed: () => controller.isSearchOpen.toggle(),
+                              ),
                           GestureDetector(
                             onTap: () => Get.toNamed(AppRoutes.PROFILE),
                             child: CustomPaint(
@@ -120,23 +136,56 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                               ),
                             ),
                           ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
 
                   SliverToBoxAdapter(
+                    child: Obx(() {
+                      if (!controller.isSearchOpen.value) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                        child: TextField(
+                          onChanged: (v) => controller.searchQuery.value = v,
+                          decoration: InputDecoration(
+                            hintText: 'search_symbols'.tr,
+                            prefixIcon: const Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE3E3E9)),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+
+                  SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                      child: Obx(() => CommSpeakBar(
+                      child: Obx(() {
+                        final hideBar = SpeechModeService.to.currentMode.value ==
+                            SpeechMode.speakImmediatelyOnly;
+                        if (hideBar) return const SizedBox.shrink();
+                        return CommSpeakBar(
                         text: controller.quickSpeakText.value,
                         imageUrl: controller.quickSpeakImage.value,
                         hint: 'select_quick_speak_hint'.tr,
+                        chips: controller.sentence.toList(),
+                        onRemoveChip: controller.removeChipAt,
                         onSpeak: controller.speakQuickSpeak,
                         onClear: controller.clearQuickSpeak,
                         isCooldown: controller.isSpeakCooldown.value,
                         cooldownCount: controller.cooldownCount.value,
-                      )),
+                      );
+                      }),
                     ),
                   ),
 
@@ -159,24 +208,33 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                       );
                     }
 
-                    final hasMore =
-                        controller.quickSpeaks.length > _kMaxHome;
-                    final showCount =
-                    hasMore ? _kMaxHome : controller.quickSpeaks.length;
-                    final cellCount = showCount + (hasMore ? 1 : 0);
+                    final qsList = controller.filteredQuickSpeaks;
+                    final hasMore = qsList.length > _kMaxHome;
+                    final showCount = hasMore ? _kMaxHome : qsList.length;
+                    final cellCount = 1 + showCount + (hasMore ? 1 : 0);
 
                     return SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                       sliver: SliverGrid(
                         delegate: SliverChildBuilderDelegate(
                               (_, i) {
-                            if (hasMore && i == _kMaxHome) {
+                            if (i == 0) {
+                              return CommCard(
+                                imageUrl: null,
+                                label: 'tap_to_type'.tr,
+                                bgColor: const Color(0xFFE8F6F8),
+                                icon: Icons.keyboard_alt_outlined,
+                                isSelected: false,
+                                onTap: controller.promptTypedText,
+                              );
+                            }
+                            if (hasMore && i == showCount + 1) {
                               return CommSeeAllCard(
                                 onTap: () => Get.toNamed(
                                     AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS),
                               );
                             }
-                            final qs = controller.quickSpeaks[i];
+                            final qs = qsList[i - 1];
                             return Obx(() => CommCard(
                               imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                               label: qs.word ?? '',
@@ -208,7 +266,7 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                   ),
 
                   Obx(() {
-                    if (controller.categories.isEmpty) {
+                    if (controller.filteredCategories.isEmpty) {
                       return SliverToBoxAdapter(
                         child: Center(
                           child: Padding(
@@ -229,9 +287,9 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     }
 
                     final hasMore =
-                        controller.categories.length > _kMaxHome;
+                        controller.filteredCategories.length > _kMaxHome;
                     final showCount =
-                    hasMore ? _kMaxHome : controller.categories.length;
+                    hasMore ? _kMaxHome : controller.filteredCategories.length;
                     final cellCount = showCount + (hasMore ? 1 : 0);
 
                     return SliverPadding(
@@ -245,7 +303,7 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                                     AppRoutes.COMMUNICATOR_ALL_CATEGORIES),
                               );
                             }
-                            final cat = controller.categories[i];
+                            final cat = controller.filteredCategories[i];
                             return CommCard(
                               imageUrl: AppUrl.mediaUrl(cat.imageIcon),
                               label: cat.name,
@@ -520,6 +578,8 @@ class CommSpeakBar extends StatelessWidget {
   final String hint;
   final VoidCallback onSpeak;
   final VoidCallback onClear;
+  final List<SentenceChip>? chips;
+  final void Function(int index)? onRemoveChip;
 
   final bool isCooldown;
 
@@ -532,18 +592,21 @@ class CommSpeakBar extends StatelessWidget {
     required this.hint,
     required this.onSpeak,
     required this.onClear,
+    this.chips,
+    this.onRemoveChip,
     this.isCooldown = false,
     this.cooldownCount = 2,
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasChips = chips != null && chips!.isNotEmpty;
     final hasText = text.isNotEmpty;
     return Row(children: [
       Expanded(
         child: Container(
-          height: 52,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          height: 64,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -555,7 +618,62 @@ class CommSpeakBar extends StatelessWidget {
                   offset: const Offset(0, 4))
             ],
           ),
-          child: Row(
+                      child: hasChips
+              ? ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  itemCount: chips!.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (_, i) {
+                    final chip = chips![i];
+                    final img = AppUrl.mediaUrl(chip.imageUrl);
+                    return GestureDetector(
+                      onTap: onRemoveChip == null ? null : () => onRemoveChip!(i),
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(4, 4, 10, 4),
+                        decoration: BoxDecoration(
+                          color: _hex(chip.color),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: img != null && img.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: img,
+                                      width: 40,
+                                      height: 40,
+                                      fit: BoxFit.cover,
+                                      errorWidget: (_, __, ___) => const Icon(
+                                          Icons.image_outlined,
+                                          color: Colors.white,
+                                          size: 22),
+                                    )
+                                  : const SizedBox(
+                                      width: 40,
+                                      height: 40,
+                                      child: Icon(Icons.keyboard,
+                                          size: 20, color: Colors.white),
+                                    ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              chip.word,
+                              style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF1A1A1A),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                )
+              : Row(
             children: [
               if (hasText && imageUrl.isNotEmpty) ...[
                 ClipRRect(

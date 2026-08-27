@@ -54,6 +54,8 @@ class CommunicatorAllQuickSpeaksScreen
               text: controller.quickSpeakText.value,
               imageUrl: controller.quickSpeakImage.value,
               hint: 'select_quick_speak_hint'.tr,
+              chips: controller.sentence.toList(),
+              onRemoveChip: controller.removeChipAt,
               onSpeak: controller.speakQuickSpeak,
               onClear: controller.clearQuickSpeak,
               isCooldown: controller.isSpeakCooldown.value,

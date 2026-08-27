@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_item_controller.dart';
+import 'package:chatter_bee/feature/home_screen/communicator/view/communicator_home_screen.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -51,20 +53,25 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
       ),
       body: Column(
         children: [
-          Obx(() => Padding(
+          Obx(() {
+            final hideBar = SpeechModeService.to.currentMode.value ==
+                SpeechMode.speakImmediatelyOnly;
+            if (hideBar) return const SizedBox(height: 8);
+            return Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: _SpeakBar(
+            child: CommSpeakBar(
               text: controller.selectedWord.value,
-              imageUrl: AppUrl.mediaUrl(controller.selectedImage.value),
-              itemColor: _parseColor(controller.selectedColor.value,
-                  const Color(0xFFFFD700)),
+              imageUrl: AppUrl.mediaUrl(controller.selectedImage.value) ?? '',
               hint: 'tap_an_item'.tr,
+              chips: controller.sentence.toList(),
+              onRemoveChip: controller.removeChipAt,
               onSpeak: controller.speakSelected,
               onClear: controller.clearSelection,
               isCooldown: controller.isSpeakCooldown.value,
               cooldownCount: controller.cooldownCount.value,
             ),
-          )),
+          );
+          }),
 
           const SizedBox(height: 14),
 

@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -429,6 +430,8 @@ class ProfileController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('remembered_email');
         Get.snackbar('success'.tr, 'logged_out'.tr,
             snackPosition: SnackPosition.BOTTOM);
         await Future.delayed(const Duration(milliseconds: 500));

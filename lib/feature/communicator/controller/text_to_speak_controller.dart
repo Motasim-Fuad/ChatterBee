@@ -1,3 +1,5 @@
+import 'package:chatter_bee/config/translations/language_controller.dart';
+import 'package:chatter_bee/services/tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,22 +20,22 @@ class TextToSpeakController extends GetxController {
   }
 
   void speakText() {
-    if (text.value.isNotEmpty) {
+    final spoken = text.value.trim();
+    if (spoken.isEmpty) {
       Get.snackbar(
-        'Speaking',
-        text.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
-    } else {
-      Get.snackbar(
-        'Error',
-        'Please type something to speak',
+        'error'.tr,
+        'type_to_speak_hint'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
       );
+      return;
     }
+    var lang = 'en';
+    try {
+      lang = LanguageController.to.currentLocale.value.languageCode;
+    } catch (_) {}
+    TtsService.to.speak(spoken, lang: lang);
   }
 
   void clearText() {

@@ -2,6 +2,7 @@ import 'package:chatter_bee/feature/Notification/notification_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,6 +44,7 @@ class LoginController extends GetxController {
   // Toggle remember me
   void toggleRememberMe() {
     rememberMe.value = !rememberMe.value;
+    _persistRememberedEmail();
   }
 
   Future<void> _restoreRememberedEmail() async {
@@ -53,6 +55,8 @@ class LoginController extends GetxController {
       rememberMe.value = true;
     }
   }
+
+  Future<void> persistRememberedEmail() => _persistRememberedEmail();
 
   Future<void> _persistRememberedEmail() async {
     final prefs = await SharedPreferences.getInstance();
@@ -116,6 +120,7 @@ class LoginController extends GetxController {
 
       if (response.isSuccess && response.data != null) {
         await _persistRememberedEmail();
+        TextInput.finishAutofillContext();
 
         Get.snackbar(
           'Success',

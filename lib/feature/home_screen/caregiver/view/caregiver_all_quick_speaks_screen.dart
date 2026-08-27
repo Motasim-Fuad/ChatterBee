@@ -123,14 +123,14 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
           return Column(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: CgQuickSpeakBar(
+              child: Obx(() => CgQuickSpeakBar(
                 text: controller.selectedQuickSpeakText.value,
                 imageUrl: controller.selectedQuickSpeakImage.value,
                 color: _parseColor(controller.selectedQuickSpeakColor.value,
                     const Color(0xFFFFD700)),
                 onSpeak: controller.speakSelectedQuickSpeak,
                 onClear: controller.clearQuickSpeak,
-              ),
+              )),
             ),
             Expanded(child: RefreshIndicator(
               onRefresh: controller.refresh,
@@ -151,7 +151,7 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                   label: qs.word ?? '',
                   bgColor:
                   _parseColor(qs.color, const Color(0xFFFFD700)),
-                  isSelected: false,
+                  isSelected: controller.selectedQuickSpeakId.value == qs.id,
                   showEditBtn: controller.isQsEditMode.value,
                   onTap: () {
                     if (!controller.isQsEditMode.value) {

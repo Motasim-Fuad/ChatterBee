@@ -1,11 +1,19 @@
 import 'dart:io';
 import 'package:chatter_bee/models/activity/activity_models.dart';
 import 'package:chatter_bee/services/api_client.dart';
+import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
 import '../../../config/app_url.dart';
 
 class ActivityRepository {
   final ApiClient _apiClient = ApiClient();
+
+  int? get _sessionCommunicatorId {
+    if (!Get.isRegistered<CommunicatorSessionService>()) return null;
+    final id = CommunicatorSessionService.to.communicatorId.value;
+    return id == 0 ? null : id;
+  }
 
   // List Activities
   Future<ApiResponse<List<ActivityModel>>> getActivities({
@@ -24,6 +32,8 @@ class ActivityRepository {
         if (dateFrom != null) 'from': dateFrom,
         if (dateTo != null) 'to': dateTo,
         if (ordering != null) 'ordering': ordering,
+        if (_sessionCommunicatorId != null)
+          'communicator_id': _sessionCommunicatorId,
       };
 
       final response = await _apiClient.get<dynamic>(
@@ -67,6 +77,8 @@ class ActivityRepository {
         'activity_name': activityName,
         'datetime': datetime,
         'status': status,
+        if (_sessionCommunicatorId != null)
+          'communicator_id': _sessionCommunicatorId,
         if (imageFile != null)
           'image_icon': await MultipartFile.fromFile(
             imageFile.path,

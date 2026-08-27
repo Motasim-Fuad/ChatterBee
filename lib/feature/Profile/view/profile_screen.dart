@@ -2,6 +2,7 @@ import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/config/translations/widgets/language_selector.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -158,6 +159,13 @@ class ProfileScreen extends GetView<ProfileController> {
                       ),
                       const SizedBox(height: 8),
                       _buildMenuTile(
+                        icon: const Icon(Icons.record_voice_over_outlined),
+                        title: 'speech_mode'.tr,
+                        onTap: () => _showSpeechModeSheet(context),
+                        trailing: const Icon(Icons.chevron_right),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.lockIcon),
                         title: 'change_password'.tr,
                         onTap: controller.onChangePasswordTap,
@@ -200,6 +208,56 @@ class ProfileScreen extends GetView<ProfileController> {
           ),
         );
       }),
+    );
+  }
+
+  void _showSpeechModeSheet(BuildContext context) {
+    Get.bottomSheet(
+      Obx(() {
+        final selected = SpeechModeService.to.currentMode.value;
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('speech_mode'.tr,
+                  style: GoogleFonts.nunito(
+                      fontSize: 20, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 8),
+              RadioListTile<SpeechMode>(
+                value: SpeechMode.speakImmediately,
+                groupValue: selected,
+                title: Text('speech_mode_immediate'.tr),
+                onChanged: (mode) {
+                  if (mode != null) SpeechModeService.to.setMode(mode);
+                },
+              ),
+              RadioListTile<SpeechMode>(
+                value: SpeechMode.buildThenSpeak,
+                groupValue: selected,
+                title: Text('speech_mode_build'.tr),
+                onChanged: (mode) {
+                  if (mode != null) SpeechModeService.to.setMode(mode);
+                },
+              ),
+              RadioListTile<SpeechMode>(
+                value: SpeechMode.speakImmediatelyOnly,
+                groupValue: selected,
+                title: Text('speech_mode_immediate_only'.tr),
+                onChanged: (mode) {
+                  if (mode != null) SpeechModeService.to.setMode(mode);
+                },
+              ),
+            ],
+          ),
+        );
+      }),
+      backgroundColor: Colors.transparent,
     );
   }
 

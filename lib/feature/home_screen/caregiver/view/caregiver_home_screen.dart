@@ -52,6 +52,12 @@ class CaregiverHomeScreen extends StatelessWidget {
       color: Color(0xFFFDD268),
       route: AppRoutes.ACTIVITIES,
     ),
+    _ExploreItem(
+      labelKey: 'text_to_speak',
+      icon: Icons.keyboard_voice_outlined,
+      color: Color(0xFFB5CFD1),
+      route: AppRoutes.TEXT_TO_SPEAK,
+    ),
   ];
 
   @override
@@ -84,6 +90,12 @@ class CaregiverHomeScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Image.asset(ImagesLink.logo, height: 47),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.search, color: Color(0xFF1A1A1A)),
+                                onPressed: () => controller.isSearchOpen.toggle(),
+                              ),
                           GestureDetector(
                             onTap: () => Get.toNamed(AppRoutes.PROFILE),
                             child: CustomPaint(
@@ -113,9 +125,35 @@ class CaregiverHomeScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
+                  ),
+
+                  SliverToBoxAdapter(
+                    child: Obx(() {
+                      if (!controller.isSearchOpen.value) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: TextField(
+                          onChanged: (v) => controller.searchQuery.value = v,
+                          decoration: InputDecoration(
+                            hintText: 'search_symbols'.tr,
+                            prefixIcon: const Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE3E3E9)),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
                   ),
 
                   SliverToBoxAdapter(
@@ -156,7 +194,10 @@ class CaregiverHomeScreen extends StatelessWidget {
                   ),
 
                   Obx(() {
-                    if (controller.quickSpeaks.isEmpty) {
+                    final qsList = controller.filteredQuickSpeaks;
+                    final showType = !controller.isQsEditMode.value;
+                    final extra = showType ? 1 : 0;
+                    if (qsList.isEmpty && !showType) {
                       return SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -168,24 +209,34 @@ class CaregiverHomeScreen extends StatelessWidget {
                       );
                     }
 
-                    final hasMore =
-                        controller.quickSpeaks.length > _kMaxHome;
+                    final hasMore = qsList.length > _kMaxHome;
                     final showCount =
-                    hasMore ? _kMaxHome : controller.quickSpeaks.length;
-                    final cellCount = showCount + (hasMore ? 1 : 0);
+                    hasMore ? _kMaxHome : qsList.length;
+                    final cellCount = extra + showCount + (hasMore ? 1 : 0);
 
                     return SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                       sliver: SliverGrid(
                         delegate: SliverChildBuilderDelegate(
                               (_, i) {
-                            if (hasMore && i == _kMaxHome) {
+                            if (showType && i == 0) {
+                              return CgFolderCard(
+                                imageUrl: null,
+                                label: 'tap_to_type'.tr,
+                                bgColor: const Color(0xFFE8F6F8),
+                                icon: Icons.keyboard_alt_outlined,
+                                isSelected: false,
+                                showEditBtn: false,
+                                onTap: controller.promptTypedText,
+                              );
+                            }
+                            if (hasMore && i == extra + showCount) {
                               return CgSeeAllCard(
                                 onTap: () => Get.toNamed(
                                     AppRoutes.CAREGIVER_ALL_QUICK_SPEAKS),
                               );
                             }
-                            final qs = controller.quickSpeaks[i];
+                            final qs = qsList[i - extra];
                             return Obx(() => CgFolderCard(
                               imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                               label: qs.word ?? '',
@@ -240,7 +291,7 @@ class CaregiverHomeScreen extends StatelessWidget {
                   ),
 
                   Obx(() {
-                    if (controller.categories.isEmpty) {
+                    if (controller.filteredCategories.isEmpty) {
                       return SliverToBoxAdapter(
                         child: Center(
                           child: Padding(
@@ -271,9 +322,9 @@ class CaregiverHomeScreen extends StatelessWidget {
                     }
 
                     final hasMore =
-                        controller.categories.length > _kMaxHome;
+                        controller.filteredCategories.length > _kMaxHome;
                     final showCount =
-                    hasMore ? _kMaxHome : controller.categories.length;
+                    hasMore ? _kMaxHome : controller.filteredCategories.length;
                     final cellCount = showCount + (hasMore ? 1 : 0);
 
                     return SliverPadding(
@@ -287,7 +338,7 @@ class CaregiverHomeScreen extends StatelessWidget {
                                     AppRoutes.CAREGIVER_ALL_CATEGORIES),
                               );
                             }
-                            final cat = controller.categories[i];
+                            final cat = controller.filteredCategories[i];
                             return Obx(() {
                               final isSelected = controller
                                   .selectedCategoryIds
@@ -380,42 +431,87 @@ class CgQuickSpeakBar extends StatelessWidget {
     final selected = text.isNotEmpty;
     return LayoutBuilder(builder: (_, constraints) {
       final compact = constraints.maxWidth < 340;
-      final buttonSize = compact ? 42.0 : 46.0;
-      return Row(children: [
-        Expanded(child: Container(
-          height: 54,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE3E3E9))),
-          child: selected ? Row(children: [
-            Container(width: 38, height: 38, clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
-              child: imageUrl.isNotEmpty
-                ? CachedNetworkImage(imageUrl: imageUrl, fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => const Icon(Icons.image_outlined, color: Colors.white))
-                : const Icon(Icons.image_outlined, color: Colors.white)),
-            const SizedBox(width: 9),
-            Expanded(child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.nunito(fontSize: 16))),
-          ]) : Align(alignment: Alignment.centerLeft,
-            child: Text('select_quick_speak_hint'.tr, maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.nunito(fontSize: 15, color: Colors.grey[400]))),
-        )),
-        SizedBox(width: compact ? 6 : 10),
-        _CaregiverBarButton(
-            color: const Color(0xFF7BC5D3),
-            onTap: onSpeak,
-            child: SvgPicture.asset(ImagesLink.speakIcon,
-                width: 22, height: 22)),
-        SizedBox(width: compact ? 6 : 10),
-        _CaregiverBarButton(
-            color: const Color(0xFFE57373),
-            onTap: onClear,
-            child: SvgPicture.asset(ImagesLink.cancelIcon,
-                width: 22, height: 22)),
-      ]);
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Container(
+              height: 64,
+              padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE3E3E9)),
+              ),
+              child: selected
+                  ? Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: color,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: imageUrl.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: imageUrl,
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) => ColoredBox(color: color),
+                                    errorWidget: (_, __, ___) => const Icon(
+                                      Icons.image_outlined,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Icon(Icons.image_outlined, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            text,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.nunito(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF1A1A1A),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'select_quick_speak_hint'.tr,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.nunito(
+                            fontSize: 15, color: Colors.grey[400]),
+                      ),
+                    ),
+            ),
+          ),
+          SizedBox(width: compact ? 6 : 10),
+          _CaregiverBarButton(
+              color: const Color(0xFF7BC5D3),
+              onTap: onSpeak,
+              child: SvgPicture.asset(ImagesLink.speakIcon,
+                  width: 22, height: 22)),
+          SizedBox(width: compact ? 6 : 10),
+          _CaregiverBarButton(
+              color: const Color(0xFFE57373),
+              onTap: onClear,
+              child: SvgPicture.asset(ImagesLink.cancelIcon,
+                  width: 22, height: 22)),
+        ],
+      );
     });
   }
 }

@@ -26,7 +26,8 @@ const List<Map<String, String>> kColorOptions = [
   {'hex': '#E91E63', 'label': 'Pink'},
 ];
 
-class CaregiverHomeController extends GetxController {
+class CaregiverHomeController extends GetxController
+    with WidgetsBindingObserver {
   final CaregiverCustomizationRepository _repo =
   CaregiverCustomizationRepository();
   final AuthRepository _authRepository = AuthRepository();
@@ -46,6 +47,8 @@ class CaregiverHomeController extends GetxController {
   final RxString selectedQuickSpeakText = ''.obs;
   final RxString selectedQuickSpeakImage = ''.obs;
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
+  final RxBool isSearchOpen = false.obs;
+  final RxString searchQuery = ''.obs;
 
   List<CategoryModel> get apiCategories => categories;
 
@@ -73,8 +76,16 @@ class CaregiverHomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
     _initAudio();
     _initLoad();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      loadContent();
+    }
   }
 
   Future<void> _initAudio() async {
@@ -189,11 +200,62 @@ class CaregiverHomeController extends GetxController {
     selectedQuickSpeakId.value = -1;
     selectedQuickSpeakText.value = '';
     selectedQuickSpeakImage.value = '';
+    selectedQuickSpeakColor.value = '#FFD700';
   }
 
   Future<void> speakSelectedQuickSpeak() async {
     if (selectedQuickSpeakText.value.isEmpty) return;
     await TtsService.to.speak(selectedQuickSpeakText.value, lang: _currentLang);
+  }
+
+  List<QuickSpeakModel> get filteredQuickSpeaks {
+    final q = searchQuery.value.trim().toLowerCase();
+    if (q.isEmpty) return quickSpeaks.toList();
+    return quickSpeaks
+        .where((e) => (e.word ?? '').toLowerCase().contains(q))
+        .toList();
+  }
+
+  List<CategoryModel> get filteredCategories {
+    final q = searchQuery.value.trim().toLowerCase();
+    if (q.isEmpty) return categories.toList();
+    bool matchesItem(ItemModel item) =>
+        (item.word ?? '').toLowerCase().contains(q);
+    return categories.where((c) {
+      if (c.name.toLowerCase().contains(q)) return true;
+      if (c.items.any(matchesItem)) return true;
+      return c.subCategories.any((s) =>
+          s.name.toLowerCase().contains(q) || s.items.any(matchesItem));
+    }).toList();
+  }
+
+  Future<void> promptTypedText() async {
+    final input = TextEditingController();
+    final result = await Get.dialog<String>(
+      AlertDialog(
+        title: Text('tap_to_type'.tr),
+        content: TextField(
+          controller: input,
+          autofocus: true,
+          decoration: InputDecoration(hintText: 'type_to_speak_hint'.tr),
+          onSubmitted: (v) => Get.back(result: v),
+        ),
+        actions: [
+          TextButton(onPressed: Get.back, child: Text('cancel'.tr)),
+          TextButton(
+            onPressed: () => Get.back(result: input.text),
+            child: Text('speak'.tr),
+          ),
+        ],
+      ),
+    );
+    input.dispose();
+    final trimmed = result?.trim() ?? '';
+    if (trimmed.isEmpty) return;
+    selectedQuickSpeakId.value = -1;
+    selectedQuickSpeakText.value = trimmed;
+    selectedQuickSpeakImage.value = '';
+    await TtsService.to.speak(trimmed, lang: _currentLang);
   }
 
   Future<void> playQuickSpeak(QuickSpeakModel qs) async {
@@ -436,6 +498,7 @@ class CaregiverHomeController extends GetxController {
 
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();
     _audioPlayer.dispose();

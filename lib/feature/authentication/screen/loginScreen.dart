@@ -18,6 +18,7 @@ class LoginScreen extends GetView<LoginController> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
+            child: AutofillGroup(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -63,6 +64,8 @@ class LoginScreen extends GetView<LoginController> {
                     controller: controller.emailController,
                     focusNode: controller.emailFocusNode,
                     keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.username, AutofillHints.email],
+                    textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       hintText: 'name@example.com',
                       hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
@@ -97,6 +100,9 @@ class LoginScreen extends GetView<LoginController> {
                       if (controller.emailError.value.isNotEmpty) {
                         controller.validateEmail();
                       }
+                      if (controller.rememberMe.value) {
+                        controller.persistRememberedEmail();
+                      }
                     },
                   ),
                 )),
@@ -118,6 +124,9 @@ class LoginScreen extends GetView<LoginController> {
                     controller: controller.passwordController,
                     focusNode: controller.passwordFocusNode,
                     obscureText: !controller.isPasswordVisible.value,
+                    autofillHints: const [AutofillHints.password],
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => controller.signIn(),
                     decoration: InputDecoration(
                       hintText: '••••••',
                       hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
@@ -280,6 +289,7 @@ class LoginScreen extends GetView<LoginController> {
 
                 const SizedBox(height: 16),
               ],
+            ),
             ),
           ),
         ),
