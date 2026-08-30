@@ -109,17 +109,12 @@ class ProfileController extends GetxController {
     if (Get.isDialogOpen ?? false) Get.back();
     if (response.isSuccess && response.data != null) {
       final switched = response.data!;
-      final role = switched.user.getRoleSafe();
       final name = switched.user.fullName.isNotEmpty
           ? switched.user.fullName
           : switched.user.email;
       await CommunicatorSessionService.to.setSelected(id, name);
 
-      Get.offAllNamed(
-        role == 'caregiver'
-            ? AppRoutes.CAREGIVERPROFILE
-            : AppRoutes.COMMUNICATORPROFILE,
-      );
+      Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
     } else if (response.statusCode == 404) {
       final name = (user['full_name'] ?? user['email'] ?? 'Communicator')
           .toString();

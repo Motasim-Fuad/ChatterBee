@@ -141,6 +141,8 @@ class CaregiverHomeScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                         child: TextField(
                           onChanged: (v) => controller.searchQuery.value = v,
+                          onTapOutside: (_) =>
+                              FocusManager.instance.primaryFocus?.unfocus(),
                           decoration: InputDecoration(
                             hintText: 'search_symbols'.tr,
                             prefixIcon: const Icon(Icons.search),
@@ -391,7 +393,9 @@ class CaregiverHomeScreen extends StatelessWidget {
                             icon: item.icon,
                             isSelected: false,
                             showEditBtn: false,
-                            onTap: () => Get.toNamed(item.route),
+                            onTap: item.route == AppRoutes.ACTIVITIES
+                                ? controller.openSchedule
+                                : () => Get.toNamed(item.route),
                           );
                         },
                         childCount: _exploreItems.length,

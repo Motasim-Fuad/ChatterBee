@@ -6,8 +6,9 @@ import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
+import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
-import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
@@ -175,14 +176,31 @@ class CaregiverItemController extends GetxController {
   }
 
   void onItemTap(ItemModel item) {
-    if (selectedItemId.value == item.id) {
-      clearSelectionBar();
+    final word = item.word ?? '';
+    if (SpeechModeService.to.speaksOnTap) {
+      if (selectedItemId.value == item.id) {
+        clearSelectionBar();
+        return;
+      }
+      selectedItemId.value = item.id;
+      selectedWord.value = word;
+      selectedImage.value = item.imageIcon ?? '';
+      selectedColor.value = item.color;
+      TtsService.to.speak(word, lang: _currentLang);
       return;
     }
     selectedItemId.value = item.id;
-    selectedWord.value = item.word ?? '';
     selectedImage.value = item.imageIcon ?? '';
     selectedColor.value = item.color;
+    if (selectedWord.value.trim().isEmpty) {
+      selectedWord.value = word;
+    } else {
+      selectedWord.value = '${selectedWord.value} $word';
+    }
+  }
+
+  void promptTypedText() {
+    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
   }
 
   Future<void> speakSelected() async {
@@ -313,7 +331,6 @@ class CaregiverItemController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    if (!ProAccessGate.allowOrPrompt()) return;
     final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,

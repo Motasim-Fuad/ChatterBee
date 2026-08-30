@@ -6,7 +6,9 @@ import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
+import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
+import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
@@ -189,10 +191,27 @@ class CaregiverHomeController extends GetxController
 
 
   void selectQuickSpeak(QuickSpeakModel qs) {
+    final word = qs.word ?? '';
+    if (SpeechModeService.to.speaksOnTap) {
+      if (selectedQuickSpeakId.value == qs.id) {
+        clearQuickSpeak();
+        return;
+      }
+      selectedQuickSpeakId.value = qs.id;
+      selectedQuickSpeakText.value = word;
+      selectedQuickSpeakImage.value = AppUrl.mediaUrl(qs.imageIcon) ?? '';
+      selectedQuickSpeakColor.value = qs.color;
+      TtsService.to.speak(word, lang: _currentLang);
+      return;
+    }
     selectedQuickSpeakId.value = qs.id;
-    selectedQuickSpeakText.value = qs.word ?? '';
     selectedQuickSpeakImage.value = AppUrl.mediaUrl(qs.imageIcon) ?? '';
     selectedQuickSpeakColor.value = qs.color;
+    if (selectedQuickSpeakText.value.trim().isEmpty) {
+      selectedQuickSpeakText.value = word;
+    } else {
+      selectedQuickSpeakText.value = '${selectedQuickSpeakText.value} $word';
+    }
   }
 
   void clearQuickSpeak() {
@@ -229,33 +248,12 @@ class CaregiverHomeController extends GetxController
     }).toList();
   }
 
-  Future<void> promptTypedText() async {
-    final input = TextEditingController();
-    final result = await Get.dialog<String>(
-      AlertDialog(
-        title: Text('tap_to_type'.tr),
-        content: TextField(
-          controller: input,
-          autofocus: true,
-          decoration: InputDecoration(hintText: 'type_to_speak_hint'.tr),
-          onSubmitted: (v) => Get.back(result: v),
-        ),
-        actions: [
-          TextButton(onPressed: Get.back, child: Text('cancel'.tr)),
-          TextButton(
-            onPressed: () => Get.back(result: input.text),
-            child: Text('speak'.tr),
-          ),
-        ],
-      ),
-    );
-    input.dispose();
-    final trimmed = result?.trim() ?? '';
-    if (trimmed.isEmpty) return;
-    selectedQuickSpeakId.value = -1;
-    selectedQuickSpeakText.value = trimmed;
-    selectedQuickSpeakImage.value = '';
-    await TtsService.to.speak(trimmed, lang: _currentLang);
+  void promptTypedText() {
+    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
+  }
+
+  void openSchedule() {
+    ProAccessGate.openScheduleOrPrompt();
   }
 
   Future<void> playQuickSpeak(QuickSpeakModel qs) async {
@@ -278,7 +276,6 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> pickCatImage() async {
-    if (!ProAccessGate.allowOrPrompt()) return;
     final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,
@@ -362,7 +359,6 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> pickQsImage() async {
-    if (!ProAccessGate.allowOrPrompt()) return;
     final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,

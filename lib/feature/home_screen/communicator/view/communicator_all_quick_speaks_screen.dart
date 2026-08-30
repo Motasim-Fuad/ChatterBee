@@ -52,10 +52,10 @@ class CommunicatorAllQuickSpeaksScreen
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: CommSpeakBar(
               text: controller.quickSpeakText.value,
-              imageUrl: controller.quickSpeakImage.value,
+              imageUrl: AppUrl.mediaUrl(controller.quickSpeakImage.value) ?? '',
+              color: _parseColor(
+                  controller.quickSpeakColor.value, const Color(0xFFFFD700)),
               hint: 'select_quick_speak_hint'.tr,
-              chips: controller.sentence.toList(),
-              onRemoveChip: controller.removeChipAt,
               onSpeak: controller.speakQuickSpeak,
               onClear: controller.clearQuickSpeak,
               isCooldown: controller.isSpeakCooldown.value,
@@ -66,25 +66,10 @@ class CommunicatorAllQuickSpeaksScreen
           const SizedBox(height: 14),
 
           Expanded(
-            child: Obx(() {
-              if (controller.quickSpeaks.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.record_voice_over_outlined,
-                          size: 60, color: Colors.grey[300]),
-                      const SizedBox(height: 12),
-                      Text('no_quick_speaks_yet'.tr,
-                          style: TextStyle(
-                              color: Colors.grey[500], fontSize: 15)),
-                    ],
-                  ),
-                );
-              }
-
-              return OrientationBuilder(builder: (context, _) {
-                final cols = _crossAxisCount(context);
+            child: OrientationBuilder(builder: (context, _) {
+              final cols = _crossAxisCount(context);
+              return Obx(() {
+                final qsList = controller.quickSpeaks.toList();
                 return RefreshIndicator(
                   onRefresh: controller.refresh,
                   color: const Color(0xFFFFC857),
@@ -97,9 +82,19 @@ class CommunicatorAllQuickSpeaksScreen
                       mainAxisSpacing: 12,
                       childAspectRatio: 0.82,
                     ),
-                    itemCount: controller.quickSpeaks.length,
+                    itemCount: qsList.length + 1,
                     itemBuilder: (_, i) {
-                      final qs = controller.quickSpeaks[i];
+                      if (i == 0) {
+                        return CommCard(
+                          imageUrl: null,
+                          label: 'tap_to_type'.tr,
+                          bgColor: const Color(0xFFE8F6F8),
+                          icon: Icons.keyboard_alt_outlined,
+                          isSelected: false,
+                          onTap: controller.promptTypedText,
+                        );
+                      }
+                      final qs = qsList[i - 1];
                       return Obx(() => CommCard(
                         imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                         label: qs.word ?? '',

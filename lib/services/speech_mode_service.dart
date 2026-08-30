@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum SpeechMode {
   speakImmediately,
   buildThenSpeak,
-  speakImmediatelyOnly,
 }
 
 class SpeechModeService extends GetxService {
@@ -14,11 +13,11 @@ class SpeechModeService extends GetxService {
 
   final Rx<SpeechMode> currentMode = SpeechMode.speakImmediately.obs;
 
-  bool get buildsSentence =>
-      currentMode.value != SpeechMode.speakImmediatelyOnly;
-
   bool get speaksOnTap =>
-      currentMode.value != SpeechMode.buildThenSpeak;
+      currentMode.value == SpeechMode.speakImmediately;
+
+  bool get isBuildMode =>
+      currentMode.value == SpeechMode.buildThenSpeak;
 
   Future<SpeechModeService> init() async {
     final prefs = await SharedPreferences.getInstance();
@@ -33,9 +32,7 @@ class SpeechModeService extends GetxService {
   }
 
   SpeechMode _fromKey(String? value) {
-    return SpeechMode.values.firstWhere(
-      (mode) => mode.name == value,
-      orElse: () => SpeechMode.speakImmediately,
-    );
+    if (value == 'buildThenSpeak') return SpeechMode.buildThenSpeak;
+    return SpeechMode.speakImmediately;
   }
 }

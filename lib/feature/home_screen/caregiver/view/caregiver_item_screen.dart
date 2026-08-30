@@ -102,34 +102,6 @@ class CaregiverItemScreen extends StatelessWidget {
               CircularProgressIndicator(color: Color(0xFFFFC857)));
         }
 
-        if (controller.items.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.touch_app_outlined,
-                    size: 64, color: Colors.grey[300]),
-                const SizedBox(height: 12),
-                Text('no_items_yet'.tr,
-                    style: TextStyle(
-                        color: Colors.grey[500], fontSize: 15)),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: controller.showAddSheet,
-                  icon: const Icon(Icons.add, color: Colors.black),
-                  label: Text('add_item'.tr,
-                      style: const TextStyle(color: Colors.black)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFC857),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
         return Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -144,6 +116,7 @@ class CaregiverItemScreen extends StatelessWidget {
           ),
           Expanded(child: OrientationBuilder(builder: (context, _) {
             final cols = _crossAxisCount(context);
+            final extra = controller.isEditMode.value ? 0 : 1;
             return RefreshIndicator(
             onRefresh: controller.refresh,
             color: const Color(0xFFFFC857),
@@ -155,9 +128,20 @@ class CaregiverItemScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: controller.items.length,
+              itemCount: extra + controller.items.length,
               itemBuilder: (_, i) {
-                final item = controller.items[i];
+                if (extra == 1 && i == 0) {
+                  return CgFolderCard(
+                    imageUrl: null,
+                    label: 'tap_to_type'.tr,
+                    bgColor: const Color(0xFFE8F6F8),
+                    icon: Icons.keyboard_alt_outlined,
+                    isSelected: false,
+                    showEditBtn: false,
+                    onTap: controller.promptTypedText,
+                  );
+                }
+                final item = controller.items[i - extra];
                 return Obx(() {
                   final isSelected = controller.isEditMode.value
                       ? controller.selectedIds.contains(item.id)

@@ -4,7 +4,6 @@ import 'package:chatter_bee/models/activity/activity_models.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:chatter_bee/services/pro_access_gate.dart';
 
 class EditActivityController extends GetxController {
   final ActivityRepository _repository = ActivityRepository();
@@ -91,7 +90,6 @@ class EditActivityController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    if (!ProAccessGate.allowOrPrompt()) return;
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,

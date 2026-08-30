@@ -245,14 +245,6 @@ class ProfileScreen extends GetView<ProfileController> {
                   if (mode != null) SpeechModeService.to.setMode(mode);
                 },
               ),
-              RadioListTile<SpeechMode>(
-                value: SpeechMode.speakImmediatelyOnly,
-                groupValue: selected,
-                title: Text('speech_mode_immediate_only'.tr),
-                onChanged: (mode) {
-                  if (mode != null) SpeechModeService.to.setMode(mode);
-                },
-              ),
             ],
           ),
         );

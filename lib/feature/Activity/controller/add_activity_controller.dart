@@ -3,7 +3,6 @@ import 'package:chatter_bee/Repository/activity/activity_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:chatter_bee/services/pro_access_gate.dart';
 
 class AddActivityController extends GetxController {
   final TextEditingController activityNameController = TextEditingController();
@@ -74,7 +73,6 @@ class AddActivityController extends GetxController {
 
   // Image Picker
   Future<void> pickImage() async {
-    if (!ProAccessGate.allowOrPrompt()) return;
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,

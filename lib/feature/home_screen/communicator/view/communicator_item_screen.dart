@@ -3,7 +3,6 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_item_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/view/communicator_home_screen.dart';
-import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -54,17 +53,14 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
       body: Column(
         children: [
           Obx(() {
-            final hideBar = SpeechModeService.to.currentMode.value ==
-                SpeechMode.speakImmediatelyOnly;
-            if (hideBar) return const SizedBox(height: 8);
             return Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: CommSpeakBar(
               text: controller.selectedWord.value,
               imageUrl: AppUrl.mediaUrl(controller.selectedImage.value) ?? '',
+              color: _parseColor(
+                  controller.selectedColor.value, const Color(0xFFFFD700)),
               hint: 'tap_an_item'.tr,
-              chips: controller.sentence.toList(),
-              onRemoveChip: controller.removeChipAt,
               onSpeak: controller.speakSelected,
               onClear: controller.clearSelection,
               isCooldown: controller.isSpeakCooldown.value,
@@ -76,54 +72,51 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
           const SizedBox(height: 14),
 
           Expanded(
-            child: Obx(() => controller.items.isEmpty
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.grid_off_outlined,
-                      size: 60, color: Colors.grey[300]),
-                  const SizedBox(height: 12),
-                  Text(
-                    'no_items_available'.tr,
-                    style: TextStyle(
-                        color: Colors.grey[500], fontSize: 15),
-                  ),
-                ],
-              ),
-            )
-                : OrientationBuilder(
+            child: OrientationBuilder(
               builder: (context, _) {
                 final cols = _crossAxisCount(context);
-                return RefreshIndicator(
-                  onRefresh: controller.refresh,
-                  color: const Color(0xFFFFC857),
-                  child: GridView.builder(
-                    padding:
-                    const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    gridDelegate:
-                    SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: cols,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.82,
+                return Obx(() {
+                  final items = controller.items.toList();
+                  return RefreshIndicator(
+                    onRefresh: controller.refresh,
+                    color: const Color(0xFFFFC857),
+                    child: GridView.builder(
+                      padding:
+                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                      gridDelegate:
+                      SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: cols,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.82,
+                      ),
+                      itemCount: items.length + 1,
+                      itemBuilder: (_, i) {
+                        if (i == 0) {
+                          return CommCard(
+                            imageUrl: null,
+                            label: 'tap_to_type'.tr,
+                            bgColor: const Color(0xFFE8F6F8),
+                            icon: Icons.keyboard_alt_outlined,
+                            isSelected: false,
+                            onTap: controller.promptTypedText,
+                          );
+                        }
+                        final item = items[i - 1];
+                        return Obx(() => _ItemCard(
+                          item: item,
+                          isSelected:
+                          controller.selectedItemId.value ==
+                              item.id,
+                          onTap: () =>
+                              controller.onItemTap(item),
+                        ));
+                      },
                     ),
-                    itemCount: controller.items.length,
-                    itemBuilder: (_, i) {
-                      final item = controller.items[i];
-                      return Obx(() => _ItemCard(
-                        item: item,
-                        isSelected:
-                        controller.selectedItemId.value ==
-                            item.id,
-                        onTap: () =>
-                            controller.onItemTap(item),
-                      ));
-                    },
-                  ),
-                );
+                  );
+                });
               },
-            )),
+            ),
           ),
         ],
       ),

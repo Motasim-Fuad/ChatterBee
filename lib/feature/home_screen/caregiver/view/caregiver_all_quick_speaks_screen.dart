@@ -90,36 +90,9 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (controller.quickSpeaks.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.record_voice_over_outlined,
-                    size: 60, color: Colors.grey[300]),
-                const SizedBox(height: 12),
-                Text('no_quick_speaks_hint'.tr,
-                    style:
-                    TextStyle(color: Colors.grey[500], fontSize: 15)),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: controller.showAddQuickSpeakSheet,
-                  icon: const Icon(Icons.add, color: Colors.black),
-                  label: Text('add'.tr,
-                      style: const TextStyle(color: Colors.black)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFC857),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
         return OrientationBuilder(builder: (context, _) {
           final cols = _crossAxisCount(context);
+          final extra = controller.isQsEditMode.value ? 0 : 1;
           return Column(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -143,9 +116,20 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: controller.quickSpeaks.length,
+              itemCount: extra + controller.quickSpeaks.length,
               itemBuilder: (_, i) {
-                final qs = controller.quickSpeaks[i];
+                if (extra == 1 && i == 0) {
+                  return CgFolderCard(
+                    imageUrl: null,
+                    label: 'tap_to_type'.tr,
+                    bgColor: const Color(0xFFE8F6F8),
+                    icon: Icons.keyboard_alt_outlined,
+                    isSelected: false,
+                    showEditBtn: false,
+                    onTap: controller.promptTypedText,
+                  );
+                }
+                final qs = controller.quickSpeaks[i - extra];
                 return Obx(() => CgFolderCard(
                   imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                   label: qs.word ?? '',

@@ -21,7 +21,7 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Text-to-Speak',
+          'tap_to_type'.tr,
           style: GoogleFonts.nunito(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -57,6 +57,8 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                       ),
                       child: Obx(() => TextField(
                         controller: controller.textController,
+                        onTapOutside: (_) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
                         style: GoogleFonts.nunito(
                           fontSize: 16,
                           color: Colors.black87,

@@ -109,6 +109,8 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
               ),
               child: TextField(
                 onChanged: (v) => searchQuery.value = v.trim().toLowerCase(),
+                onTapOutside: (_) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
                 style:
                 GoogleFonts.nunito(fontSize: 16, color: Colors.black87),
                 decoration: InputDecoration(

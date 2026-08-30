@@ -7,12 +7,10 @@ import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
-import 'package:chatter_bee/models/aac/sentence_chip.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
-import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
-import 'package:chatter_bee/services/revenueCat_services.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,8 +29,8 @@ class CommunicatorHomeController extends GetxController
 
   final RxString quickSpeakText = ''.obs;
   final RxString quickSpeakImage = ''.obs;
+  final RxString quickSpeakColor = '#FFD700'.obs;
   final RxInt selectedQsId = (-1).obs;
-  final RxList<SentenceChip> sentence = <SentenceChip>[].obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
@@ -88,11 +86,16 @@ class CommunicatorHomeController extends GetxController
         ? await _repo.getBuddyModeContent(lang: lang)
         : await _repo.getContent(lang: lang);
 
-    isLoading.value = false;
-
     if (res.isSuccess && res.data != null) {
       categories.assignAll(res.data!.categories);
-      quickSpeaks.assignAll(res.data!.quickSpeaks);
+      var qs = res.data!.quickSpeaks;
+      if (qs.isEmpty && isBuddyMode.value) {
+        final fallback = await _repo.getContent(lang: lang);
+        if (fallback.isSuccess && fallback.data != null) {
+          qs = fallback.data!.quickSpeaks;
+        }
+      }
+      quickSpeaks.assignAll(qs);
     } else {
       categories.clear();
       quickSpeaks.clear();
@@ -100,92 +103,50 @@ class CommunicatorHomeController extends GetxController
           ? res.message
           : 'failed_to_load_content'.tr;
     }
+    isLoading.value = false;
   }
 
   Future<void> refresh() => loadContent();
 
-  void _syncSentencePreview() {
-    if (sentence.isEmpty) {
-      selectedQsId.value = -1;
-      quickSpeakText.value = '';
-      quickSpeakImage.value = '';
-      return;
-    }
-    final last = sentence.last;
-    selectedQsId.value = last.id;
-    quickSpeakText.value = sentence.map((c) => c.word).join(' ');
-    quickSpeakImage.value = AppUrl.mediaUrl(last.imageUrl) ?? last.imageUrl ?? '';
-  }
-
   void onQuickSpeakTap(CommQuickSpeakModel qs) {
-    final mode = SpeechModeService.to.currentMode.value;
-    final chip = SentenceChip(
-      id: qs.id,
-      word: qs.word ?? '',
-      imageUrl: qs.imageIcon,
-      color: qs.color,
-    );
-
-    if (mode == SpeechMode.speakImmediatelyOnly) {
+    final word = qs.word ?? '';
+    if (SpeechModeService.to.speaksOnTap) {
+      if (selectedQsId.value == qs.id) {
+        clearQuickSpeak();
+        return;
+      }
       selectedQsId.value = qs.id;
-      quickSpeakText.value = chip.word;
-      quickSpeakImage.value = AppUrl.mediaUrl(chip.imageUrl) ?? '';
-      TtsService.to.speak(chip.word, lang: _currentLang);
+      quickSpeakText.value = word;
+      quickSpeakImage.value = qs.imageIcon ?? '';
+      quickSpeakColor.value = qs.color;
+      TtsService.to.speak(word, lang: _currentLang);
       _repo.pressContent(contentType: 'quickspeak', contentId: qs.id);
       BuddyBeeEncouragement.maybeShow();
       return;
     }
-
-    sentence.add(chip);
-    _syncSentencePreview();
-    if (mode == SpeechMode.speakImmediately) {
-      TtsService.to.speak(chip.word, lang: _currentLang);
-      _repo.pressContent(contentType: 'quickspeak', contentId: qs.id);
+    selectedQsId.value = qs.id;
+    quickSpeakImage.value = qs.imageIcon ?? '';
+    quickSpeakColor.value = qs.color;
+    if (quickSpeakText.value.trim().isEmpty) {
+      quickSpeakText.value = word;
+    } else {
+      quickSpeakText.value = '${quickSpeakText.value} $word';
     }
   }
 
   void addTypedText(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
-    sentence.add(SentenceChip(
-      id: DateTime.now().millisecondsSinceEpoch,
-      word: trimmed,
-      isTyped: true,
-    ));
-    _syncSentencePreview();
+    selectedQsId.value = -1;
+    quickSpeakText.value = trimmed;
+    quickSpeakImage.value = '';
     if (SpeechModeService.to.speaksOnTap) {
       TtsService.to.speak(trimmed, lang: _currentLang);
     }
   }
 
-  Future<void> promptTypedText() async {
-    final input = TextEditingController();
-    final result = await Get.dialog<String>(
-      AlertDialog(
-        title: Text('tap_to_type'.tr),
-        content: TextField(
-          controller: input,
-          autofocus: true,
-          decoration: InputDecoration(hintText: 'type_to_speak_hint'.tr),
-          onSubmitted: (v) => Get.back(result: v),
-        ),
-        actions: [
-          TextButton(onPressed: Get.back, child: Text('cancel'.tr)),
-          TextButton(
-            onPressed: () => Get.back(result: input.text),
-            child: Text('add'.tr),
-          ),
-        ],
-      ),
-    );
-    input.dispose();
-    if (result != null) addTypedText(result);
-  }
-
-  void removeChipAt(int index) {
-    if (index < 0 || index >= sentence.length) return;
-    sentence.removeAt(index);
-    _syncSentencePreview();
+  void promptTypedText() {
+    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
   }
 
   void onSearchItemTap(CommItemModel item) {
@@ -229,27 +190,14 @@ class CommunicatorHomeController extends GetxController
 
   void speakQuickSpeak() {
     if (isSpeakCooldown.value) return;
-    final mode = SpeechModeService.to.currentMode.value;
-    if (mode == SpeechMode.speakImmediatelyOnly) {
-      if (quickSpeakText.value.isEmpty) {
-        Get.snackbar('select_first'.tr, 'tap_quick_speak_first'.tr,
-            snackPosition: SnackPosition.BOTTOM);
-        return;
-      }
-      TtsService.to.speak(quickSpeakText.value, lang: _currentLang);
-      BuddyBeeEncouragement.maybeShow();
-      _startCooldown();
-      return;
-    }
-    if (sentence.isEmpty) {
+    if (quickSpeakText.value.isEmpty) {
       Get.snackbar('select_first'.tr, 'tap_quick_speak_first'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
-    final spoken = sentence.map((c) => c.word).join(' ');
-    TtsService.to.speak(spoken, lang: _currentLang);
-    for (final chip in sentence.where((c) => !c.isTyped)) {
-      _repo.pressContent(contentType: 'quickspeak', contentId: chip.id);
+    TtsService.to.speak(quickSpeakText.value, lang: _currentLang);
+    if (selectedQsId.value > 0) {
+      _repo.pressContent(contentType: 'quickspeak', contentId: selectedQsId.value);
     }
     BuddyBeeEncouragement.maybeShow();
     _startCooldown();
@@ -261,7 +209,6 @@ class CommunicatorHomeController extends GetxController
     selectedQsId.value = -1;
     quickSpeakText.value = '';
     quickSpeakImage.value = '';
-    sentence.clear();
     _cancelCooldown();
   }
   // Cooldown helpers
@@ -335,83 +282,7 @@ class CommunicatorHomeController extends GetxController
   }
 
   void openSchedule() {
-    final isPro = Get.isRegistered<ProStatusController>() &&
-        ProStatusController.to.isProUser.value;
-    if (isPro) {
-      Get.toNamed(AppRoutes.ACTIVITIES);
-      return;
-    }
-    _showProUpgradeDialog();
-  }
-
-  void _showProUpgradeDialog() {
-    const features = [
-      'Real-Time Notifications',
-      'Visual Routines',
-      'Advanced Customization',
-      'BuddyBee Encouragement',
-      'Linked Caregiver Accounts',
-    ];
-    Get.dialog(
-      Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: const BoxDecoration(color: Color(0xFFFFF4CF), shape: BoxShape.circle),
-              child: const Icon(Icons.workspace_premium_rounded, size: 40, color: Color(0xFFF4B400)),
-            ),
-            const SizedBox(height: 16),
-            const Text('Unlock ChatterBee Pro', textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 10),
-            const Text(
-              'Unlock powerful tools that help caregivers stay connected while creating a more personalized communication experience.',
-              textAlign: TextAlign.center,
-              style: TextStyle(height: 1.45, color: Color(0xFF636F85)),
-            ),
-            const SizedBox(height: 18),
-            ...features.map((feature) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(children: [
-                const Icon(Icons.check_circle_rounded, size: 20, color: Color(0xFFF4B400)),
-                const SizedBox(width: 10),
-                Expanded(child: Text(feature, style: const TextStyle(fontWeight: FontWeight.w600))),
-              ]),
-            )),
-            const SizedBox(height: 20),
-            SizedBox(width: double.infinity, child: ElevatedButton(
-              onPressed: () { Get.back(); Get.toNamed(AppRoutes.SUBSCRIPTION); },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFFC857),
-                foregroundColor: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              ),
-              child: const Text('Unlock ChatterBee Pro', style: TextStyle(fontWeight: FontWeight.w800)),
-            )),
-            TextButton(onPressed: Get.back, child: const Text('Maybe Later')),
-            TextButton(
-              onPressed: () async {
-                final restored = await RevenueCatService.instance.restorePurchases();
-                if (restored && Get.isRegistered<ProStatusController>()) {
-                  ProStatusController.to.isProUser.value = true;
-                  Get.back();
-                  Get.toNamed(AppRoutes.ACTIVITIES);
-                } else {
-                  Get.snackbar('Not found', 'No active subscription to restore.');
-                }
-              },
-              child: const Text('Already subscribed? Restore Purchase'),
-            ),
-          ]),
-        ),
-      ),
-    );
+    ProAccessGate.openScheduleOrPrompt();
   }
 
   @override

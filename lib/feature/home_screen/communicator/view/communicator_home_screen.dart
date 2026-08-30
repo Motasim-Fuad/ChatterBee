@@ -4,9 +4,7 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
-import 'package:chatter_bee/models/aac/sentence_chip.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
-import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,8 +19,6 @@ Color _parseColor(String hex, Color fallback) {
     return fallback;
   }
 }
-
-Color _hex(String hex) => _parseColor(hex, const Color(0xFFFFD700));
 
 int _crossAxisCount(BuildContext context) {
   final w = MediaQuery.of(context).size.width;
@@ -152,6 +148,8 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                         padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                         child: TextField(
                           onChanged: (v) => controller.searchQuery.value = v,
+                          onTapOutside: (_) =>
+                              FocusManager.instance.primaryFocus?.unfocus(),
                           decoration: InputDecoration(
                             hintText: 'search_symbols'.tr,
                             prefixIcon: const Icon(Icons.search),
@@ -171,15 +169,13 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                       child: Obx(() {
-                        final hideBar = SpeechModeService.to.currentMode.value ==
-                            SpeechMode.speakImmediatelyOnly;
-                        if (hideBar) return const SizedBox.shrink();
                         return CommSpeakBar(
                         text: controller.quickSpeakText.value,
-                        imageUrl: controller.quickSpeakImage.value,
+                        imageUrl: AppUrl.mediaUrl(controller.quickSpeakImage.value) ?? '',
+                        color: _parseColor(
+                            controller.quickSpeakColor.value,
+                            const Color(0xFFFFD700)),
                         hint: 'select_quick_speak_hint'.tr,
-                        chips: controller.sentence.toList(),
-                        onRemoveChip: controller.removeChipAt,
                         onSpeak: controller.speakQuickSpeak,
                         onClear: controller.clearQuickSpeak,
                         isCooldown: controller.isSpeakCooldown.value,
@@ -197,17 +193,6 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                   ),
 
                   Obx(() {
-                    if (controller.quickSpeaks.isEmpty) {
-                      return SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: Text('no_quick_speaks_yet'.tr,
-                              style: TextStyle(color: Colors.grey[500])),
-                        ),
-                      );
-                    }
-
                     final qsList = controller.filteredQuickSpeaks;
                     final hasMore = qsList.length > _kMaxHome;
                     final showCount = hasMore ? _kMaxHome : qsList.length;
@@ -575,11 +560,10 @@ class CommSeeAllCard extends StatelessWidget {
 class CommSpeakBar extends StatelessWidget {
   final String text;
   final String imageUrl;
+  final Color color;
   final String hint;
   final VoidCallback onSpeak;
   final VoidCallback onClear;
-  final List<SentenceChip>? chips;
-  final void Function(int index)? onRemoveChip;
 
   final bool isCooldown;
 
@@ -589,24 +573,22 @@ class CommSpeakBar extends StatelessWidget {
     super.key,
     required this.text,
     this.imageUrl = '',
+    this.color = const Color(0xFFFFD700),
     required this.hint,
     required this.onSpeak,
     required this.onClear,
-    this.chips,
-    this.onRemoveChip,
     this.isCooldown = false,
     this.cooldownCount = 2,
   });
 
   @override
   Widget build(BuildContext context) {
-    final hasChips = chips != null && chips!.isNotEmpty;
     final hasText = text.isNotEmpty;
     return Row(children: [
       Expanded(
         child: Container(
           height: 64,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -618,88 +600,59 @@ class CommSpeakBar extends StatelessWidget {
                   offset: const Offset(0, 4))
             ],
           ),
-                      child: hasChips
-              ? ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  itemCount: chips!.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (_, i) {
-                    final chip = chips![i];
-                    final img = AppUrl.mediaUrl(chip.imageUrl);
-                    return GestureDetector(
-                      onTap: onRemoveChip == null ? null : () => onRemoveChip!(i),
-                      child: Container(
-                        padding: const EdgeInsets.fromLTRB(4, 4, 10, 4),
-                        decoration: BoxDecoration(
-                          color: _hex(chip.color),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: img != null && img.isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageUrl: img,
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                      errorWidget: (_, __, ___) => const Icon(
-                                          Icons.image_outlined,
-                                          color: Colors.white,
-                                          size: 22),
-                                    )
-                                  : const SizedBox(
-                                      width: 40,
-                                      height: 40,
-                                      child: Icon(Icons.keyboard,
-                                          size: 20, color: Colors.white),
-                                    ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              chip.word,
-                              style: GoogleFonts.nunito(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1A1A1A),
-                              ),
-                            ),
-                          ],
+          child: hasText
+              ? Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: imageUrl.isNotEmpty
+                            ? CachedNetworkImage(
+                                imageUrl: imageUrl,
+                                width: 40,
+                                height: 40,
+                                fit: BoxFit.cover,
+                                placeholder: (_, __) => ColoredBox(color: color),
+                                errorWidget: (_, __, ___) => const Icon(
+                                  Icons.image_outlined,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.image_outlined, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        text,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.nunito(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF1A1A1A),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 )
-              : Row(
-            children: [
-              if (hasText && imageUrl.isNotEmpty) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    width: 36,
-                    height: 36,
-                    fit: BoxFit.cover,
-                    errorWidget: (_, __, ___) => const SizedBox.shrink(),
+              : Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    hint,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.nunito(
+                        fontSize: 15, color: Colors.grey[400]),
                   ),
                 ),
-                const SizedBox(width: 10),
-              ],
-              Expanded(
-                child: Text(
-                  hasText ? text : hint,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.nunito(
-                      fontSize: 16,
-                      color: hasText ? Colors.black87 : Colors.grey[400]),
-                ),
-              ),
-            ],
-          ),
         ),
       ),
       const SizedBox(width: 10),

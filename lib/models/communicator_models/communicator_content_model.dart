@@ -12,19 +12,27 @@ class CommunicatorContentModel {
   });
 
   factory CommunicatorContentModel.fromJson(Map<String, dynamic> json, {String lang = 'en'}) {
-    final data = json['data'] is Map
+    var data = json['data'] is Map
         ? Map<String, dynamic>.from(json['data'] as Map)
         : json;
+    if (data['content'] is Map) {
+      data = Map<String, dynamic>.from(data['content'] as Map);
+    }
+    final qsRaw = data['quickspeaks'] ??
+        data['quick_speaks'] ??
+        data['quickSpeaks'] ??
+        data['quick_speak'] ??
+        const [];
     return CommunicatorContentModel(
       categories: (data['categories'] as List? ?? data['category_list'] as List? ?? [])
           .whereType<Map>()
           .map((e) => CommCategoryModel.fromJson(Map<String, dynamic>.from(e), lang: lang))
           .where((c) => !c.isDeleted && c.isActive)
           .toList(),
-      quickSpeaks: (data['quickspeaks'] as List? ?? data['quick_speaks'] as List? ?? [])
+      quickSpeaks: (qsRaw is List ? qsRaw : const [])
           .whereType<Map>()
           .map((e) => CommQuickSpeakModel.fromJson(Map<String, dynamic>.from(e), lang: lang))
-          .where((q) => !q.isDeleted && q.isActive)
+          .where((q) => !q.isDeleted)
           .toList(),
       totalCategories: data['total_categories'] ?? 0,
       totalQuickSpeaks: data['total_quickspeaks'] ?? data['total_quick_speaks'] ?? 0,
