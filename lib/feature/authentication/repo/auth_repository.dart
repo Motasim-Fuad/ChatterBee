@@ -72,7 +72,6 @@ class AuthRepository {
   Future<ApiResponse<LoginResponse>> login({
     required String email,
     required String password,
-    bool persistSession = true,
   }) async {
     try {
       LoggerUtils.logInfo('=== LOGIN ===');
@@ -82,7 +81,7 @@ class AuthRepository {
       );
       if (response.isSuccess && response.data != null) {
         final loginResponse = LoginResponse.fromJson(response.data!);
-        await _saveAuthData(loginResponse, persistSession: persistSession);
+        await _saveAuthData(loginResponse);
         final isRegistered = await NotificationControllerFCM.to.registerFcmToken();
         print('FCM registered: $isRegistered');
         return ApiResponse.success(data: loginResponse, statusCode: response.statusCode, message: response.message);
@@ -107,7 +106,7 @@ class AuthRepository {
             message: 'This linked account is inactive. Please reactivate it before switching.',
           );
         }
-        await _saveAuthData(switched, persistSession: _secureStorage.persistToDisk);
+        await _saveAuthData(switched);
         return ApiResponse.success(
           data: switched,
           statusCode: response.statusCode,
@@ -332,10 +331,7 @@ class AuthRepository {
     }
   }
 
-  Future<void> _saveAuthData(
-    LoginResponse loginResponse, {
-    bool persistSession = true,
-  }) async {
+  Future<void> _saveAuthData(LoginResponse loginResponse) async {
     if (loginResponse.accessToken.isEmpty || loginResponse.refreshToken.isEmpty) {
       throw StateError('Authentication response did not contain both tokens.');
     }
@@ -346,12 +342,10 @@ class AuthRepository {
       userId: loginResponse.user.id,
       email: loginResponse.user.email,
       role: role,
-      persist: persistSession,
     );
     await _storage.saveUserRole(role);
     await _storage.saveUserName(loginResponse.user.fullName);
     await _storage.setLoggedIn(true);
-    await _storage.setRememberMe(persistSession);
     final userId = int.tryParse(loginResponse.user.id) ?? 0;
     if (role == 'communicator' && userId != 0) {
       await CommunicatorSessionService.to.setSelected(
@@ -378,7 +372,6 @@ class AuthRepository {
     );
     await _storage.saveUserRole(role);
     await _storage.setLoggedIn(true);
-    await _storage.setRememberMe(true);
   }
 
   Future<void> _clearAuthData() async {

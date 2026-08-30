@@ -1,6 +1,6 @@
-import 'package:chatter_bee/feature/Notification/notification_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
+  final SecureStorageService _secureStorage = SecureStorageService();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -17,6 +18,8 @@ class LoginController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString emailError = ''.obs;
   final RxString passwordError = ''.obs;
+  final RxString lastRememberedEmail = ''.obs;
+  final RxBool showEmailSuggestion = false.obs;
 
   final FocusNode emailFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
@@ -24,11 +27,13 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    emailFocusNode.addListener(_onEmailFocusChanged);
     _restoreRememberedEmail();
   }
 
   @override
   void onClose() {
+    emailFocusNode.removeListener(_onEmailFocusChanged);
     emailController.dispose();
     passwordController.dispose();
     emailFocusNode.dispose();
@@ -36,38 +41,60 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
-  // Toggle password visibility
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  // Toggle remember me
   void toggleRememberMe() {
     rememberMe.value = !rememberMe.value;
-    _persistRememberedEmail();
+    if (!rememberMe.value) {
+      lastRememberedEmail.value = '';
+      showEmailSuggestion.value = false;
+      _secureStorage.clearRememberedEmail();
+    }
+  }
+
+  void _onEmailFocusChanged() {
+    showEmailSuggestion.value = emailFocusNode.hasFocus &&
+        lastRememberedEmail.value.isNotEmpty &&
+        rememberMe.value;
+  }
+
+  void applyRememberedEmail() {
+    final email = lastRememberedEmail.value;
+    if (email.isEmpty) return;
+    emailController.text = email;
+    emailController.selection =
+        TextSelection.collapsed(offset: email.length);
+    showEmailSuggestion.value = false;
   }
 
   Future<void> _restoreRememberedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString('remembered_email') ?? '';
+    var saved = await _secureStorage.getRememberedEmail() ?? '';
+    if (saved.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      saved = (prefs.getString('remembered_email') ?? '').trim().toLowerCase();
+      if (saved.isNotEmpty) {
+        await _secureStorage.saveRememberedEmail(saved);
+        await prefs.remove('remembered_email');
+      }
+    }
     if (saved.isNotEmpty) {
-      emailController.text = saved;
+      lastRememberedEmail.value = saved;
       rememberMe.value = true;
     }
   }
 
-  Future<void> persistRememberedEmail() => _persistRememberedEmail();
-
-  Future<void> _persistRememberedEmail() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> _saveRememberedEmailAfterLogin(String email) async {
     if (rememberMe.value) {
-      await prefs.setString('remembered_email', emailController.text.trim().toLowerCase());
+      await _secureStorage.saveRememberedEmail(email);
+      lastRememberedEmail.value = email.trim().toLowerCase();
     } else {
-      await prefs.remove('remembered_email');
+      await _secureStorage.clearRememberedEmail();
+      lastRememberedEmail.value = '';
     }
   }
 
-  // Validate email
   bool validateEmail() {
     final email = emailController.text.trim();
     if (email.isEmpty) {
@@ -82,7 +109,6 @@ class LoginController extends GetxController {
     return true;
   }
 
-  // Validate password
   bool validatePassword() {
     final password = passwordController.text;
     if (password.isEmpty) {
@@ -97,14 +123,12 @@ class LoginController extends GetxController {
     return true;
   }
 
-  // Validate all fields
   bool validateForm() {
     final emailValid = validateEmail();
     final passwordValid = validatePassword();
     return emailValid && passwordValid;
   }
 
-  // Sign in method with role-based navigation
   Future<void> signIn() async {
     if (!validateForm()) {
       return;
@@ -116,11 +140,10 @@ class LoginController extends GetxController {
       final response = await _authRepository.login(
         email: emailController.text.trim(),
         password: passwordController.text,
-        persistSession: rememberMe.value,
       );
 
       if (response.isSuccess && response.data != null) {
-        await _persistRememberedEmail();
+        await _saveRememberedEmailAfterLogin(emailController.text.trim());
         TextInput.finishAutofillContext();
 
         Get.snackbar(
@@ -143,7 +166,6 @@ class LoginController extends GetxController {
             snackPosition: SnackPosition.TOP,
             duration: const Duration(seconds: 4),
           );
-
         } else {
           Get.snackbar(
             'Login Failed',
@@ -169,22 +191,18 @@ class LoginController extends GetxController {
     }
   }
 
-  // Forgot password method
   void forgotPassword() {
     Get.toNamed(AppRoutes.FORGOTSCREEN);
   }
 
-  // Sign up navigation - GO TO ROLE SELECTION
   void goToSignUp() {
     Get.toNamed(AppRoutes.ROLESELECTION);
   }
 
-  // Clear form
   void clearForm() {
     emailController.clear();
     passwordController.clear();
     emailError.value = '';
     passwordError.value = '';
-    rememberMe.value = false;
   }
 }

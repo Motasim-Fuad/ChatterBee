@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/authentication/controller/signup_controller.dart';
+import 'package:chatter_bee/feature/authentication/widgets/last_email_suggestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -141,6 +142,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 48,
                         child: TextField(
                           controller: controller.emailController,
+                          focusNode: controller.emailFocusNode,
                           keyboardType: TextInputType.emailAddress,
                           textCapitalization: TextCapitalization.none,
                           autocorrect: false,
@@ -174,6 +176,11 @@ class SignUpScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Obx(() => LastEmailSuggestion(
+                        email: controller.lastRememberedEmail.value,
+                        visible: controller.showEmailSuggestion.value,
+                        onSelect: controller.applyRememberedEmail,
+                      )),
                       Obx(() => controller.emailError.value.isEmpty
                           ? const SizedBox.shrink()
                           : Padding(

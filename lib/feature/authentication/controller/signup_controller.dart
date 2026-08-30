@@ -1,6 +1,7 @@
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/api_client.dart';
+import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,10 @@ class SignUpController extends GetxController {
   late TextEditingController lastNameController;
   late TextEditingController emailController;
   late TextEditingController passwordController;
+
+  final emailFocusNode = FocusNode();
+  final RxString lastRememberedEmail = ''.obs;
+  final RxBool showEmailSuggestion = false.obs;
 
   bool _isPasswordVisible = false;
   bool _isLoading = false;
@@ -31,6 +36,8 @@ class SignUpController extends GetxController {
     lastNameController = TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    emailFocusNode.addListener(_onEmailFocusChanged);
+    _loadRememberedEmail();
 
     _loadUserRole();
 
@@ -46,11 +53,39 @@ class SignUpController extends GetxController {
 
   @override
   void onClose() {
+    emailFocusNode.removeListener(_onEmailFocusChanged);
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    emailFocusNode.dispose();
     super.onClose();
+  }
+
+  void _onEmailFocusChanged() {
+    showEmailSuggestion.value =
+        emailFocusNode.hasFocus && lastRememberedEmail.value.isNotEmpty;
+  }
+
+  void applyRememberedEmail() {
+    final email = lastRememberedEmail.value;
+    if (email.isEmpty) return;
+    emailController.text = email;
+    emailController.selection =
+        TextSelection.collapsed(offset: email.length);
+    showEmailSuggestion.value = false;
+    update();
+  }
+
+  Future<void> _loadRememberedEmail() async {
+    var saved = await SecureStorageService().getRememberedEmail() ?? '';
+    if (saved.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      saved = (prefs.getString('remembered_email') ?? '').trim().toLowerCase();
+    }
+    if (saved.isNotEmpty) {
+      lastRememberedEmail.value = saved;
+    }
   }
 
   // Toggle password visibility

@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/authentication/controller/loginController.dart';
+import 'package:chatter_bee/feature/authentication/widgets/last_email_suggestion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -100,11 +101,13 @@ class LoginScreen extends GetView<LoginController> {
                       if (controller.emailError.value.isNotEmpty) {
                         controller.validateEmail();
                       }
-                      if (controller.rememberMe.value) {
-                        controller.persistRememberedEmail();
-                      }
                     },
                   ),
+                )),
+                Obx(() => LastEmailSuggestion(
+                  email: controller.lastRememberedEmail.value,
+                  visible: controller.showEmailSuggestion.value,
+                  onSelect: controller.applyRememberedEmail,
                 )),
 
                 const SizedBox(height: 20),

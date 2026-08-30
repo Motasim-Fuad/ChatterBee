@@ -21,8 +21,8 @@ class SecureStorageService {
   static const String _keyUserRole = 'user_role';
 
   static const String _keyFcmTokenId = 'fcm_token_id';
+  static const String _keyRememberedEmail = 'remembered_login_email';
 
-  bool persistToDisk = true;
   String? _memAccessToken;
   String? _memRefreshToken;
   String? _memUserId;
@@ -31,11 +31,7 @@ class SecureStorageService {
   String? _memFcmTokenId;
 
   Future<void> _write(String key, String value) async {
-    if (persistToDisk) {
-      await _storage.write(key: key, value: value);
-    } else {
-      await _storage.delete(key: key);
-    }
+    await _storage.write(key: key, value: value);
   }
 
   Future<String?> _read(String key, String? memoryValue) async {
@@ -77,29 +73,18 @@ class SecureStorageService {
     required String userId,
     required String email,
     required String role,
-    bool persist = true,
   }) async {
-    persistToDisk = persist;
     _memAccessToken = accessToken;
     _memRefreshToken = refreshToken;
     _memUserId = userId;
     _memUserEmail = email;
     _memUserRole = role;
 
-    if (persist) {
-      await _storage.write(key: _keyAccessToken, value: accessToken);
-      await _storage.write(key: _keyRefreshToken, value: refreshToken);
-      await _storage.write(key: _keyUserId, value: userId);
-      await _storage.write(key: _keyUserEmail, value: email);
-      await _storage.write(key: _keyUserRole, value: role);
-      return;
-    }
-
-    await _storage.delete(key: _keyAccessToken);
-    await _storage.delete(key: _keyRefreshToken);
-    await _storage.delete(key: _keyUserId);
-    await _storage.delete(key: _keyUserEmail);
-    await _storage.delete(key: _keyUserRole);
+    await _storage.write(key: _keyAccessToken, value: accessToken);
+    await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    await _storage.write(key: _keyUserId, value: userId);
+    await _storage.write(key: _keyUserEmail, value: email);
+    await _storage.write(key: _keyUserRole, value: role);
   }
 
   Future<void> saveUserId(String userId) async {
@@ -143,6 +128,25 @@ class SecureStorageService {
     await _storage.delete(key: _keyFcmTokenId);
   }
 
+  Future<void> saveRememberedEmail(String email) async {
+    final trimmed = email.trim().toLowerCase();
+    if (trimmed.isEmpty) {
+      await clearRememberedEmail();
+      return;
+    }
+    await _storage.write(key: _keyRememberedEmail, value: trimmed);
+  }
+
+  Future<String?> getRememberedEmail() async {
+    final value = await _storage.read(key: _keyRememberedEmail);
+    if (value == null || value.trim().isEmpty) return null;
+    return value.trim().toLowerCase();
+  }
+
+  Future<void> clearRememberedEmail() async {
+    await _storage.delete(key: _keyRememberedEmail);
+  }
+
   Future<void> clearAll() async {
     _memAccessToken = null;
     _memRefreshToken = null;
@@ -150,8 +154,11 @@ class SecureStorageService {
     _memUserEmail = null;
     _memUserRole = null;
     _memFcmTokenId = null;
-    persistToDisk = true;
+    final remembered = await _storage.read(key: _keyRememberedEmail);
     await _storage.deleteAll();
+    if (remembered != null && remembered.trim().isNotEmpty) {
+      await _storage.write(key: _keyRememberedEmail, value: remembered.trim());
+    }
   }
 
   Future<void> clearTokens() async {
