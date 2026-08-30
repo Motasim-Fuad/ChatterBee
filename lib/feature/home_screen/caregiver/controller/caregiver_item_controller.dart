@@ -9,6 +9,7 @@ import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
+import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
@@ -187,6 +188,7 @@ class CaregiverItemController extends GetxController {
       selectedImage.value = item.imageIcon ?? '';
       selectedColor.value = item.color;
       TtsService.to.speak(word, lang: _currentLang);
+      BuddyBeeEncouragement.maybeShow();
       return;
     }
     selectedItemId.value = item.id;
@@ -206,6 +208,7 @@ class CaregiverItemController extends GetxController {
   Future<void> speakSelected() async {
     if (selectedWord.value.trim().isEmpty) return;
     await TtsService.to.speak(selectedWord.value, lang: _currentLang);
+    BuddyBeeEncouragement.maybeShow();
   }
 
   void clearSelectionBar() {

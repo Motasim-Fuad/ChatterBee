@@ -4,6 +4,7 @@ import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dar
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,6 +45,7 @@ class CaregiverProfileController extends GetxController {
         final data = response.data!['data'] ?? response.data!;
         fullNameController.text = data['full_name'] ?? '';
         isBuddyBeeMode.value = data['buddy_mode'] ?? false;
+        StorageService().setBuddyMode(isBuddyBeeMode.value);
         selectedVoiceType.value = data['voice_type'] ?? 'male_child';
       }
     } catch (e) {
@@ -60,6 +62,7 @@ class CaregiverProfileController extends GetxController {
       return;
     }
     isBuddyBeeMode.value = value;
+    StorageService().setBuddyMode(value);
   }
 
   // Checks if another communicator can be added

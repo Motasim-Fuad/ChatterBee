@@ -96,7 +96,13 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image.asset(ImagesLink.logo, height: 47),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Image.asset(ImagesLink.logo,
+                                  height: 47, fit: BoxFit.contain),
+                            ),
+                          ),
                           Row(
                             children: [
                               IconButton(
@@ -418,7 +424,8 @@ class CommCard extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         final tabH = constraints.maxHeight * 0.10;
         final topPad = tabH + 6;
-        final imgSize = constraints.maxWidth * 0.52;
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
 
         return CustomPaint(
           painter: CommFolderPainter(
@@ -510,7 +517,8 @@ class CommSeeAllCard extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         final tabH = constraints.maxHeight * 0.10;
         final topPad = tabH + 6;
-        final imgSize = constraints.maxWidth * 0.52;
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
 
         return CustomPaint(
           painter: const CommFolderPainter(
@@ -810,11 +818,15 @@ class CommSectionHeader extends StatelessWidget {
             color: const Color(0xFFFFC857)),
       ),
       const SizedBox(width: 8),
-      Text(title,
-          style: GoogleFonts.nunito(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87)),
+      Expanded(
+        child: Text(title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.nunito(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87)),
+      ),
     ]);
   }
 }

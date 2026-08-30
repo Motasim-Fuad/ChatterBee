@@ -11,6 +11,7 @@ import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -75,6 +76,7 @@ class CommunicatorHomeController extends GetxController
       if (profileRes.isSuccess && profileRes.data != null) {
         final data = profileRes.data!['data'] ?? profileRes.data!;
         isBuddyMode.value = data['buddy_mode'] ?? false;
+        await StorageService().setBuddyMode(isBuddyMode.value);
       }
     } catch (e) {
       debugPrint('CommunicatorHomeController: profile fetch error: $e');

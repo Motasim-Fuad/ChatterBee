@@ -176,9 +176,9 @@ class LoginScreen extends GetView<LoginController> {
                 const SizedBox(height: 16),
 
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Obx(() => Transform.translate(
+                    Expanded(
+                      child: Obx(() => Transform.translate(
                       offset: const Offset(-6, 0),
                       child: Row(
                         children: [
@@ -196,17 +196,23 @@ class LoginScreen extends GetView<LoginController> {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            'Remember Me',
-                            style: GoogleFonts.nunito(
-                              fontSize: 14,
-                              color: Color(0xFF636F85),
+                          Flexible(
+                            child: Text(
+                              'Remember Me',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.nunito(
+                                fontSize: 14,
+                                color: Color(0xFF636F85),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     )),
-                    TextButton(
+                    ),
+                    Flexible(
+                      child: TextButton(
                       onPressed: controller.forgotPassword,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
@@ -215,12 +221,15 @@ class LoginScreen extends GetView<LoginController> {
                       ),
                       child: const Text(
                         'Forgot Password?',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.red,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                    ),
                     ),
                   ],
                 ),

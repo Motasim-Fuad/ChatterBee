@@ -139,9 +139,10 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
           Expanded(
             child: Obx(() {
               final query = searchQuery.value;
+              final cats = controller.categories.toList();
               final filtered = query.isEmpty
-                  ? controller.categories
-                  : controller.categories
+                  ? cats
+                  : cats
                   .where((c) =>
                   c.name.toLowerCase().contains(query))
                   .toList();

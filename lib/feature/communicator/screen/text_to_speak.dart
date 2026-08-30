@@ -55,7 +55,7 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                           ),
                         ],
                       ),
-                      child: Obx(() => TextField(
+                      child: TextField(
                         controller: controller.textController,
                         onTapOutside: (_) =>
                             FocusManager.instance.primaryFocus?.unfocus(),
@@ -64,9 +64,7 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                           color: Colors.black87,
                         ),
                         decoration: InputDecoration(
-                          hintText: controller.text.value.isEmpty
-                              ? 'Type here...'
-                              : null,
+                          hintText: 'Type here...',
                           hintStyle: GoogleFonts.nunito(
                             fontSize: 16,
                             color: Colors.grey.shade400,
@@ -74,7 +72,7 @@ class TextToSpeakScreen extends GetView<TextToSpeakController> {
                           border: InputBorder.none,
                         ),
                         onChanged: (value) => controller.updateText(value),
-                      )),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),

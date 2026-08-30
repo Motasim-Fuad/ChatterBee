@@ -43,8 +43,8 @@ class NavigationScreen extends GetView<NavigationController> {
 
           Positioned(
             bottom: 30,
-            left: screenWidth > 400 ? 80 : 65,
-            right: screenWidth > 400 ? 80 : 65,
+            left: screenWidth > 400 ? 80 : 16,
+            right: screenWidth > 400 ? 80 : 16,
             child: Obx(() => _buildFloatingNavigationBar(context)),
           ),
         ],
@@ -73,23 +73,26 @@ class NavigationScreen extends GetView<NavigationController> {
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildNavItem(
-            context: context,
-            selectedIconPath: ImagesLink.home,
-            unselectedIconPath: ImagesLink.homeGrey,
-            label: 'Home',
-            index: 0,
-            isSelected: controller.selectedIndex.value == 0,
+          Expanded(
+            child: _buildNavItem(
+              context: context,
+              selectedIconPath: ImagesLink.home,
+              unselectedIconPath: ImagesLink.homeGrey,
+              label: 'Home',
+              index: 0,
+              isSelected: controller.selectedIndex.value == 0,
+            ),
           ),
-          _buildNavItem(
-            context: context,
-            selectedIconPath: ImagesLink.notification,
-            unselectedIconPath: ImagesLink.notificationGrey,
-            label: 'Notification',
-            index: 1,
-            isSelected: controller.selectedIndex.value == 1,
+          Expanded(
+            child: _buildNavItem(
+              context: context,
+              selectedIconPath: ImagesLink.notification,
+              unselectedIconPath: ImagesLink.notificationGrey,
+              label: 'Notification',
+              index: 1,
+              isSelected: controller.selectedIndex.value == 1,
+            ),
           ),
         ],
       ),
@@ -113,8 +116,9 @@ class NavigationScreen extends GetView<NavigationController> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        alignment: Alignment.center,
         padding: EdgeInsets.symmetric(
-          horizontal: 12,
+          horizontal: isSmallScreen ? 8 : 12,
           vertical: 10,
         ),
         decoration: BoxDecoration(

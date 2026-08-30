@@ -45,6 +45,7 @@ class CaregiverItemScreen extends StatelessWidget {
         ),
         title: Text(
           controller.parentTitle,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.nunito(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -102,6 +103,11 @@ class CaregiverItemScreen extends StatelessWidget {
               CircularProgressIndicator(color: Color(0xFFFFC857)));
         }
 
+        final extra = controller.isEditMode.value ? 0 : 1;
+        final items = controller.items.toList();
+        final selectedId = controller.selectedItemId.value;
+        final selectedIds = controller.selectedIds.toSet();
+
         return Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -116,7 +122,6 @@ class CaregiverItemScreen extends StatelessWidget {
           ),
           Expanded(child: OrientationBuilder(builder: (context, _) {
             final cols = _crossAxisCount(context);
-            final extra = controller.isEditMode.value ? 0 : 1;
             return RefreshIndicator(
             onRefresh: controller.refresh,
             color: const Color(0xFFFFC857),
@@ -128,7 +133,7 @@ class CaregiverItemScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: extra + controller.items.length,
+              itemCount: extra + items.length,
               itemBuilder: (_, i) {
                 if (extra == 1 && i == 0) {
                   return CgFolderCard(
@@ -141,12 +146,11 @@ class CaregiverItemScreen extends StatelessWidget {
                     onTap: controller.promptTypedText,
                   );
                 }
-                final item = controller.items[i - extra];
-                return Obx(() {
-                  final isSelected = controller.isEditMode.value
-                      ? controller.selectedIds.contains(item.id)
-                      : controller.selectedItemId.value == item.id;
-                  return CgFolderCard(
+                final item = items[i - extra];
+                final isSelected = controller.isEditMode.value
+                    ? selectedIds.contains(item.id)
+                    : selectedId == item.id;
+                return CgFolderCard(
                     imageUrl: AppUrl.mediaUrl(item.imageIcon),
                     label: item.word ?? '',
                     bgColor: _parseColor(
@@ -162,7 +166,6 @@ class CaregiverItemScreen extends StatelessWidget {
                     },
                     onEditTap: () => controller.showEditSheet(item),
                   );
-                });
               },
             ),
             );

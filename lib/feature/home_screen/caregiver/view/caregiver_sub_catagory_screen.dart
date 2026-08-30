@@ -98,7 +98,8 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
               CircularProgressIndicator(color: Color(0xFFFFC857)));
         }
 
-        if (controller.subCategories.isEmpty) {
+        final subs = controller.subCategories.toList();
+        if (subs.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -139,9 +140,9 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: controller.subCategories.length,
+              itemCount: subs.length,
               itemBuilder: (_, i) {
-                final sub = controller.subCategories[i];
+                final sub = subs[i];
                 return Obx(() {
                   final isSelected =
                   controller.selectedIds.contains(sub.id);

@@ -1,55 +1,77 @@
+import 'dart:async';
+
 import 'package:chatter_bee/config/imagesUrl.dart';
-import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BuddyBeeEncouragement {
+  static bool get _enabled => StorageService().buddyMode();
+
   static Future<void> maybeShow() async {
-    var enabled = false;
-    if (Get.isRegistered<CommunicatorHomeController>()) {
-      enabled = Get.find<CommunicatorHomeController>().isBuddyMode.value;
-    }
-    if (!enabled) return;
-
-    TtsService.to.speak('Good job!', lang: 'en');
-
+    if (!_enabled) return;
     if (Get.isDialogOpen ?? false) return;
 
-    await Get.dialog(
+    unawaited(_speakGoodJob());
+
+    Get.dialog(
       Dialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+        child: const Padding(
+          padding: EdgeInsets.fromLTRB(24, 28, 24, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(ImagesLink.success, height: 96),
-              const SizedBox(height: 16),
+              _BeeThumbsUp(),
+              SizedBox(height: 16),
               Text(
-                'good_job'.tr,
+                'Good job!',
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'buddy_bee_encouragement_msg'.tr,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFF636F85), height: 1.4),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: Get.back,
-                child: Text('done'.tr),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
               ),
             ],
           ),
         ),
       ),
       barrierDismissible: true,
+    );
+
+    await Future.delayed(const Duration(seconds: 2));
+    if (Get.isDialogOpen ?? false) Get.back();
+  }
+
+  static Future<void> _speakGoodJob() async {
+    await Future.delayed(const Duration(milliseconds: 250));
+    await TtsService.to.speakWhenIdle('Good job!', lang: 'en');
+  }
+}
+
+class _BeeThumbsUp extends StatelessWidget {
+  const _BeeThumbsUp();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 120,
+      width: 120,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(ImagesLink.logo, height: 96, fit: BoxFit.contain),
+          const Positioned(
+            right: 0,
+            bottom: 4,
+            child: CircleAvatar(
+              radius: 22,
+              backgroundColor: Color(0xFFFFC857),
+              child: Icon(Icons.thumb_up_alt_rounded,
+                  color: Colors.white, size: 22),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:chatter_bee/feature/authentication/model/auth_model.dart';
 import 'package:chatter_bee/services/notification_controller.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:chatter_bee/services/storage/secure_storage.dart';
+import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/services/api_client.dart';
 import 'package:chatter_bee/utils/logger_utils.dart';
@@ -351,6 +352,13 @@ class AuthRepository {
     await _storage.saveUserName(loginResponse.user.fullName);
     await _storage.setLoggedIn(true);
     await _storage.setRememberMe(persistSession);
+    final userId = int.tryParse(loginResponse.user.id) ?? 0;
+    if (role == 'communicator' && userId != 0) {
+      await CommunicatorSessionService.to.setSelected(
+        userId,
+        loginResponse.user.fullName,
+      );
+    }
   }
 
   Future<void> saveVerifiedSignupSession({
@@ -374,6 +382,9 @@ class AuthRepository {
   }
 
   Future<void> _clearAuthData() async {
+    if (Get.isRegistered<CommunicatorSessionService>()) {
+      await CommunicatorSessionService.to.clear();
+    }
     await _secureStorage.clearAll();
     await _storage.clearAll();
   }

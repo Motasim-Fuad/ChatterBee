@@ -43,6 +43,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
         ),
         title: Text(
           controller.parentTitle,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.nunito(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -147,7 +148,8 @@ class _ItemCard extends StatelessWidget {
         builder: (context, constraints) {
           final tabH = constraints.maxHeight * 0.10;
           final topPad = tabH + 6;
-          final imgSize = constraints.maxWidth * 0.52;
+          final imgSize = (constraints.maxWidth * 0.52)
+              .clamp(0.0, constraints.maxHeight * 0.42);
 
           return CustomPaint(
             painter: _FolderPainter(

@@ -89,7 +89,13 @@ class CaregiverHomeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Image.asset(ImagesLink.logo, height: 47),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Image.asset(ImagesLink.logo,
+                                  height: 47, fit: BoxFit.contain),
+                            ),
+                          ),
                           Row(
                             children: [
                               IconButton(
@@ -164,7 +170,8 @@ class CaregiverHomeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CgSectionHeader(title: 'quick_speak'.tr),
+                          Expanded(
+                              child: CgSectionHeader(title: 'quick_speak'.tr)),
                           Obx(() => Row(children: [
                             _EditToggleBtn(
                               isEdit: controller.isQsEditMode.value,
@@ -274,7 +281,8 @@ class CaregiverHomeScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          CgSectionHeader(title: 'tap_to_talk'.tr),
+                          Expanded(
+                              child: CgSectionHeader(title: 'tap_to_talk'.tr)),
                           Obx(() => Row(children: [
                             _EditToggleBtn(
                               isEdit: controller.isEditMode.value,
@@ -708,7 +716,8 @@ class CgFolderCard extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         final tabH = constraints.maxHeight * 0.10;
         final topPad = tabH + 6;
-        final imgSize = constraints.maxWidth * 0.52;
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
 
         return CustomPaint(
           painter: CgFolderPainter(
@@ -817,7 +826,8 @@ class CgSeeAllCard extends StatelessWidget {
       child: LayoutBuilder(builder: (context, constraints) {
         final tabH = constraints.maxHeight * 0.10;
         final topPad = tabH + 6;
-        final imgSize = constraints.maxWidth * 0.52;
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
 
         return CustomPaint(
           painter: const CgFolderPainter(
@@ -863,7 +873,7 @@ class CgSectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
+    return Row(children: [
       Container(
         width: 4,
         height: 18,
@@ -872,11 +882,15 @@ class CgSectionHeader extends StatelessWidget {
             color: const Color(0xFFFFC857)),
       ),
       const SizedBox(width: 8),
-      Text(title,
-          style: GoogleFonts.nunito(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87)),
+      Flexible(
+        child: Text(title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.nunito(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87)),
+      ),
     ]);
   }
 }

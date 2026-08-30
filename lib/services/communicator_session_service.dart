@@ -1,3 +1,7 @@
+import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
+import 'package:chatter_bee/models/profile_invitation_model/profile_invitation_model.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
+import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,7 +12,6 @@ class CommunicatorSessionService extends GetxService {
   final RxInt communicatorId = 0.obs;
   final RxString communicatorName = ''.obs;
 
-  // Singleton accessor
   static CommunicatorSessionService get to => Get.find();
 
   @override
@@ -40,4 +43,62 @@ class CommunicatorSessionService extends GetxService {
   }
 
   bool get hasSelected => communicatorId.value != 0;
+
+  /// Caregiver: linked communicator. Communicator: own user id.
+  Future<int?> resolveActivityCommunicatorId() async {
+    final role = StorageService().getUserRole()?.trim().toLowerCase();
+    if (role == 'communicator') {
+      final raw = await SecureStorageService().getUserId();
+      final id = int.tryParse(raw ?? '') ?? 0;
+      if (id != 0) {
+        if (communicatorId.value != id) {
+          await setSelected(id, communicatorName.value);
+        }
+        return id;
+      }
+    }
+
+    if (communicatorId.value != 0) return communicatorId.value;
+
+    if (role == 'caregiver') {
+      await _selectFirstLinkedCommunicator();
+      if (communicatorId.value != 0) return communicatorId.value;
+    }
+    return null;
+  }
+
+  Future<void> _selectFirstLinkedCommunicator() async {
+    try {
+      final response = await ProfileInvitationRepo().listConnections();
+      if (!response.isSuccess || response.data == null) return;
+      final connections = _parseConnections(response.data!);
+      if (connections.isEmpty) return;
+      final preferred = connections.firstWhereOrNull((c) => c.isSelected) ??
+          connections.first;
+      if (preferred.communicatorId != 0) {
+        await setSelected(
+          preferred.communicatorId,
+          preferred.communicatorName,
+        );
+      }
+    } catch (_) {}
+  }
+
+  List<ConnectionModel> _parseConnections(Map<String, dynamic> responseData) {
+    List<dynamic> rawList = [];
+    if (responseData['data'] is Map) {
+      rawList = responseData['data']['connections'] ?? [];
+    } else if (responseData['connections'] is List) {
+      rawList = responseData['connections'];
+    } else if (responseData['results'] is List) {
+      rawList = responseData['results'];
+    } else if (responseData['data'] is List) {
+      rawList = responseData['data'];
+    }
+    return rawList
+        .whereType<Map>()
+        .map((e) => ConnectionModel.fromJson(Map<String, dynamic>.from(e)))
+        .where((c) => c.communicatorId != 0)
+        .toList();
+  }
 }

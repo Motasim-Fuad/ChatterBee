@@ -6,8 +6,10 @@ import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
+import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -100,6 +102,7 @@ class CaregiverHomeController extends GetxController
 
   Future<void> _initLoad() async {
     await _fetchProfile();
+    await CommunicatorSessionService.to.resolveActivityCommunicatorId();
     await loadContent();
   }
 
@@ -109,6 +112,7 @@ class CaregiverHomeController extends GetxController
       if (profileRes.isSuccess && profileRes.data != null) {
         final data = profileRes.data!['data'] ?? profileRes.data!;
         isBuddyMode.value = data['buddy_mode'] ?? false;
+        await StorageService().setBuddyMode(isBuddyMode.value);
       }
     } catch (e) {
       debugPrint('CaregiverHomeController: profile fetch error: $e');
@@ -202,6 +206,7 @@ class CaregiverHomeController extends GetxController
       selectedQuickSpeakImage.value = AppUrl.mediaUrl(qs.imageIcon) ?? '';
       selectedQuickSpeakColor.value = qs.color;
       TtsService.to.speak(word, lang: _currentLang);
+      BuddyBeeEncouragement.maybeShow();
       return;
     }
     selectedQuickSpeakId.value = qs.id;
@@ -225,6 +230,7 @@ class CaregiverHomeController extends GetxController
   Future<void> speakSelectedQuickSpeak() async {
     if (selectedQuickSpeakText.value.isEmpty) return;
     await TtsService.to.speak(selectedQuickSpeakText.value, lang: _currentLang);
+    BuddyBeeEncouragement.maybeShow();
   }
 
   List<QuickSpeakModel> get filteredQuickSpeaks {

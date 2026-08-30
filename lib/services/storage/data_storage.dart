@@ -25,6 +25,7 @@ class StorageService {
   static const String _keyUserName = 'user_name';
   static const String _keyIsLoggedIn = 'is_logged_in';
   static const String _keyRememberMe = 'remember_me';
+  static const String _keyBuddyMode = 'buddy_mode';
   static const String _keyOnboardingComplete = 'onboarding_complete';
   static const String _keyTheme = 'theme';
   static const String _keyLanguage = 'language';
@@ -121,6 +122,14 @@ class StorageService {
   bool? rememberMeOrNull() {
     if (!containsKey(_keyRememberMe)) return null;
     return getBool(_keyRememberMe);
+  }
+
+  Future<bool> setBuddyMode(bool value) async {
+    return await setBool(_keyBuddyMode, value);
+  }
+
+  bool buddyMode() {
+    return getBool(_keyBuddyMode, defaultValue: false) ?? false;
   }
 
   // Set onboarding complete

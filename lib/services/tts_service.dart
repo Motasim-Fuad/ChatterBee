@@ -32,6 +32,14 @@ class TtsService extends GetxService {
     await _tts.speak(text);
   }
 
+  Future<void> speakWhenIdle(String text, {String lang = 'en'}) async {
+    final deadline = DateTime.now().add(const Duration(seconds: 8));
+    while (isSpeaking.value && DateTime.now().isBefore(deadline)) {
+      await Future.delayed(const Duration(milliseconds: 80));
+    }
+    await speak(text, lang: lang);
+  }
+
   Future<void> stop() async {
     await _tts.stop();
     isSpeaking.value = false;

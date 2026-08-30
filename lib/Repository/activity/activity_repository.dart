@@ -9,10 +9,9 @@ import '../../../config/app_url.dart';
 class ActivityRepository {
   final ApiClient _apiClient = ApiClient();
 
-  int? get _sessionCommunicatorId {
+  Future<int?> _activityCommunicatorId() async {
     if (!Get.isRegistered<CommunicatorSessionService>()) return null;
-    final id = CommunicatorSessionService.to.communicatorId.value;
-    return id == 0 ? null : id;
+    return CommunicatorSessionService.to.resolveActivityCommunicatorId();
   }
 
   // List Activities
@@ -25,6 +24,7 @@ class ActivityRepository {
     String? ordering,
   }) async {
     try {
+      final communicatorId = await _activityCommunicatorId();
       final queryParams = <String, dynamic>{
         'days': days,
         'limit': limit,
@@ -32,8 +32,7 @@ class ActivityRepository {
         if (dateFrom != null) 'from': dateFrom,
         if (dateTo != null) 'to': dateTo,
         if (ordering != null) 'ordering': ordering,
-        if (_sessionCommunicatorId != null)
-          'communicator_id': _sessionCommunicatorId,
+        if (communicatorId != null) 'communicator_id': communicatorId,
       };
 
       final response = await _apiClient.get<dynamic>(
@@ -73,12 +72,12 @@ class ActivityRepository {
     String status = 'in_progress',
   }) async {
     try {
+      final communicatorId = await _activityCommunicatorId();
       final formData = FormData.fromMap({
         'activity_name': activityName,
         'datetime': datetime,
         'status': status,
-        if (_sessionCommunicatorId != null)
-          'communicator_id': _sessionCommunicatorId,
+        if (communicatorId != null) 'communicator_id': communicatorId,
         if (imageFile != null)
           'image_icon': await MultipartFile.fromFile(
             imageFile.path,
@@ -123,6 +122,8 @@ class ActivityRepository {
   }) async {
     try {
       final map = <String, dynamic>{};
+      final communicatorId = await _activityCommunicatorId();
+      if (communicatorId != null) map['communicator_id'] = communicatorId;
       if (activityName != null) map['activity_name'] = activityName;
       if (datetime != null) map['datetime'] = datetime;
       if (status != null) map['status'] = status;

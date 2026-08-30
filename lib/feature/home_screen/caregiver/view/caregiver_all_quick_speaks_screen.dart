@@ -89,65 +89,68 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
               : const SizedBox.shrink()),
         ],
       ),
-      body: Obx(() {
-        return OrientationBuilder(builder: (context, _) {
-          final cols = _crossAxisCount(context);
+      body: OrientationBuilder(builder: (context, _) {
+        final cols = _crossAxisCount(context);
+        return Obx(() {
           final extra = controller.isQsEditMode.value ? 0 : 1;
+          final qsList = controller.quickSpeaks.toList();
           return Column(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Obx(() => CgQuickSpeakBar(
+              child: CgQuickSpeakBar(
                 text: controller.selectedQuickSpeakText.value,
                 imageUrl: controller.selectedQuickSpeakImage.value,
                 color: _parseColor(controller.selectedQuickSpeakColor.value,
                     const Color(0xFFFFD700)),
                 onSpeak: controller.speakSelectedQuickSpeak,
                 onClear: controller.clearQuickSpeak,
-              )),
+              ),
             ),
-            Expanded(child: RefreshIndicator(
-              onRefresh: controller.refresh,
-              color: const Color(0xFFFFC857),
-              child: GridView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: cols,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.82,
-              ),
-              itemCount: extra + controller.quickSpeaks.length,
-              itemBuilder: (_, i) {
-                if (extra == 1 && i == 0) {
-                  return CgFolderCard(
-                    imageUrl: null,
-                    label: 'tap_to_type'.tr,
-                    bgColor: const Color(0xFFE8F6F8),
-                    icon: Icons.keyboard_alt_outlined,
-                    isSelected: false,
-                    showEditBtn: false,
-                    onTap: controller.promptTypedText,
-                  );
-                }
-                final qs = controller.quickSpeaks[i - extra];
-                return Obx(() => CgFolderCard(
-                  imageUrl: AppUrl.mediaUrl(qs.imageIcon),
-                  label: qs.word ?? '',
-                  bgColor:
-                  _parseColor(qs.color, const Color(0xFFFFD700)),
-                  isSelected: controller.selectedQuickSpeakId.value == qs.id,
-                  showEditBtn: controller.isQsEditMode.value,
-                  onTap: () {
-                    if (!controller.isQsEditMode.value) {
-                      controller.selectQuickSpeak(qs);
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: controller.refresh,
+                color: const Color(0xFFFFC857),
+                child: GridView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: cols,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 0.82,
+                  ),
+                  itemCount: extra + qsList.length,
+                  itemBuilder: (_, i) {
+                    if (extra == 1 && i == 0) {
+                      return CgFolderCard(
+                        imageUrl: null,
+                        label: 'tap_to_type'.tr,
+                        bgColor: const Color(0xFFE8F6F8),
+                        icon: Icons.keyboard_alt_outlined,
+                        isSelected: false,
+                        showEditBtn: false,
+                        onTap: controller.promptTypedText,
+                      );
                     }
+                    final qs = qsList[i - extra];
+                    return CgFolderCard(
+                      imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                      label: qs.word ?? '',
+                      bgColor: _parseColor(qs.color, const Color(0xFFFFD700)),
+                      isSelected:
+                          controller.selectedQuickSpeakId.value == qs.id,
+                      showEditBtn: controller.isQsEditMode.value,
+                      onTap: () {
+                        if (!controller.isQsEditMode.value) {
+                          controller.selectQuickSpeak(qs);
+                        }
+                      },
+                      onEditTap: () =>
+                          controller.showEditQuickSpeakSheet(qs),
+                    );
                   },
-                  onEditTap: () =>
-                      controller.showEditQuickSpeakSheet(qs),
-                ));
-              },
+                ),
               ),
-            )),
+            ),
           ]);
         });
       }),

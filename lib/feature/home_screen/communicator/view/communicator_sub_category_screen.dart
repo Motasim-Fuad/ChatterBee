@@ -48,26 +48,29 @@ class CommunicatorSubCategoryScreen
           ),
         ),
       ),
-      body: Obx(() => controller.subCategories.isEmpty
-          ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.folder_open_outlined,
-                size: 60, color: Colors.grey[300]),
-            const SizedBox(height: 12),
-            Text(
-              'no_sub_categories_available'.tr,
-              style:
-              TextStyle(color: Colors.grey[500], fontSize: 15),
-            ),
-          ],
-        ),
-      )
-          : OrientationBuilder(
+      body: OrientationBuilder(
         builder: (context, _) {
           final cols = _crossAxisCount(context);
-          return RefreshIndicator(
+          return Obx(() {
+            final subs = controller.subCategories.toList();
+            if (subs.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.folder_open_outlined,
+                        size: 60, color: Colors.grey[300]),
+                    const SizedBox(height: 12),
+                    Text(
+                      'no_sub_categories_available'.tr,
+                      style:
+                      TextStyle(color: Colors.grey[500], fontSize: 15),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return RefreshIndicator(
             onRefresh: controller.refresh,
             color: const Color(0xFFFFC857),
             child: GridView.builder(
@@ -78,18 +81,19 @@ class CommunicatorSubCategoryScreen
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: controller.subCategories.length,
+              itemCount: subs.length,
               itemBuilder: (_, i) {
-                final sub = controller.subCategories[i];
+                final sub = subs[i];
                 return _SubCategoryCard(
                   sub: sub,
                   onTap: () => controller.onSubCategoryTap(sub),
                 );
               },
             ),
-          );
+            );
+          });
         },
-      )),
+      ),
     );
   }
 }
@@ -112,7 +116,8 @@ class _SubCategoryCard extends StatelessWidget {
         builder: (context, constraints) {
           final tabH = constraints.maxHeight * 0.10;
           final topPad = tabH + 6;
-          final imgSize = constraints.maxWidth * 0.52;
+          final imgSize = (constraints.maxWidth * 0.52)
+              .clamp(0.0, constraints.maxHeight * 0.42);
 
           return CustomPaint(
             painter: _FolderPainter(cardColor: Colors.white, tabColor: bgColor),

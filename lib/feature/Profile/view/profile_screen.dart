@@ -30,7 +30,7 @@ class ProfileScreen extends GetView<ProfileController> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 20),
-            child: Image.asset(ImagesLink.logo, height: 50),
+            child: Image.asset(ImagesLink.logo, height: 36, fit: BoxFit.contain),
           ),
         ],
       ),
