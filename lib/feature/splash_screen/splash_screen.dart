@@ -4,7 +4,6 @@ import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,24 +26,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
     try {
       final token = await _secureStorage.getAccessToken();
-
       final role = await _secureStorage.getUserRole();
 
-      final prefs = await SharedPreferences.getInstance();
-      final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
-
-      if (token != null && token.isNotEmpty && isLoggedIn) {
-
+      if (token != null && token.isNotEmpty) {
         if (role == "caregiver") {
           Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
-        }
-        else if (role == "communicator") {
+        } else if (role == "communicator") {
           Get.offAllNamed(AppRoutes.COMMUNICATORHOMESCREEN);
-        }
-        else {
+        } else {
           Get.offAllNamed(AppRoutes.SIGNINSCREEN);
         }
-
       } else {
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       }

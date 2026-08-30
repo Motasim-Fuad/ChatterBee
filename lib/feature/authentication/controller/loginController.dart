@@ -116,6 +116,7 @@ class LoginController extends GetxController {
       final response = await _authRepository.login(
         email: emailController.text.trim(),
         password: passwordController.text,
+        persistSession: rememberMe.value,
       );
 
       if (response.isSuccess && response.data != null) {

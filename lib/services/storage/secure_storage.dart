@@ -22,30 +22,53 @@ class SecureStorageService {
 
   static const String _keyFcmTokenId = 'fcm_token_id';
 
-  // Save Access Token
+  bool persistToDisk = true;
+  String? _memAccessToken;
+  String? _memRefreshToken;
+  String? _memUserId;
+  String? _memUserEmail;
+  String? _memUserRole;
+  String? _memFcmTokenId;
+
+  Future<void> _write(String key, String value) async {
+    if (persistToDisk) {
+      await _storage.write(key: key, value: value);
+    } else {
+      await _storage.delete(key: key);
+    }
+  }
+
+  Future<String?> _read(String key, String? memoryValue) async {
+    if (memoryValue != null && memoryValue.isNotEmpty) return memoryValue;
+    return await _storage.read(key: key);
+  }
 
   Future<void> saveAccessToken(String token) async {
-    await _storage.write(key: _keyAccessToken, value: token);
+    _memAccessToken = token;
+    await _write(_keyAccessToken, token);
   }
 
   Future<String?> getAccessToken() async {
-    return await _storage.read(key: _keyAccessToken);
+    return _read(_keyAccessToken, _memAccessToken);
   }
 
   Future<void> saveRefreshToken(String token) async {
-    await _storage.write(key: _keyRefreshToken, value: token);
+    _memRefreshToken = token;
+    await _write(_keyRefreshToken, token);
   }
 
   Future<String?> getRefreshToken() async {
-    return await _storage.read(key: _keyRefreshToken);
+    return _read(_keyRefreshToken, _memRefreshToken);
   }
 
   Future<void> saveTokens({
     required String accessToken,
     required String refreshToken,
   }) async {
-    await _storage.write(key: _keyAccessToken, value: accessToken);
-    await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    _memAccessToken = accessToken;
+    _memRefreshToken = refreshToken;
+    await _write(_keyAccessToken, accessToken);
+    await _write(_keyRefreshToken, refreshToken);
   }
 
   Future<void> saveAuthSession({
@@ -54,63 +77,87 @@ class SecureStorageService {
     required String userId,
     required String email,
     required String role,
+    bool persist = true,
   }) async {
-    await _storage.write(key: _keyAccessToken, value: accessToken);
-    await _storage.write(key: _keyRefreshToken, value: refreshToken);
-    await _storage.write(key: _keyUserId, value: userId);
-    await _storage.write(key: _keyUserEmail, value: email);
-    await _storage.write(key: _keyUserRole, value: role);
+    persistToDisk = persist;
+    _memAccessToken = accessToken;
+    _memRefreshToken = refreshToken;
+    _memUserId = userId;
+    _memUserEmail = email;
+    _memUserRole = role;
+
+    if (persist) {
+      await _storage.write(key: _keyAccessToken, value: accessToken);
+      await _storage.write(key: _keyRefreshToken, value: refreshToken);
+      await _storage.write(key: _keyUserId, value: userId);
+      await _storage.write(key: _keyUserEmail, value: email);
+      await _storage.write(key: _keyUserRole, value: role);
+      return;
+    }
+
+    await _storage.delete(key: _keyAccessToken);
+    await _storage.delete(key: _keyRefreshToken);
+    await _storage.delete(key: _keyUserId);
+    await _storage.delete(key: _keyUserEmail);
+    await _storage.delete(key: _keyUserRole);
   }
 
-  // Save User Id
-
   Future<void> saveUserId(String userId) async {
-    await _storage.write(key: _keyUserId, value: userId);
+    _memUserId = userId;
+    await _write(_keyUserId, userId);
   }
 
   Future<String?> getUserId() async {
-    return await _storage.read(key: _keyUserId);
+    return _read(_keyUserId, _memUserId);
   }
 
   Future<void> saveUserEmail(String email) async {
-    await _storage.write(key: _keyUserEmail, value: email);
+    _memUserEmail = email;
+    await _write(_keyUserEmail, email);
   }
 
   Future<String?> getUserEmail() async {
-    return await _storage.read(key: _keyUserEmail);
+    return _read(_keyUserEmail, _memUserEmail);
   }
 
   Future<void> saveUserRole(String role) async {
-    await _storage.write(key: _keyUserRole, value: role);
+    _memUserRole = role;
+    await _write(_keyUserRole, role);
   }
 
   Future<String?> getUserRole() async {
-    return await _storage.read(key: _keyUserRole);
+    return _read(_keyUserRole, _memUserRole);
   }
 
-
-  // Save FCM token ID returned by the backend
   Future<void> saveFcmTokenId(String tokenId) async {
-    await _storage.write(key: _keyFcmTokenId, value: tokenId);
+    _memFcmTokenId = tokenId;
+    await _write(_keyFcmTokenId, tokenId);
   }
 
-  // Get FCM Token ID
   Future<String?> getFcmTokenId() async {
-    return await _storage.read(key: _keyFcmTokenId);
+    return _read(_keyFcmTokenId, _memFcmTokenId);
   }
 
-  // Delete FCM Token ID
   Future<void> deleteFcmTokenId() async {
+    _memFcmTokenId = null;
     await _storage.delete(key: _keyFcmTokenId);
   }
 
-  // Clear All
-
   Future<void> clearAll() async {
+    _memAccessToken = null;
+    _memRefreshToken = null;
+    _memUserId = null;
+    _memUserEmail = null;
+    _memUserRole = null;
+    _memFcmTokenId = null;
+    persistToDisk = true;
     await _storage.deleteAll();
   }
 
   Future<void> clearTokens() async {
+    _memAccessToken = null;
+    _memRefreshToken = null;
+    _memFcmTokenId = null;
     await _storage.delete(key: _keyAccessToken);
     await _storage.delete(key: _keyRefreshToken);
     await _storage.delete(key: _keyFcmTokenId);
@@ -119,8 +166,6 @@ class SecureStorageService {
   Future<void> delete(String key) async {
     await _storage.delete(key: key);
   }
-
-  // Save
 
   Future<void> save(String key, String value) async {
     await _storage.write(key: key, value: value);

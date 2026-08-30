@@ -68,7 +68,11 @@ class AuthRepository {
   }
 
   // Login
-  Future<ApiResponse<LoginResponse>> login({required String email, required String password}) async {
+  Future<ApiResponse<LoginResponse>> login({
+    required String email,
+    required String password,
+    bool persistSession = true,
+  }) async {
     try {
       LoggerUtils.logInfo('=== LOGIN ===');
       final response = await _apiClient.post<Map<String, dynamic>>(
@@ -77,7 +81,7 @@ class AuthRepository {
       );
       if (response.isSuccess && response.data != null) {
         final loginResponse = LoginResponse.fromJson(response.data!);
-        await _saveAuthData(loginResponse);
+        await _saveAuthData(loginResponse, persistSession: persistSession);
         final isRegistered = await NotificationControllerFCM.to.registerFcmToken();
         print('FCM registered: $isRegistered');
         return ApiResponse.success(data: loginResponse, statusCode: response.statusCode, message: response.message);
@@ -102,7 +106,7 @@ class AuthRepository {
             message: 'This linked account is inactive. Please reactivate it before switching.',
           );
         }
-        await _saveAuthData(switched);
+        await _saveAuthData(switched, persistSession: _secureStorage.persistToDisk);
         return ApiResponse.success(
           data: switched,
           statusCode: response.statusCode,
@@ -327,7 +331,10 @@ class AuthRepository {
     }
   }
 
-  Future<void> _saveAuthData(LoginResponse loginResponse) async {
+  Future<void> _saveAuthData(
+    LoginResponse loginResponse, {
+    bool persistSession = true,
+  }) async {
     if (loginResponse.accessToken.isEmpty || loginResponse.refreshToken.isEmpty) {
       throw StateError('Authentication response did not contain both tokens.');
     }
@@ -338,10 +345,12 @@ class AuthRepository {
       userId: loginResponse.user.id,
       email: loginResponse.user.email,
       role: role,
+      persist: persistSession,
     );
     await _storage.saveUserRole(role);
     await _storage.saveUserName(loginResponse.user.fullName);
     await _storage.setLoggedIn(true);
+    await _storage.setRememberMe(persistSession);
   }
 
   Future<void> saveVerifiedSignupSession({
@@ -361,6 +370,7 @@ class AuthRepository {
     );
     await _storage.saveUserRole(role);
     await _storage.setLoggedIn(true);
+    await _storage.setRememberMe(true);
   }
 
   Future<void> _clearAuthData() async {

@@ -24,6 +24,7 @@ class StorageService {
   static const String _keyUserRole = 'user_role';
   static const String _keyUserName = 'user_name';
   static const String _keyIsLoggedIn = 'is_logged_in';
+  static const String _keyRememberMe = 'remember_me';
   static const String _keyOnboardingComplete = 'onboarding_complete';
   static const String _keyTheme = 'theme';
   static const String _keyLanguage = 'language';
@@ -107,6 +108,19 @@ class StorageService {
   // Check if logged in
   bool isLoggedIn() {
     return getBool(_keyIsLoggedIn, defaultValue: false) ?? false;
+  }
+
+  Future<bool> setRememberMe(bool value) async {
+    return await setBool(_keyRememberMe, value);
+  }
+
+  bool rememberMe() {
+    return getBool(_keyRememberMe, defaultValue: false) ?? false;
+  }
+
+  bool? rememberMeOrNull() {
+    if (!containsKey(_keyRememberMe)) return null;
+    return getBool(_keyRememberMe);
   }
 
   // Set onboarding complete
