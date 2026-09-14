@@ -10,7 +10,9 @@ import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
+import 'package:chatter_bee/services/sentence_bar_service.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:get/get.dart';
@@ -53,6 +55,8 @@ class CaregiverHomeController extends GetxController
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+  final RxInt homePageIndex = 0.obs;
+  final pageController = PageController();
 
   List<CategoryModel> get apiCategories => categories;
 
@@ -194,43 +198,60 @@ class CaregiverHomeController extends GetxController
   }
 
 
+  void onTalkItemTap(ItemModel item) {
+    SentenceBarService.to.addToken(
+      text: item.word ?? '',
+      imageUrl: item.imageIcon ?? '',
+      colorHex: item.color,
+      lang: _currentLang,
+    );
+  }
+
   void selectQuickSpeak(QuickSpeakModel qs) {
-    final word = qs.word ?? '';
-    if (SpeechModeService.to.speaksOnTap) {
-      if (selectedQuickSpeakId.value == qs.id) {
-        clearQuickSpeak();
-        return;
-      }
-      selectedQuickSpeakId.value = qs.id;
-      selectedQuickSpeakText.value = word;
-      selectedQuickSpeakImage.value = AppUrl.mediaUrl(qs.imageIcon) ?? '';
-      selectedQuickSpeakColor.value = qs.color;
-      TtsService.to.speak(word, lang: _currentLang);
-      BuddyBeeEncouragement.maybeShow();
-      return;
-    }
     selectedQuickSpeakId.value = qs.id;
-    selectedQuickSpeakImage.value = AppUrl.mediaUrl(qs.imageIcon) ?? '';
-    selectedQuickSpeakColor.value = qs.color;
-    if (selectedQuickSpeakText.value.trim().isEmpty) {
-      selectedQuickSpeakText.value = word;
-    } else {
-      selectedQuickSpeakText.value = '${selectedQuickSpeakText.value} $word';
-    }
+    SentenceBarService.to.addToken(
+      text: qs.word ?? '',
+      imageUrl: qs.imageIcon ?? '',
+      colorHex: qs.color,
+      lang: _currentLang,
+    );
+  }
+
+  void promptTypedText() {
+    SentenceBarService.to.beginTyping();
+  }
+
+  void addTypedText(String text) {
+    SentenceBarService.to.addToken(text: text, lang: _currentLang);
   }
 
   void clearQuickSpeak() {
     TtsService.to.stop();
     selectedQuickSpeakId.value = -1;
-    selectedQuickSpeakText.value = '';
-    selectedQuickSpeakImage.value = '';
-    selectedQuickSpeakColor.value = '#FFD700';
+    SentenceBarService.to.clear();
   }
 
   Future<void> speakSelectedQuickSpeak() async {
-    if (selectedQuickSpeakText.value.isEmpty) return;
-    await TtsService.to.speak(selectedQuickSpeakText.value, lang: _currentLang);
-    BuddyBeeEncouragement.maybeShow();
+    if (SentenceBarService.to.spokenText.isEmpty) return;
+    await SentenceBarService.to.speakAll(lang: _currentLang);
+  }
+
+  List<ItemModel> get allAacButtons {
+    final out = <ItemModel>[];
+    for (final cat in categories) {
+      out.addAll(cat.items);
+      for (final sub in cat.subCategories) {
+        out.addAll(sub.items);
+      }
+    }
+    return out;
+  }
+
+  List<ItemModel> get homeTalkButtons {
+    final q = searchQuery.value.trim().toLowerCase();
+    final out = allAacButtons;
+    if (q.isEmpty) return out;
+    return out.where((i) => (i.word ?? '').toLowerCase().contains(q)).toList();
   }
 
   List<QuickSpeakModel> get filteredQuickSpeaks {
@@ -252,10 +273,6 @@ class CaregiverHomeController extends GetxController
       return c.subCategories.any((s) =>
           s.name.toLowerCase().contains(q) || s.items.any(matchesItem));
     }).toList();
-  }
-
-  void promptTypedText() {
-    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
   }
 
   void openSchedule() {
@@ -344,24 +361,137 @@ class CaregiverHomeController extends GetxController
 
   void showAddQuickSpeakSheet() {
     _editingQuickSpeak = null;
-    qsColorHex.value = '#FFD700';
-    qsImageFile.value = null;
-    qsAudioFile.value = null;
-    qsAudioFileName.value = '';
-    qsIsRecording.value = false;
-    qsIsPlayingAudio.value = false;
-    _openSheet(_QuickSpeakSheet(controller: this, title: 'quick_speak'.tr));
+    _openAacButtonPicker(title: 'add_to_quick_speak'.tr);
   }
 
   void showEditQuickSpeakSheet(QuickSpeakModel qs) {
     _editingQuickSpeak = qs;
-    qsColorHex.value = qs.color.isNotEmpty ? qs.color : '#FFD700';
-    qsImageFile.value = null;
-    qsAudioFile.value = null;
-    qsAudioFileName.value = '';
-    qsIsRecording.value = false;
-    qsIsPlayingAudio.value = false;
-    _openSheet(_QuickSpeakSheet(controller: this, title: 'edit'.tr));
+    _openAacButtonPicker(title: 'swap_quick_speak'.tr);
+  }
+
+  void _openAacButtonPicker({required String title}) {
+    final buttons = allAacButtons;
+    Get.bottomSheet(
+      Container(
+        height: Get.height * 0.72,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              child: Text(title,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w700)),
+            ),
+            Expanded(
+              child: buttons.isEmpty
+                  ? Center(child: Text('no_categories_available'.tr))
+                  : GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.82,
+                      ),
+                      itemCount: buttons.length,
+                      itemBuilder: (_, i) {
+                        final item = buttons[i];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.back();
+                            applyAacButtonToQuickSpeak(item);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF7F7F7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: item.imageIcon != null &&
+                                          item.imageIcon!.isNotEmpty
+                                      ? Image.network(
+                                          AppUrl.mediaUrl(item.imageIcon) ?? '',
+                                          fit: BoxFit.contain,
+                                          errorBuilder: (_, __, ___) =>
+                                              const Icon(Icons.image_outlined),
+                                        )
+                                      : const Icon(Icons.image_outlined),
+                                ),
+                                Text(item.word ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Future<void> applyAacButtonToQuickSpeak(ItemModel item) async {
+    qsFormLoading.value = true;
+    File? image;
+    final url = AppUrl.mediaUrl(item.imageIcon);
+    if (url != null) {
+      try {
+        final dir = await getTemporaryDirectory();
+        final path = '${dir.path}/qs_${item.id}.jpg';
+        await Dio().download(url, path);
+        image = File(path);
+      } catch (_) {}
+    }
+    final communicatorId = CommunicatorSessionService.to.communicatorId.value;
+    final word = (item.word ?? '').trim();
+    final color = item.color.isNotEmpty ? item.color : '#FFD700';
+    if (_editingQuickSpeak != null) {
+      final res = await _repo.updateQuickSpeak(
+        quickSpeakId: _editingQuickSpeak!.id,
+        word: word,
+        color: color,
+        imageFile: image,
+        lang: _currentLang,
+      );
+      qsFormLoading.value = false;
+      if (res.isSuccess) {
+        await loadContent();
+        Get.snackbar('updated'.tr, 'quick_speak_updated'.tr,
+            snackPosition: SnackPosition.BOTTOM);
+      } else {
+        Get.snackbar('error'.tr, res.message,
+            snackPosition: SnackPosition.BOTTOM);
+      }
+      return;
+    }
+    final res = await _repo.createQuickSpeak(
+      word: word,
+      color: color,
+      communicatorId: communicatorId,
+      imageFile: image,
+      lang: _currentLang,
+    );
+    qsFormLoading.value = false;
+    if (res.isSuccess) {
+      await loadContent();
+      Get.snackbar('created'.tr, 'quick_speak_created'.tr,
+          snackPosition: SnackPosition.BOTTOM);
+    } else {
+      Get.snackbar('error'.tr, res.message,
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   Future<void> pickQsImage() async {
@@ -504,6 +634,7 @@ class CaregiverHomeController extends GetxController
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();
     _audioPlayer.dispose();
+    pageController.dispose();
     _isRecorderInitialized = false;
     super.onClose();
   }

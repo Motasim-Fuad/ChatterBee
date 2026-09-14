@@ -7,6 +7,7 @@ import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/sentence_bar_service.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
@@ -97,33 +98,18 @@ class CommunicatorItemController extends GetxController {
   }
 
   void onItemTap(CommItemModel item) {
-    final word = item.word ?? '';
-    if (SpeechModeService.to.speaksOnTap) {
-      if (selectedItemId.value == item.id) {
-        clearSelection();
-        return;
-      }
-      selectedItemId.value = item.id;
-      selectedWord.value = word;
-      selectedImage.value = item.imageIcon ?? '';
-      selectedColor.value = item.color;
-      _speakNow(word);
-      _repo.pressContent(contentType: 'item', contentId: item.id);
-      BuddyBeeEncouragement.maybeShow();
-      return;
-    }
     selectedItemId.value = item.id;
-    selectedImage.value = item.imageIcon ?? '';
-    selectedColor.value = item.color;
-    if (selectedWord.value.trim().isEmpty) {
-      selectedWord.value = word;
-    } else {
-      selectedWord.value = '${selectedWord.value} $word';
-    }
+    SentenceBarService.to.addToken(
+      text: item.word ?? '',
+      imageUrl: item.imageIcon ?? '',
+      colorHex: item.color,
+      lang: _currentLang,
+    );
+    _repo.pressContent(contentType: 'item', contentId: item.id);
   }
 
   void promptTypedText() {
-    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
+    SentenceBarService.to.beginTyping();
   }
 
   void _speakNow(String text) {
@@ -133,23 +119,18 @@ class CommunicatorItemController extends GetxController {
   // Speak the full sentence (or the last word in immediate-only mode)
   void speakSelected() {
     if (isSpeakCooldown.value) return;
-
-    if (selectedWord.value.isEmpty) return;
-    _speakNow(selectedWord.value);
+    if (SentenceBarService.to.spokenText.isEmpty) return;
+    SentenceBarService.to.speakAll(lang: _currentLang);
     if (selectedItemId.value > 0) {
       _repo.pressContent(contentType: 'item', contentId: selectedItemId.value);
     }
-    BuddyBeeEncouragement.maybeShow();
     _startCooldown();
   }
 
-  // Clear Selection
   void clearSelection() {
     _stopAudio();
-    TtsService.to.stop();
     selectedItemId.value = -1;
-    selectedWord.value = '';
-    selectedImage.value = '';
+    SentenceBarService.to.clear();
     _cancelCooldown();
   }
 

@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
 
 class ProfileController extends GetxController {
@@ -21,6 +23,7 @@ class ProfileController extends GetxController {
   final RxString voiceType = ''.obs;
   final RxString avatarUrl = ''.obs;
   final RxBool isLoading = false.obs;
+  final RxBool isBuddyBeeMode = false.obs;
   final RxList<Map<String, dynamic>> switchableUsers = <Map<String, dynamic>>[].obs;
 
   final ImagePicker _picker = ImagePicker();
@@ -44,6 +47,8 @@ class ProfileController extends GetxController {
         userType.value = profileData['profile_type'] ?? '';
         voiceType.value = profileData['voice_type'] ?? '';
         avatarUrl.value = profileData['avatar'] ?? '';
+        isBuddyBeeMode.value = profileData['buddy_mode'] ?? false;
+        StorageService().setBuddyMode(isBuddyBeeMode.value);
         final role = profileData['role'] ?? '';
         selectedRole.value = _capitalizeRole(role);
         if (role.toString().toLowerCase() == 'caregiver') {
@@ -69,6 +74,16 @@ class ProfileController extends GetxController {
   }
 
   bool get canSwitchUser => selectedRole.value.toLowerCase() == 'caregiver';
+
+  Future<void> toggleBuddyBeeMode(bool value) async {
+    if (value && !ProAccessGate.isPro) {
+      ProAccessGate.showUnlockProDialog();
+      return;
+    }
+    isBuddyBeeMode.value = value;
+    await StorageService().setBuddyMode(value);
+    await _authRepository.updateProfile(buddyMode: value);
+  }
 
   Future<void> loadSwitchableUsers() async {
     final response = await _connectionRepository.listConnections();

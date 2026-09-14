@@ -1,5 +1,6 @@
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,11 +51,7 @@ class CommunicatorAllQuickSpeaksScreen
         children: [
           Obx(() => Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: CommSpeakBar(
-              text: controller.quickSpeakText.value,
-              imageUrl: AppUrl.mediaUrl(controller.quickSpeakImage.value) ?? '',
-              color: _parseColor(
-                  controller.quickSpeakColor.value, const Color(0xFFFFD700)),
+            child: SentenceBar(
               hint: 'select_quick_speak_hint'.tr,
               onSpeak: controller.speakQuickSpeak,
               onClear: controller.clearQuickSpeak,

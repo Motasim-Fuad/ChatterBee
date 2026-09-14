@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:chatter_bee/Repository/activity/activity_repository.dart';
 import 'package:chatter_bee/models/activity/activity_models.dart';
+import 'package:chatter_bee/widgets/schedule_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -90,23 +91,31 @@ class EditActivityController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1000,
-        maxHeight: 1000,
-        imageQuality: 85,
-      );
-      if (image != null) {
-        selectedImagePath.value = image.path;
+    await showScheduleImagePicker(
+      onLibraryAsset: (asset) async {
+        selectedImagePath.value = await copyAssetToTemp(asset);
         existingImageUrl.value = '';
-      }
-    } catch (e) {
-      Get.snackbar(
-        'error'.tr, 'failed_pick_image_activity'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+      },
+      onGallery: () async {
+        try {
+          final XFile? image = await _picker.pickImage(
+            source: ImageSource.gallery,
+            maxWidth: 1000,
+            maxHeight: 1000,
+            imageQuality: 85,
+          );
+          if (image != null) {
+            selectedImagePath.value = image.path;
+            existingImageUrl.value = '';
+          }
+        } catch (e) {
+          Get.snackbar(
+            'error'.tr, 'failed_pick_image_activity'.tr,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
+      },
+    );
   }
 
   void selectStatus(String value) => selectedStatus.value = value;

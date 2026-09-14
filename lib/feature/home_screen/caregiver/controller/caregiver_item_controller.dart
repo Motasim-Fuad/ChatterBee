@@ -7,6 +7,7 @@ import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_h
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/sentence_bar_service.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
@@ -177,45 +178,27 @@ class CaregiverItemController extends GetxController {
   }
 
   void onItemTap(ItemModel item) {
-    final word = item.word ?? '';
-    if (SpeechModeService.to.speaksOnTap) {
-      if (selectedItemId.value == item.id) {
-        clearSelectionBar();
-        return;
-      }
-      selectedItemId.value = item.id;
-      selectedWord.value = word;
-      selectedImage.value = item.imageIcon ?? '';
-      selectedColor.value = item.color;
-      TtsService.to.speak(word, lang: _currentLang);
-      BuddyBeeEncouragement.maybeShow();
-      return;
-    }
     selectedItemId.value = item.id;
-    selectedImage.value = item.imageIcon ?? '';
-    selectedColor.value = item.color;
-    if (selectedWord.value.trim().isEmpty) {
-      selectedWord.value = word;
-    } else {
-      selectedWord.value = '${selectedWord.value} $word';
-    }
+    SentenceBarService.to.addToken(
+      text: item.word ?? '',
+      imageUrl: item.imageIcon ?? '',
+      colorHex: item.color,
+      lang: _currentLang,
+    );
   }
 
   void promptTypedText() {
-    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
+    SentenceBarService.to.beginTyping();
   }
 
   Future<void> speakSelected() async {
-    if (selectedWord.value.trim().isEmpty) return;
-    await TtsService.to.speak(selectedWord.value, lang: _currentLang);
-    BuddyBeeEncouragement.maybeShow();
+    if (SentenceBarService.to.spokenText.isEmpty) return;
+    await SentenceBarService.to.speakAll(lang: _currentLang);
   }
 
   void clearSelectionBar() {
-    TtsService.to.stop();
     selectedItemId.value = -1;
-    selectedWord.value = '';
-    selectedImage.value = '';
+    SentenceBarService.to.clear();
   }
 
   void toggleEditMode() {

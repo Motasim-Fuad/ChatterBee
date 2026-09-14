@@ -7,6 +7,7 @@ import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/sentence_bar_service.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:chatter_bee/utils/buddy_bee_encouragement.dart';
@@ -34,6 +35,8 @@ class CommunicatorHomeController extends GetxController
   final RxInt selectedQsId = (-1).obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+  final RxInt homePageIndex = 0.obs;
+  final pageController = PageController();
 
   final RxInt playingId = (-1).obs;
 
@@ -57,14 +60,15 @@ class CommunicatorHomeController extends GetxController
     }
   }
 
-  // Current language code (en / es / ar)
-  String get _currentLang {
+  String get currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
     } catch (_) {
       return 'en';
     }
   }
+
+  String get _currentLang => currentLang;
 
   // API call with buddy mode + lang routing
   Future<void> loadContent() async {
@@ -112,43 +116,22 @@ class CommunicatorHomeController extends GetxController
 
   void onQuickSpeakTap(CommQuickSpeakModel qs) {
     final word = qs.word ?? '';
-    if (SpeechModeService.to.speaksOnTap) {
-      if (selectedQsId.value == qs.id) {
-        clearQuickSpeak();
-        return;
-      }
-      selectedQsId.value = qs.id;
-      quickSpeakText.value = word;
-      quickSpeakImage.value = qs.imageIcon ?? '';
-      quickSpeakColor.value = qs.color;
-      TtsService.to.speak(word, lang: _currentLang);
-      _repo.pressContent(contentType: 'quickspeak', contentId: qs.id);
-      BuddyBeeEncouragement.maybeShow();
-      return;
-    }
     selectedQsId.value = qs.id;
-    quickSpeakImage.value = qs.imageIcon ?? '';
-    quickSpeakColor.value = qs.color;
-    if (quickSpeakText.value.trim().isEmpty) {
-      quickSpeakText.value = word;
-    } else {
-      quickSpeakText.value = '${quickSpeakText.value} $word';
-    }
+    SentenceBarService.to.addToken(
+      text: word,
+      imageUrl: qs.imageIcon ?? '',
+      colorHex: qs.color,
+      lang: _currentLang,
+    );
+    _repo.pressContent(contentType: 'quickspeak', contentId: qs.id);
   }
 
   void addTypedText(String text) {
-    final trimmed = text.trim();
-    if (trimmed.isEmpty) return;
-    selectedQsId.value = -1;
-    quickSpeakText.value = trimmed;
-    quickSpeakImage.value = '';
-    if (SpeechModeService.to.speaksOnTap) {
-      TtsService.to.speak(trimmed, lang: _currentLang);
-    }
+    SentenceBarService.to.addToken(text: text, lang: _currentLang);
   }
 
   void promptTypedText() {
-    Get.toNamed(AppRoutes.TEXT_TO_SPEAK);
+    SentenceBarService.to.beginTyping();
   }
 
   void onSearchItemTap(CommItemModel item) {
@@ -190,27 +173,39 @@ class CommunicatorHomeController extends GetxController
     return out;
   }
 
+  List<CommItemModel> get homeTalkButtons {
+    final q = searchQuery.value.trim().toLowerCase();
+    final out = <CommItemModel>[];
+    for (final cat in categories) {
+      out.addAll(cat.items);
+      for (final sub in cat.subCategories) {
+        out.addAll(sub.items);
+      }
+    }
+    if (q.isEmpty) return out;
+    return out
+        .where((i) => (i.word ?? '').toLowerCase().contains(q))
+        .toList();
+  }
+
   void speakQuickSpeak() {
     if (isSpeakCooldown.value) return;
-    if (quickSpeakText.value.isEmpty) {
+    if (SentenceBarService.to.spokenText.isEmpty) {
       Get.snackbar('select_first'.tr, 'tap_quick_speak_first'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
-    TtsService.to.speak(quickSpeakText.value, lang: _currentLang);
+    SentenceBarService.to.speakAll(lang: _currentLang);
     if (selectedQsId.value > 0) {
       _repo.pressContent(contentType: 'quickspeak', contentId: selectedQsId.value);
     }
-    BuddyBeeEncouragement.maybeShow();
     _startCooldown();
   }
 
   void clearQuickSpeak() {
     _stopAudio();
-    TtsService.to.stop();
     selectedQsId.value = -1;
-    quickSpeakText.value = '';
-    quickSpeakImage.value = '';
+    SentenceBarService.to.clear();
     _cancelCooldown();
   }
   // Cooldown helpers
@@ -276,7 +271,8 @@ class CommunicatorHomeController extends GetxController
 
   // On Category Tap
   void onCategoryTap(CommCategoryModel category) {
-    if (category.subCategories.isEmpty) {
+    final liveSubs = category.subCategories.where((s) => !s.isDeleted).toList();
+    if (liveSubs.isEmpty) {
       Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: category);
     } else {
       Get.toNamed(AppRoutes.COMMUNICATOR_SUB_CATEGORY, arguments: category);
@@ -292,6 +288,7 @@ class CommunicatorHomeController extends GetxController
     WidgetsBinding.instance.removeObserver(this);
     _cancelCooldown();
     _audioPlayer.dispose();
+    pageController.dispose();
     super.onClose();
   }
 }

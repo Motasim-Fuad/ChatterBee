@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatter_bee/config/app_colors.dart';
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
@@ -85,7 +86,13 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
           return OrientationBuilder(builder: (context, _) {
             final cols = _crossAxisCount(context);
 
-            return RefreshIndicator(
+            return GestureDetector(
+              onHorizontalDragEnd: (details) {
+                final v = details.primaryVelocity ?? 0;
+                if (v < -250) controller.homePageIndex.value = 1;
+                if (v > 250) controller.homePageIndex.value = 0;
+              },
+              child: RefreshIndicator(
               onRefresh: controller.refresh,
               color: const Color(0xFFFFC857),
               child: CustomScrollView(
@@ -174,31 +181,30 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                      child: Obx(() {
-                        return CommSpeakBar(
-                        text: controller.quickSpeakText.value,
-                        imageUrl: AppUrl.mediaUrl(controller.quickSpeakImage.value) ?? '',
-                        color: _parseColor(
-                            controller.quickSpeakColor.value,
-                            const Color(0xFFFFD700)),
+                      child: Obx(() => SentenceBar(
                         hint: 'select_quick_speak_hint'.tr,
-                        onSpeak: controller.speakQuickSpeak,
-                        onClear: controller.clearQuickSpeak,
+                        lang: controller.currentLang,
                         isCooldown: controller.isSpeakCooldown.value,
                         cooldownCount: controller.cooldownCount.value,
-                      );
-                      }),
+                        onSpeak: controller.speakQuickSpeak,
+                        onClear: controller.clearQuickSpeak,
+                      )),
                     ),
                   ),
 
                   SliverToBoxAdapter(
-                    child: Padding(
+                    child: Obx(() => controller.homePageIndex.value == 0
+                        ? Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
                       child: CommSectionHeader(title: 'quick_speak'.tr),
-                    ),
+                    )
+                        : const SizedBox.shrink()),
                   ),
 
                   Obx(() {
+                    if (controller.homePageIndex.value != 0) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
                     final qsList = controller.filteredQuickSpeaks;
                     final hasMore = qsList.length > _kMaxHome;
                     final showCount = hasMore ? _kMaxHome : qsList.length;
@@ -250,13 +256,56 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                   }),
 
                   SliverToBoxAdapter(
-                    child: Padding(
+                    child: Obx(() => Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                      child: CommSectionHeader(title: 'tap_to_talk'.tr),
-                    ),
+                      child: CommSectionHeader(
+                          title: controller.homePageIndex.value == 0
+                              ? 'tap_to_talk'.tr
+                              : 'all_categories'.tr),
+                    )),
                   ),
 
                   Obx(() {
+                    if (controller.homePageIndex.value == 0) {
+                      final words = controller.homeTalkButtons;
+                      if (words.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Text('no_categories_available'.tr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.grey[500])),
+                          ),
+                        );
+                      }
+                      return SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                        sliver: SliverGrid(
+                          delegate: SliverChildBuilderDelegate(
+                            (_, i) {
+                              final item = words[i];
+                              return CommCard(
+                                imageUrl: AppUrl.mediaUrl(item.imageIcon),
+                                label: item.word ?? '',
+                                bgColor: _parseColor(
+                                    item.color, const Color(0xFFFFD700)),
+                                isSelected: false,
+                                onTap: () => controller.onSearchItemTap(item),
+                              );
+                            },
+                            childCount: words.length,
+                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: cols,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 0.82,
+                          ),
+                        ),
+                      );
+                    }
+
                     if (controller.filteredCategories.isEmpty) {
                       return SliverToBoxAdapter(
                         child: Center(
@@ -277,24 +326,13 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                       );
                     }
 
-                    final hasMore =
-                        controller.filteredCategories.length > _kMaxHome;
-                    final showCount =
-                    hasMore ? _kMaxHome : controller.filteredCategories.length;
-                    final cellCount = showCount + (hasMore ? 1 : 0);
-
+                    final cats = controller.filteredCategories;
                     return SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                       sliver: SliverGrid(
                         delegate: SliverChildBuilderDelegate(
                               (_, i) {
-                            if (hasMore && i == _kMaxHome) {
-                              return CommSeeAllCard(
-                                onTap: () => Get.toNamed(
-                                    AppRoutes.COMMUNICATOR_ALL_CATEGORIES),
-                              );
-                            }
-                            final cat = controller.filteredCategories[i];
+                            final cat = cats[i];
                             return CommCard(
                               imageUrl: AppUrl.mediaUrl(cat.imageIcon),
                               label: cat.name,
@@ -307,7 +345,7 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                               onTap: () => controller.onCategoryTap(cat),
                             );
                           },
-                          childCount: cellCount,
+                          childCount: cats.length,
                         ),
                         gridDelegate:
                         SliverGridDelegateWithFixedCrossAxisCount(
@@ -320,14 +358,23 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                     );
                   }),
 
-                  SliverToBoxAdapter(
+                  Obx(() {
+                    if (controller.homePageIndex.value == 0) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
                       child: CommSectionHeader(title: 'explore_more'.tr),
                     ),
-                  ),
+                  );
+                  }),
 
-                  SliverPadding(
+                  Obx(() {
+                    if (controller.homePageIndex.value == 0) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    return SliverPadding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
                     sliver: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
@@ -353,11 +400,51 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
                         childAspectRatio: 0.82,
                       ),
                     ),
+                  );
+                  }),
+
+                  SliverToBoxAdapter(
+                    child: Obx(() => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: controller.homePageIndex.value == 0
+                                ? null
+                                : () => controller.homePageIndex.value = 0,
+                            icon: const Icon(Icons.chevron_left),
+                          ),
+                          Icon(
+                            controller.homePageIndex.value == 0
+                                ? Icons.circle
+                                : Icons.circle_outlined,
+                            size: 10,
+                            color: const Color(0xFFFFC857),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            controller.homePageIndex.value == 1
+                                ? Icons.circle
+                                : Icons.circle_outlined,
+                            size: 10,
+                            color: const Color(0xFFFFC857),
+                          ),
+                          IconButton(
+                            onPressed: controller.homePageIndex.value == 1
+                                ? null
+                                : () => controller.homePageIndex.value = 1,
+                            icon: const Icon(Icons.chevron_right),
+                          ),
+                        ],
+                      ),
+                    )),
                   ),
 
                   const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
+            ),
             );
           });
         }),

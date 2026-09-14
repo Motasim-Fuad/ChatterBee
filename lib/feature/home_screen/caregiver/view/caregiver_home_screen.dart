@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
@@ -78,7 +79,13 @@ class CaregiverHomeScreen extends StatelessWidget {
           return OrientationBuilder(builder: (context, _) {
             final cols = _crossAxisCount(context);
 
-            return RefreshIndicator(
+            return GestureDetector(
+              onHorizontalDragEnd: (details) {
+                final v = details.primaryVelocity ?? 0;
+                if (v < -250) controller.homePageIndex.value = 1;
+                if (v > 250) controller.homePageIndex.value = 0;
+              },
+              child: RefreshIndicator(
               onRefresh: controller.refresh,
               color: const Color(0xFFFFC857),
               child: CustomScrollView(
@@ -191,14 +198,11 @@ class CaregiverHomeScreen extends StatelessWidget {
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                      child: Obx(() => CgQuickSpeakBar(
-                        text: controller.selectedQuickSpeakText.value,
-                        imageUrl: controller.selectedQuickSpeakImage.value,
-                        color: _parseColor(controller.selectedQuickSpeakColor.value,
-                            const Color(0xFFFFD700)),
+                      child: SentenceBar(
+                        hint: 'select_quick_speak_hint'.tr,
                         onSpeak: controller.speakSelectedQuickSpeak,
                         onClear: controller.clearQuickSpeak,
-                      )),
+                      ),
                     ),
                   ),
 
@@ -275,14 +279,52 @@ class CaregiverHomeScreen extends StatelessWidget {
                     );
                   }),
 
+                  Obx(() {
+                    if (controller.homePageIndex.value != 0) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    final words = controller.homeTalkButtons;
+                    if (words.isEmpty) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) {
+                            final item = words[i];
+                            return CgFolderCard(
+                              imageUrl: AppUrl.mediaUrl(item.imageIcon),
+                              label: item.word ?? '',
+                              bgColor: _parseColor(
+                                  item.color, const Color(0xFFFFD700)),
+                              isSelected: false,
+                              showEditBtn: false,
+                              onTap: () => controller.onTalkItemTap(item),
+                            );
+                          },
+                          childCount: words.length,
+                        ),
+                        gridDelegate:
+                            SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: cols,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 0.82,
+                        ),
+                      ),
+                    );
+                  }),
+
                   SliverToBoxAdapter(
-                    child: Padding(
+                    child: Obx(() => controller.homePageIndex.value == 1
+                        ? Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                              child: CgSectionHeader(title: 'tap_to_talk'.tr)),
+                              child: CgSectionHeader(title: 'all_categories'.tr)),
                           Obx(() => Row(children: [
                             _EditToggleBtn(
                               isEdit: controller.isEditMode.value,
@@ -297,10 +339,14 @@ class CaregiverHomeScreen extends StatelessWidget {
                           ])),
                         ],
                       ),
-                    ),
+                    )
+                        : const SizedBox.shrink()),
                   ),
 
                   Obx(() {
+                    if (controller.homePageIndex.value != 1) {
+                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                    }
                     if (controller.filteredCategories.isEmpty) {
                       return SliverToBoxAdapter(
                         child: Center(
@@ -420,6 +466,7 @@ class CaregiverHomeScreen extends StatelessWidget {
                   const SliverToBoxAdapter(child: SizedBox(height: 80)),
                 ],
               ),
+            ),
             );
           });
         }),

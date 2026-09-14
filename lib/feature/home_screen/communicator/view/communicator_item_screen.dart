@@ -4,6 +4,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_item_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/view/communicator_home_screen.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -56,11 +57,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
           Obx(() {
             return Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: CommSpeakBar(
-              text: controller.selectedWord.value,
-              imageUrl: AppUrl.mediaUrl(controller.selectedImage.value) ?? '',
-              color: _parseColor(
-                  controller.selectedColor.value, const Color(0xFFFFD700)),
+            child: SentenceBar(
               hint: 'tap_an_item'.tr,
               onSpeak: controller.speakSelected,
               onClear: controller.clearSelection,

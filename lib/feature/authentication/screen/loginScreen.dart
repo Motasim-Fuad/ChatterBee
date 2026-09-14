@@ -65,7 +65,7 @@ class LoginScreen extends GetView<LoginController> {
                     controller: controller.emailController,
                     focusNode: controller.emailFocusNode,
                     keyboardType: TextInputType.emailAddress,
-                    autofillHints: const [AutofillHints.username, AutofillHints.email],
+                    autofillHints: const [AutofillHints.username],
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
                       hintText: 'name@example.com',

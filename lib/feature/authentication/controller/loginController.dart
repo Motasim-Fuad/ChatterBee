@@ -82,6 +82,7 @@ class LoginController extends GetxController {
     if (saved.isNotEmpty) {
       lastRememberedEmail.value = saved;
       rememberMe.value = true;
+      emailController.text = saved;
     }
   }
 

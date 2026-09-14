@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_item_controller.dart';
@@ -111,11 +112,8 @@ class CaregiverItemScreen extends StatelessWidget {
         return Column(children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: _CaregiverSpeakBar(
-              text: controller.selectedWord.value,
-              imageUrl: AppUrl.mediaUrl(controller.selectedImage.value),
-              itemColor: _parseColor(controller.selectedColor.value,
-                  const Color(0xFFFFD700)),
+            child: SentenceBar(
+              hint: 'tap_an_item'.tr,
               onSpeak: controller.speakSelected,
               onClear: controller.clearSelectionBar,
             ),

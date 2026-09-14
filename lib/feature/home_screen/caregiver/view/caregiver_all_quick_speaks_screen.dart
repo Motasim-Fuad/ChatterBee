@@ -1,7 +1,8 @@
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
-    show CgFolderCard, CgQuickSpeakBar;
+    show CgFolderCard;
+import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -97,11 +98,8 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
           return Column(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: CgQuickSpeakBar(
-                text: controller.selectedQuickSpeakText.value,
-                imageUrl: controller.selectedQuickSpeakImage.value,
-                color: _parseColor(controller.selectedQuickSpeakColor.value,
-                    const Color(0xFFFFD700)),
+              child: SentenceBar(
+                hint: 'select_quick_speak_hint'.tr,
                 onSpeak: controller.speakSelectedQuickSpeak,
                 onClear: controller.clearQuickSpeak,
               ),

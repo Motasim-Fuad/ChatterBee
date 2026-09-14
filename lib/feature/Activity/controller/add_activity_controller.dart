@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:chatter_bee/Repository/activity/activity_repository.dart';
+import 'package:chatter_bee/widgets/schedule_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -73,22 +74,29 @@ class AddActivityController extends GetxController {
 
   // Image Picker
   Future<void> pickImage() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1000,
-        maxHeight: 1000,
-        imageQuality: 85,
-      );
-      if (image != null) selectedImagePath.value = image.path;
-    } catch (e) {
-      Get.snackbar(
-        'error'.tr, 'failed_pick_image_activity'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
-    }
+    await showScheduleImagePicker(
+      onLibraryAsset: (asset) async {
+        selectedImagePath.value = await copyAssetToTemp(asset);
+      },
+      onGallery: () async {
+        try {
+          final XFile? image = await _picker.pickImage(
+            source: ImageSource.gallery,
+            maxWidth: 1000,
+            maxHeight: 1000,
+            imageQuality: 85,
+          );
+          if (image != null) selectedImagePath.value = image.path;
+        } catch (e) {
+          Get.snackbar(
+            'error'.tr, 'failed_pick_image_activity'.tr,
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red.shade100,
+            colorText: Colors.red.shade900,
+          );
+        }
+      },
+    );
   }
 
   void selectStatus(String value) => selectedStatus.value = value;

@@ -113,7 +113,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Free Plan',
+                                  'ChatterBee Basic (Free)',
                                   style: GoogleFonts.nunito(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
@@ -132,9 +132,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                           const SizedBox(height: 16),
                           ...[
                             'free_feature_1'.tr,
-                            'free_feature_2'.tr,
-                            'free_feature_3'.tr,
-                            'free_feature_4'.tr,
                           ].map(
                                 (f) => Padding(
                               padding: const EdgeInsets.only(bottom: 8),
@@ -153,7 +150,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
 
                     _buildPlanCard(
                       planType: 'monthly',
-                      title: 'ChatterBee Pro',
+                      title: 'ChatterBee Pro (Monthly)',
                       price: controller.monthlyPrice,
                       period: '/ month',
                       trialText: controller.monthlyTrialText,
@@ -172,16 +169,12 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                       children: [
                         _buildPlanCard(
                           planType: 'annually',
-                          title: 'ChatterBee Pro',
+                          title: 'ChatterBee Pro (Annual)',
                           price: controller.annuallyPrice,
                           period: '/ year',
                           trialText: controller.annuallyTrialText,
                           features: [
-                            'pro_feature_1'.tr,
-                            'pro_feature_2'.tr,
-                            'pro_feature_3'.tr,
-                            'pro_feature_4'.tr,
-                            'pro_feature_5'.tr,
+                            'pro_annual_includes'.tr,
                           ],
                         ),
                         Positioned(

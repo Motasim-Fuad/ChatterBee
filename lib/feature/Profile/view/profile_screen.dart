@@ -165,6 +165,21 @@ class ProfileScreen extends GetView<ProfileController> {
                         trailing: const Icon(Icons.chevron_right),
                       ),
                       const SizedBox(height: 8),
+                      Obx(() => Row(
+                        children: [
+                          const Icon(Icons.emoji_emotions_outlined, size: 24),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text('buddy_bee_mode'.tr,
+                                style: GoogleFonts.nunito(fontSize: 16)),
+                          ),
+                          Switch.adaptive(
+                            value: controller.isBuddyBeeMode.value,
+                            onChanged: controller.toggleBuddyBeeMode,
+                          ),
+                        ],
+                      )),
+                      const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.lockIcon),
                         title: 'change_password'.tr,
@@ -192,6 +207,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         onTap: controller.onLogoutTap,
                         textColor: Colors.red,
                       ),
+                      if (controller.canSwitchUser) ...[
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.delete),
@@ -199,6 +215,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         onTap: controller.onDeleteAccountTap,
                         textColor: Colors.red,
                       ),
+                      ],
                     ],
                   ),
                 ),
@@ -241,6 +258,14 @@ class ProfileScreen extends GetView<ProfileController> {
                 value: SpeechMode.buildThenSpeak,
                 groupValue: selected,
                 title: Text('speech_mode_build'.tr),
+                onChanged: (mode) {
+                  if (mode != null) SpeechModeService.to.setMode(mode);
+                },
+              ),
+              RadioListTile<SpeechMode>(
+                value: SpeechMode.speakImmediatelyOnly,
+                groupValue: selected,
+                title: Text('speech_mode_immediate_only'.tr),
                 onChanged: (mode) {
                   if (mode != null) SpeechModeService.to.setMode(mode);
                 },

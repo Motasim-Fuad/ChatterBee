@@ -1,3 +1,4 @@
+import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/revenueCat_services.dart';
@@ -39,14 +40,7 @@ class ProAccessGate {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: const BoxDecoration(
-                  color: Color(0xFFFFF4CF), shape: BoxShape.circle),
-              child: const Icon(Icons.workspace_premium_rounded,
-                  size: 40, color: Color(0xFFF4B400)),
-            ),
+            Image.asset(ImagesLink.logo, height: 72, fit: BoxFit.contain),
             const SizedBox(height: 16),
             const Text('Unlock ChatterBee Pro',
                 textAlign: TextAlign.center,
@@ -110,52 +104,6 @@ class ProAccessGate {
   }
 
   static void show({required String featureName}) {
-    Get.dialog(Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Icon(Icons.workspace_premium, color: Colors.amber),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: Text('pro_required'.tr,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w700))),
-            ]),
-            const SizedBox(height: 12),
-            Text('${'pro_feature_desc'.tr} "$featureName"',
-                style: const TextStyle(color: Color(0xFF636F85), height: 1.35)),
-            const SizedBox(height: 18),
-            Wrap(
-                alignment: WrapAlignment.end,
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-              TextButton(onPressed: Get.back, child: Text('cancel'.tr)),
-              ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                    Get.toNamed(AppRoutes.SUBSCRIPTION);
-                  },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(9))),
-                  child: Text('upgrade_to_pro'.tr,
-                      style: const TextStyle(color: Colors.white))),
-            ]),
-          ]),
-        ),
-      ),
-    ));
+    showUnlockProDialog();
   }
 }
