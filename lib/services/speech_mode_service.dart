@@ -45,7 +45,7 @@ class SpeechModeService extends GetxService {
       case 'immediateOnly':
         return SpeechMode.speakImmediatelyOnly;
       default:
-        return SpeechMode.speakImmediately;
+        return SpeechMode.buildThenSpeak;
     }
   }
 }

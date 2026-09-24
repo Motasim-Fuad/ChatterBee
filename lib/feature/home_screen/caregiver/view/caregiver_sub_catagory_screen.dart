@@ -99,7 +99,14 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
         }
 
         final subs = controller.subCategories.toList();
-        if (subs.isEmpty) {
+        final directItems = controller.directItems.toList();
+
+        // Direct item thakle prothom card hishebe "category er nijer item" dekhabe
+        // (edit mode e dekhabe na)
+        final extra =
+        (directItems.isNotEmpty && !controller.isEditMode.value) ? 1 : 0;
+
+        if (subs.isEmpty && extra == 0) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -140,9 +147,24 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 childAspectRatio: 0.82,
               ),
-              itemCount: subs.length,
+              itemCount: extra + subs.length,
               itemBuilder: (_, i) {
-                final sub = subs[i];
+                if (extra == 1 && i == 0) {
+                  return CgFolderCard(
+                    imageUrl: AppUrl.mediaUrl(
+                        controller.parentCategory.imageIcon),
+                    label: controller.parentCategory.name,
+                    subLabel:
+                    '${directItems.length} ${'items_count_suffix'.tr}',
+                    bgColor: _parseColor(controller.parentCategory.color,
+                        const Color(0xFFB5CFD1)),
+                    icon: Icons.apps_rounded,
+                    isSelected: false,
+                    showEditBtn: false,
+                    onTap: controller.openDirectItems,
+                  );
+                }
+                final sub = subs[i - extra];
                 return Obx(() {
                   final isSelected =
                   controller.selectedIds.contains(sub.id);

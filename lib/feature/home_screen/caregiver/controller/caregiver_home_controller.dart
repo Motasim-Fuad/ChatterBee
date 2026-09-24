@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:chatter_bee/Repository/caregiver_repository/caregiver_customization_repository.dart';
 import 'package:chatter_bee/config/app_url.dart';
@@ -20,6 +21,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const List<Map<String, String>> kColorOptions = [
   {'hex': '#B5CFD1', 'label': 'Teal'},
@@ -55,8 +57,13 @@ class CaregiverHomeController extends GetxController
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
-  final RxInt homePageIndex = 0.obs;
-  final pageController = PageController();
+
+  // Home <-> All Categories swipe
+  final PageController pageController = PageController();
+  final RxInt currentPage = 0.obs;
+
+  // Quick speak swap: je card prothom select kora hoyeche tar index
+  final RxInt swapFromIndex = (-1).obs;
 
   List<CategoryModel> get apiCategories => categories;
 
@@ -161,6 +168,7 @@ class CaregiverHomeController extends GetxController
     if (response.isSuccess && response.data != null) {
       categories.assignAll(response.data!.categories);
       quickSpeaks.assignAll(response.data!.quickSpeaks);
+      await _applySavedOrder();
     } else {
       categories.clear();
       quickSpeaks.clear();
@@ -177,7 +185,16 @@ class CaregiverHomeController extends GetxController
     if (!isEditMode.value) selectedCategoryIds.clear();
   }
 
-  void toggleQsEditMode() => isQsEditMode.value = !isQsEditMode.value;
+  void toggleQsEditMode() {
+    isQsEditMode.value = !isQsEditMode.value;
+    swapFromIndex.value = -1;
+  }
+
+  void goToPage(int i) {
+    if (!pageController.hasClients) return;
+    pageController.animateToPage(i,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
 
   void toggleCategorySelection(int id) {
     if (selectedCategoryIds.contains(id)) {
@@ -197,16 +214,6 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-
-  void onTalkItemTap(ItemModel item) {
-    SentenceBarService.to.addToken(
-      text: item.word ?? '',
-      imageUrl: item.imageIcon ?? '',
-      colorHex: item.color,
-      lang: _currentLang,
-    );
-  }
-
   void selectQuickSpeak(QuickSpeakModel qs) {
     selectedQuickSpeakId.value = qs.id;
     SentenceBarService.to.addToken(
@@ -215,6 +222,69 @@ class CaregiverHomeController extends GetxController
       colorHex: qs.color,
       lang: _currentLang,
     );
+  }
+
+  // ───────── Quick Speak tap / swap ─────────
+  /// Normal mode: word select hobe.
+  /// Edit mode: prothom tap = source select, dwitiyo tap = duita card swap.
+  void onQuickSpeakTap(int index, QuickSpeakModel qs) {
+    if (!isQsEditMode.value) {
+      selectQuickSpeak(qs);
+      return;
+    }
+    if (swapFromIndex.value == -1) {
+      swapFromIndex.value = index;
+    } else if (swapFromIndex.value == index) {
+      swapFromIndex.value = -1; // same card abar tap = cancel
+    } else {
+      swapQuickSpeaks(swapFromIndex.value, index);
+      swapFromIndex.value = -1;
+    }
+  }
+
+  void swapQuickSpeaks(int a, int b) {
+    if (a < 0 ||
+        b < 0 ||
+        a >= quickSpeaks.length ||
+        b >= quickSpeaks.length) {
+      return;
+    }
+    final tmp = quickSpeaks[a];
+    quickSpeaks[a] = quickSpeaks[b];
+    quickSpeaks[b] = tmp;
+    quickSpeaks.refresh();
+    _saveQsOrder();
+  }
+
+  String get _qsOrderKey =>
+      'qs_order_${CommunicatorSessionService.to.communicatorId.value}';
+
+  Future<void> _saveQsOrder() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          _qsOrderKey, jsonEncode(quickSpeaks.map((e) => e.id).toList()));
+      // TODO: backend-e quick speak order update API thakle ekhane call koro
+    } catch (e) {
+      debugPrint('save qs order error: $e');
+    }
+  }
+
+  Future<void> _applySavedOrder() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_qsOrderKey);
+      if (raw == null) return;
+      final saved = (jsonDecode(raw) as List).map((e) => e as int).toList();
+      final pos = {for (var i = 0; i < saved.length; i++) saved[i]: i};
+      final list = quickSpeaks.toList();
+      final orig = {for (var i = 0; i < list.length; i++) list[i].id: i};
+      int key(QuickSpeakModel q) => pos[q.id] ?? (100000 + orig[q.id]!);
+      list.sort((a, b) => key(a).compareTo(key(b)));
+      quickSpeaks.assignAll(list);
+    } catch (e) {
+      debugPrint('apply qs order error: $e');
+    }
   }
 
   void promptTypedText() {
@@ -236,6 +306,8 @@ class CaregiverHomeController extends GetxController
     await SentenceBarService.to.speakAll(lang: _currentLang);
   }
 
+  /// Sob category + sub-category er item ekta flat list e.
+  /// Shudhu Quick Speak picker e use hoy.
   List<ItemModel> get allAacButtons {
     final out = <ItemModel>[];
     for (final cat in categories) {
@@ -245,13 +317,6 @@ class CaregiverHomeController extends GetxController
       }
     }
     return out;
-  }
-
-  List<ItemModel> get homeTalkButtons {
-    final q = searchQuery.value.trim().toLowerCase();
-    final out = allAacButtons;
-    if (q.isEmpty) return out;
-    return out.where((i) => (i.word ?? '').toLowerCase().contains(q)).toList();
   }
 
   List<QuickSpeakModel> get filteredQuickSpeaks {
@@ -271,7 +336,7 @@ class CaregiverHomeController extends GetxController
       if (c.name.toLowerCase().contains(q)) return true;
       if (c.items.any(matchesItem)) return true;
       return c.subCategories.any((s) =>
-          s.name.toLowerCase().contains(q) || s.items.any(matchesItem));
+      s.name.toLowerCase().contains(q) || s.items.any(matchesItem));
     }).toList();
   }
 
@@ -390,50 +455,50 @@ class CaregiverHomeController extends GetxController
               child: buttons.isEmpty
                   ? Center(child: Text('no_categories_available'.tr))
                   : GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.82,
+                padding: const EdgeInsets.all(16),
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.82,
+                ),
+                itemCount: buttons.length,
+                itemBuilder: (_, i) {
+                  final item = buttons[i];
+                  return GestureDetector(
+                    onTap: () {
+                      Get.back();
+                      applyAacButtonToQuickSpeak(item);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF7F7F7),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      itemCount: buttons.length,
-                      itemBuilder: (_, i) {
-                        final item = buttons[i];
-                        return GestureDetector(
-                          onTap: () {
-                            Get.back();
-                            applyAacButtonToQuickSpeak(item);
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF7F7F7),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: item.imageIcon != null &&
-                                          item.imageIcon!.isNotEmpty
-                                      ? Image.network(
-                                          AppUrl.mediaUrl(item.imageIcon) ?? '',
-                                          fit: BoxFit.contain,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(Icons.image_outlined),
-                                        )
-                                      : const Icon(Icons.image_outlined),
-                                ),
-                                Text(item.word ?? '',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis),
-                              ],
-                            ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: item.imageIcon != null &&
+                                item.imageIcon!.isNotEmpty
+                                ? Image.network(
+                              AppUrl.mediaUrl(item.imageIcon) ?? '',
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                              const Icon(Icons.image_outlined),
+                            )
+                                : const Icon(Icons.image_outlined),
                           ),
-                        );
-                      },
+                          Text(item.word ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -631,10 +696,10 @@ class CaregiverHomeController extends GetxController
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
+    pageController.dispose();
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();
     _audioPlayer.dispose();
-    pageController.dispose();
     _isRecorderInitialized = false;
     super.onClose();
   }
@@ -799,76 +864,76 @@ class _QuickSpeakSheetState extends State<_QuickSpeakSheet> {
               ? _ImagePreview(file: c.qsImageFile.value!, onRemove: c.removeQsImage)
               : _PickImageBtn(onTap: c.pickQsImage)),
           if (false) ...[
-          const SizedBox(height: 16),
-          Text('voice_audio_speak'.tr,
-              style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
-          Obx(() {
-            final hasAudio = c.qsAudioFile.value != null;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(children: [
-                  _AudioBtn(
-                    icon: c.qsIsRecording.value ? Icons.stop : Icons.mic,
-                    color: c.qsIsRecording.value ? Colors.red : const Color(0xFFFFC857),
-                    label: c.qsIsRecording.value ? 'stop'.tr : 'record'.tr,
-                    onTap: c.toggleQsRecording,
-                  ),
-                  if (hasAudio) ...[
-                    const SizedBox(width: 10),
+            const SizedBox(height: 16),
+            Text('voice_audio_speak'.tr,
+                style: const TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Obx(() {
+              final hasAudio = c.qsAudioFile.value != null;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
                     _AudioBtn(
-                      icon: c.qsIsPlayingAudio.value ? Icons.stop : Icons.play_arrow,
-                      color: const Color(0xFF4CAF50),
-                      label: c.qsIsPlayingAudio.value ? 'stop'.tr : 'play'.tr,
-                      onTap: c.toggleQsPlayback,
+                      icon: c.qsIsRecording.value ? Icons.stop : Icons.mic,
+                      color: c.qsIsRecording.value ? Colors.red : const Color(0xFFFFC857),
+                      label: c.qsIsRecording.value ? 'stop'.tr : 'record'.tr,
+                      onTap: c.toggleQsRecording,
                     ),
-                    const SizedBox(width: 10),
-                    _AudioBtn(
-                      icon: Icons.delete_outline,
-                      color: Colors.red,
-                      label: 'delete'.tr,
-                      onTap: c.removeQsAudio,
+                    if (hasAudio) ...[
+                      const SizedBox(width: 10),
+                      _AudioBtn(
+                        icon: c.qsIsPlayingAudio.value ? Icons.stop : Icons.play_arrow,
+                        color: const Color(0xFF4CAF50),
+                        label: c.qsIsPlayingAudio.value ? 'stop'.tr : 'play'.tr,
+                        onTap: c.toggleQsPlayback,
+                      ),
+                      const SizedBox(width: 10),
+                      _AudioBtn(
+                        icon: Icons.delete_outline,
+                        color: Colors.red,
+                        label: 'delete'.tr,
+                        onTap: c.removeQsAudio,
+                      ),
+                    ],
+                  ]),
+                  if (c.qsIsRecording.value) ...[
+                    const SizedBox(height: 8),
+                    Row(children: [
+                      Container(width: 8, height: 8,
+                          decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                      const SizedBox(width: 6),
+                      Text('recording_indicator'.tr,
+                          style: const TextStyle(color: Colors.red, fontSize: 12)),
+                    ]),
+                  ],
+                  if (hasAudio && !c.qsIsRecording.value) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE8F5E9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.audio_file, color: Color(0xFF4CAF50), size: 16),
+                          const SizedBox(width: 6),
+                          Text(
+                            c.qsAudioFileName.value.isEmpty ? 'audio_ready'.tr : c.qsAudioFileName.value,
+                            style: const TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                ]),
-                if (c.qsIsRecording.value) ...[
-                  const SizedBox(height: 8),
-                  Row(children: [
-                    Container(width: 8, height: 8,
-                        decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
-                    const SizedBox(width: 6),
-                    Text('recording_indicator'.tr,
-                        style: const TextStyle(color: Colors.red, fontSize: 12)),
-                  ]),
+                  const SizedBox(height: 4),
+                  Text('record_voice_hint'.tr,
+                      style: TextStyle(fontSize: 11, color: Colors.grey[500])),
                 ],
-                if (hasAudio && !c.qsIsRecording.value) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.audio_file, color: Color(0xFF4CAF50), size: 16),
-                        const SizedBox(width: 6),
-                        Text(
-                          c.qsAudioFileName.value.isEmpty ? 'audio_ready'.tr : c.qsAudioFileName.value,
-                          style: const TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 4),
-                Text('record_voice_hint'.tr,
-                    style: TextStyle(fontSize: 11, color: Colors.grey[500])),
-              ],
-            );
-          }),
+              );
+            }),
           ],
           const SizedBox(height: 24),
           Obx(() => _SaveBtn(

@@ -16,6 +16,10 @@ class CaregiverSubCategoryController extends GetxController {
   late final CategoryModel parentCategory;
 
   final RxList<SubCategoryModel> subCategories = <SubCategoryModel>[].obs;
+
+  /// Category er nijer direct item (sub-category chhara).
+  final RxList<ItemModel> directItems = <ItemModel>[].obs;
+
   final RxBool isLoading = false.obs;
   final RxBool isEditMode = false.obs;
   final RxSet<int> selectedIds = <int>{}.obs;
@@ -33,6 +37,7 @@ class CaregiverSubCategoryController extends GetxController {
     super.onInit();
     parentCategory = Get.arguments as CategoryModel;
     subCategories.value = parentCategory.subCategories;
+    directItems.value = parentCategory.items;
   }
 
   // Normalize Lang
@@ -73,7 +78,10 @@ class CaregiverSubCategoryController extends GetxController {
     if (response.isSuccess && response.data != null) {
       final updated = response.data!.categories
           .firstWhereOrNull((c) => c.id == parentCategory.id);
-      if (updated != null) subCategories.value = updated.subCategories;
+      if (updated != null) {
+        subCategories.value = updated.subCategories;
+        directItems.value = updated.items;
+      }
 
       if (Get.isRegistered<CaregiverHomeController>()) {
         Get.find<CaregiverHomeController>().loadContent();
@@ -100,6 +108,11 @@ class CaregiverSubCategoryController extends GetxController {
     } else {
       Get.toNamed('/item-screen', arguments: sub);
     }
+  }
+
+  /// Category er direct item gulo dekhate.
+  void openDirectItems() {
+    Get.toNamed('/item-screen', arguments: parentCategory);
   }
 
   void showAddSheet() {

@@ -38,7 +38,10 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               size: 18, color: Color(0xFF1A1A1A)),
-          onPressed: () => Get.back(),
+          onPressed: () {
+            controller.swapFromIndex.value = -1;
+            Get.back();
+          },
         ),
         title: Text('quick_speak'.tr,
             style: GoogleFonts.nunito(
@@ -95,6 +98,10 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
         return Obx(() {
           final extra = controller.isQsEditMode.value ? 0 : 1;
           final qsList = controller.quickSpeaks.toList();
+          final editing = controller.isQsEditMode.value;
+          final swapIdx = controller.swapFromIndex.value;
+          final selectedQsId = controller.selectedQuickSpeakId.value;
+
           return Column(children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -104,11 +111,21 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                 onClear: controller.clearQuickSpeak,
               ),
             ),
+            if (editing)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                child: Text(
+                  'swap_hint'.tr,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                ),
+              ),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: controller.refresh,
                 color: const Color(0xFFFFC857),
                 child: GridView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: cols,
@@ -129,19 +146,18 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                         onTap: controller.promptTypedText,
                       );
                     }
-                    final qs = qsList[i - extra];
+                    // idx = quickSpeaks list-er asol index (swap er jonno)
+                    final idx = i - extra;
+                    final qs = qsList[idx];
                     return CgFolderCard(
                       imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                       label: qs.word ?? '',
-                      bgColor: _parseColor(qs.color, const Color(0xFFFFD700)),
+                      bgColor:
+                      _parseColor(qs.color, const Color(0xFFFFD700)),
                       isSelected:
-                          controller.selectedQuickSpeakId.value == qs.id,
-                      showEditBtn: controller.isQsEditMode.value,
-                      onTap: () {
-                        if (!controller.isQsEditMode.value) {
-                          controller.selectQuickSpeak(qs);
-                        }
-                      },
+                      editing ? swapIdx == idx : selectedQsId == qs.id,
+                      showEditBtn: editing,
+                      onTap: () => controller.onQuickSpeakTap(idx, qs),
                       onEditTap: () =>
                           controller.showEditQuickSpeakSheet(qs),
                     );

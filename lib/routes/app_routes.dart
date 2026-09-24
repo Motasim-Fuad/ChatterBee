@@ -65,6 +65,7 @@ import 'package:chatter_bee/feature/home_screen/caregiver/buinding/caregiver_ite
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_all_categories_screen.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_all_quick_speaks_screen.dart';
+import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_item_screen.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_sub_catagory_screen.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/buinding/communicator_home_binding.dart';
@@ -313,6 +314,11 @@ final List<GetPage> routes = [
     binding: EditActivityBuinding(),
   ),
 
+  GetPage(
+    name: AppRoutes.CAREGIVER_Home_Screen,
+    page: () => const CaregiverHomeScreen(),
+  ),
+
 
   GetPage(
   name: AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS,
@@ -413,5 +419,6 @@ class AppRoutes {
 
   static const CAREGIVER_ALL_QUICK_SPEAKS = '/caregiver-all-quick-speaks';
   static const CAREGIVER_ALL_CATEGORIES   = '/caregiver-all-categories';
+  static const CAREGIVER_Home_Screen   = '/caregiver-Home-screen';
 
 }

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
@@ -53,6 +54,9 @@ class CaregiverItemScreen extends StatelessWidget {
               color: const Color(0xFF1A1A1A)),
         ),
         actions: [
+          // IconButton(onPressed: (){
+          //   AppRoutes.CAREGIVER_Home_Screen;
+          // }, icon: Icon(Icons.home),),
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(

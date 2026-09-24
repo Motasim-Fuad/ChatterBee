@@ -57,7 +57,8 @@ class AppTranslations extends Translations {
       'full_name': 'Full Name',
       'enter_full_name': 'Enter your full name',
       'buddy_bee_mode': 'BuddyBee',
-      'buddy_bee_desc': 'Toggle ON for a child-friendly, colorful\nversion. Toggle OFF for a plain adult version.',
+      'buddy_bee_desc':
+          'Toggle ON for a child-friendly, colorful\nversion. Toggle OFF for a plain adult version.',
       'pro_required': 'ChatterBee Pro Required',
       'pro_feature_desc': 'Upgrade to ChatterBee Pro to use',
       'upgrade_to_pro': 'Upgrade to Pro',
@@ -91,9 +92,11 @@ class AppTranslations extends Translations {
       'password_changed': 'Password changed successfully',
 
       'unlock_pro': 'Unlock ChatterBee Pro',
-      'unlock_pro_desc': 'Unlock powerful tools that help caregivers stay connected while creating a more personalized communication experience.',
+      'unlock_pro_desc':
+          'Unlock powerful tools that help caregivers stay connected while creating a more personalized communication experience.',
       'free_plan': 'ChatterBee Basic (Free)',
-      'free_feature_1': 'AAC Communication System: A simple, symbol-based communication board featuring a fixed core phrase row, intuitive categories, and clear visuals designed for everyday communication.',
+      'free_feature_1':
+          'AAC Communication System: A simple, symbol-based communication board featuring a fixed core phrase row, intuitive categories, and clear visuals designed for everyday communication.',
       'free_feature_2': 'Buddy mode is disabled',
       'free_feature_3': 'No push notifications',
       'free_feature_4': 'No multiple account control',
@@ -120,12 +123,15 @@ class AppTranslations extends Translations {
       'my_communicators': 'My Communicators',
       'invite': 'Invite',
       'connected_profiles': 'Connected Profiles',
-      'tap_to_switch': 'Tap a profile to switch. Selected profile is highlighted in green.',
+      'tap_to_switch':
+          'Tap a profile to switch. Selected profile is highlighted in green.',
       'pending_invitations': 'Pending Invitations',
       'select_active_communicator': 'Select Active Communicator',
-      'tap_profile_below': 'Tap a profile below to switch to that communicator\'s board.',
+      'tap_profile_below':
+          'Tap a profile below to switch to that communicator\'s board.',
       'no_communicators_yet': 'No Communicators Yet',
-      'invite_communicator_desc': 'Invite a communicator using their\nemail address to get started.',
+      'invite_communicator_desc':
+          'Invite a communicator using their\nemail address to get started.',
       'send_invitation': 'Send Invitation',
       'active': 'Active',
       'invitation_pending': 'Invitation pending…',
@@ -134,7 +140,8 @@ class AppTranslations extends Translations {
       'disconnect_confirm_title': 'Disconnect?',
       'disconnect_confirm_msg': 'Are you sure you want to disconnect from',
       'invite_communicator': 'Invite Communicator',
-      'invite_communicator_hint': 'Enter the email address of the communicator you want to connect with.',
+      'invite_communicator_hint':
+          'Enter the email address of the communicator you want to connect with.',
       'enter_email': 'Please enter communicator\'s email',
       'valid_email': 'Please enter a valid email address',
       'invitation_sent_title': 'Invitation Sent!',
@@ -148,7 +155,8 @@ class AppTranslations extends Translations {
       'has_been_disconnected': 'has been disconnected.',
       'invitations': 'Invitations',
       'no_pending_invitations': 'No Pending Invitations',
-      'no_pending_desc': 'When a caregiver sends you an invitation,\nit will appear here.',
+      'no_pending_desc':
+          'When a caregiver sends you an invitation,\nit will appear here.',
       'wants_to_connect': 'wants to connect with you as your caregiver.',
       'decline': 'Decline',
       'accept': 'Accept',
@@ -169,7 +177,8 @@ class AppTranslations extends Translations {
       'upload_image_icon': 'Upload Image/Icon',
       'upload_image': 'Upload Image',
       'custom_image_upload': 'Custom image upload',
-      'upload_image_desc': 'Image must be in JPG or PNG format\nand at least 100*100 pixels.',
+      'upload_image_desc':
+          'Image must be in JPG or PNG format\nand at least 100*100 pixels.',
       'tap_to_change': 'Tap to change image',
       'no_activities_today': 'No activities today',
       'no_activities_desc': 'Tap the button below to add\nyour first activity.',
@@ -255,9 +264,9 @@ class AppTranslations extends Translations {
       'tap_quick_speak_first': 'Please tap a Quick Speak card first',
       'speak': 'Speak',
 
-      'see_all'           : 'See All',
-      'search_categories' : 'Search categories...',
-      'no_results_found'  : 'No results found',
+      'see_all': 'See All',
+      'search_categories': 'Search categories...',
+      'no_results_found': 'No results found',
       'search_symbols': 'Search symbols',
       'tap_to_type': 'Tap to Type',
       'type_to_speak_hint': 'Type a word or sentence',
@@ -279,7 +288,12 @@ class AppTranslations extends Translations {
       'pro_feature_2': 'Linked Caregiver Accounts',
       'pro_feature_3': 'BuddyBee Encouragement',
       'pro_feature_4': 'Visual Routines',
-      'pro_feature_5': 'Advanced Customization'
+      'pro_feature_5': 'Advanced Customization',
+
+      'see_whats_next': 'See what\'s next',
+      'type_and_hear_it': 'Type and hear it',
+      'browse_all_categories': 'Browse everything',
+      'swap_hint': 'Tap one card, then tap another to swap their places',
     },
 
     'ar_SA': {
@@ -336,7 +350,8 @@ class AppTranslations extends Translations {
       'full_name': 'الاسم الكامل',
       'enter_full_name': 'أدخل اسمك الكامل',
       'buddy_bee_mode': 'وضع بادي بي',
-      'buddy_bee_desc': 'فعّل للحصول على نسخة ملونة مناسبة للأطفال.\nأوقف للحصول على نسخة بسيطة للبالغين.',
+      'buddy_bee_desc':
+          'فعّل للحصول على نسخة ملونة مناسبة للأطفال.\nأوقف للحصول على نسخة بسيطة للبالغين.',
       'pro_required': 'يتطلب ChatterBee Pro',
       'pro_feature_desc': 'قم بالترقية إلى ChatterBee Pro لاستخدام',
       'upgrade_to_pro': 'الترقية إلى Pro',
@@ -370,7 +385,8 @@ class AppTranslations extends Translations {
       'password_changed': 'تم تغيير كلمة المرور بنجاح',
 
       'unlock_pro': 'افتح ChatterBee Pro',
-      'unlock_pro_desc': 'امنح متواصلك المزيد من طرق التواصل مع ChatterBee Pro.',
+      'unlock_pro_desc':
+          'امنح متواصلك المزيد من طرق التواصل مع ChatterBee Pro.',
       'free_plan': 'الخطة المجانية',
       'free_feature_1': 'ميزات محدودة',
       'free_feature_2': 'مقعد مقدم رعاية واحد',
@@ -404,7 +420,8 @@ class AppTranslations extends Translations {
       'select_active_communicator': 'اختر المتواصل النشط',
       'tap_profile_below': 'اضغط على ملف أدناه للتبديل إليه.',
       'no_communicators_yet': 'لا يوجد متواصلون بعد',
-      'invite_communicator_desc': 'ادعُ متواصلاً باستخدام\nبريده الإلكتروني للبدء.',
+      'invite_communicator_desc':
+          'ادعُ متواصلاً باستخدام\nبريده الإلكتروني للبدء.',
       'send_invitation': 'إرسال دعوة',
       'active': 'نشط',
       'invitation_pending': 'الدعوة معلقة…',
@@ -413,7 +430,8 @@ class AppTranslations extends Translations {
       'disconnect_confirm_title': 'قطع الاتصال؟',
       'disconnect_confirm_msg': 'هل أنت متأكد أنك تريد قطع الاتصال مع',
       'invite_communicator': 'دعوة متواصل',
-      'invite_communicator_hint': 'أدخل البريد الإلكتروني للمتواصل الذي تريد التواصل معه.',
+      'invite_communicator_hint':
+          'أدخل البريد الإلكتروني للمتواصل الذي تريد التواصل معه.',
       'enter_email': 'يرجى إدخال بريد المتواصل الإلكتروني',
       'valid_email': 'يرجى إدخال بريد إلكتروني صالح',
       'invitation_sent_title': 'تم إرسال الدعوة!',
@@ -448,7 +466,8 @@ class AppTranslations extends Translations {
       'upload_image_icon': 'رفع صورة/أيقونة',
       'upload_image': 'رفع صورة',
       'custom_image_upload': 'رفع صورة مخصصة',
-      'upload_image_desc': 'يجب أن تكون الصورة بصيغة JPG أو PNG\nوأبعادها 100×100 بكسل على الأقل.',
+      'upload_image_desc':
+          'يجب أن تكون الصورة بصيغة JPG أو PNG\nوأبعادها 100×100 بكسل على الأقل.',
       'tap_to_change': 'اضغط لتغيير الصورة',
       'no_activities_today': 'لا توجد أنشطة اليوم',
       'no_activities_desc': 'اضغط الزر أدناه لإضافة\nنشاطك الأول.',
@@ -546,8 +565,7 @@ class AppTranslations extends Translations {
       'text_to_speak': 'نص إلى كلام',
       'see_all': 'عرض الكل',
       'search_categories': 'البحث في الفئات...',
-      'no_results_found': 'لا توجد نتائج'
-
+      'no_results_found': 'لا توجد نتائج',
     },
 
     'es_ES': {
@@ -598,13 +616,15 @@ class AppTranslations extends Translations {
       'profile_picture_updated': 'Foto de perfil actualizada',
       'profile_picture_removed': 'Foto de perfil eliminada',
       'account_deleted': 'Cuenta eliminada exitosamente',
-      'failed_delete_account': 'Error al eliminar la cuenta. Inténtalo de nuevo.',
+      'failed_delete_account':
+          'Error al eliminar la cuenta. Inténtalo de nuevo.',
       'logged_out': 'Sesión cerrada exitosamente',
 
       'full_name': 'Nombre Completo',
       'enter_full_name': 'Ingresa tu nombre completo',
       'buddy_bee_mode': 'Modo Buddy Bee',
-      'buddy_bee_desc': 'Activa para una versión colorida para niños.\nDesactiva para una versión simple para adultos.',
+      'buddy_bee_desc':
+          'Activa para una versión colorida para niños.\nDesactiva para una versión simple para adultos.',
       'pro_required': 'Se requiere ChatterBee Pro',
       'pro_feature_desc': 'Actualiza a ChatterBee Pro para usar',
       'upgrade_to_pro': 'Actualizar a Pro',
@@ -633,12 +653,14 @@ class AppTranslations extends Translations {
       'confirm_password': 'Confirmar Contraseña',
       'confirm_changes': 'Confirmar Cambios',
       'fill_all_fields': 'Por favor completa todos los campos',
-      'password_min_length': 'La nueva contraseña debe tener al menos 8 caracteres',
+      'password_min_length':
+          'La nueva contraseña debe tener al menos 8 caracteres',
       'passwords_not_match': 'Las nuevas contraseñas no coinciden',
       'password_changed': 'Contraseña cambiada exitosamente',
 
       'unlock_pro': 'Desbloquear ChatterBee Pro',
-      'unlock_pro_desc': 'Dale a tu comunicador más formas de conectar con ChatterBee Pro.',
+      'unlock_pro_desc':
+          'Dale a tu comunicador más formas de conectar con ChatterBee Pro.',
       'free_plan': 'Plan Gratuito',
       'free_feature_1': 'No se puede cambiar el idioma',
       'free_feature_2': 'Modo Buddy deshabilitado',
@@ -667,12 +689,15 @@ class AppTranslations extends Translations {
       'my_communicators': 'Mis Comunicadores',
       'invite': 'Invitar',
       'connected_profiles': 'Perfiles Conectados',
-      'tap_to_switch': 'Toca un perfil para cambiar. El perfil seleccionado está en verde.',
+      'tap_to_switch':
+          'Toca un perfil para cambiar. El perfil seleccionado está en verde.',
       'pending_invitations': 'Invitaciones Pendientes',
       'select_active_communicator': 'Seleccionar Comunicador Activo',
-      'tap_profile_below': 'Toca un perfil abajo para cambiar a ese comunicador.',
+      'tap_profile_below':
+          'Toca un perfil abajo para cambiar a ese comunicador.',
       'no_communicators_yet': 'Sin Comunicadores Aún',
-      'invite_communicator_desc': 'Invita a un comunicador usando su\ncorreo electrónico para comenzar.',
+      'invite_communicator_desc':
+          'Invita a un comunicador usando su\ncorreo electrónico para comenzar.',
       'send_invitation': 'Enviar Invitación',
       'active': 'Activo',
       'invitation_pending': 'Invitación pendiente…',
@@ -681,7 +706,8 @@ class AppTranslations extends Translations {
       'disconnect_confirm_title': '¿Desconectar?',
       'disconnect_confirm_msg': '¿Estás seguro de que quieres desconectarte de',
       'invite_communicator': 'Invitar Comunicador',
-      'invite_communicator_hint': 'Ingresa el correo del comunicador con quien quieres conectarte.',
+      'invite_communicator_hint':
+          'Ingresa el correo del comunicador con quien quieres conectarte.',
       'enter_email': 'Por favor ingresa el correo del comunicador',
       'valid_email': 'Por favor ingresa un correo válido',
       'invitation_sent_title': '¡Invitación Enviada!',
@@ -695,7 +721,8 @@ class AppTranslations extends Translations {
       'has_been_disconnected': 'ha sido desconectado.',
       'invitations': 'Invitaciones',
       'no_pending_invitations': 'Sin Invitaciones Pendientes',
-      'no_pending_desc': 'Cuando un cuidador te envíe una invitación,\naparecerá aquí.',
+      'no_pending_desc':
+          'Cuando un cuidador te envíe una invitación,\naparecerá aquí.',
       'wants_to_connect': 'quiere conectarse contigo como cuidador.',
       'decline': 'Rechazar',
       'accept': 'Aceptar',
@@ -716,10 +743,12 @@ class AppTranslations extends Translations {
       'upload_image_icon': 'Subir Imagen/Ícono',
       'upload_image': 'Subir Imagen',
       'custom_image_upload': 'Carga de imagen personalizada',
-      'upload_image_desc': 'La imagen debe estar en formato JPG o PNG\ny tener al menos 100×100 píxeles.',
+      'upload_image_desc':
+          'La imagen debe estar en formato JPG o PNG\ny tener al menos 100×100 píxeles.',
       'tap_to_change': 'Toca para cambiar la imagen',
       'no_activities_today': 'Sin actividades hoy',
-      'no_activities_desc': 'Toca el botón de abajo para agregar\ntu primera actividad.',
+      'no_activities_desc':
+          'Toca el botón de abajo para agregar\ntu primera actividad.',
       'activity_added': '¡agregado exitosamente!',
       'activity_deleted': 'ha sido eliminado.',
       'activity_updated': '¡actualizado exitosamente!',
@@ -742,7 +771,8 @@ class AppTranslations extends Translations {
 
       'select_quick_speak_hint': 'Selecciona una Habla Rápida...',
       'no_quick_speaks_yet': 'Sin hablas rápidas aún.',
-      'no_quick_speaks_hint': 'Sin hablas rápidas. Toca Agregar para crear una.',
+      'no_quick_speaks_hint':
+          'Sin hablas rápidas. Toca Agregar para crear una.',
       'no_categories_available': 'No hay categorías disponibles',
       'no_categories_yet': 'Sin categorías aún',
       'no_items_available': 'No hay elementos disponibles',
@@ -781,8 +811,10 @@ class AppTranslations extends Translations {
       'play': 'Reproducir',
       'recording_indicator': 'Grabando...',
       'audio_ready': 'Audio listo',
-      'record_voice_hint': 'Graba tu voz, luego toca Reproducir para previsualizar',
-      'record_voice_hint2': 'Graba la voz, luego toca Reproducir para previsualizar',
+      'record_voice_hint':
+          'Graba tu voz, luego toca Reproducir para previsualizar',
+      'record_voice_hint2':
+          'Graba la voz, luego toca Reproducir para previsualizar',
 
       'permission': 'Permiso',
       'mic_permission_required': 'Se requiere acceso al micrófono',
@@ -799,7 +831,8 @@ class AppTranslations extends Translations {
       'sub_category_updated': 'Subcategoría actualizada',
       'sub_category_created': 'Subcategoría creada',
       'select_first': 'Selecciona primero',
-      'tap_quick_speak_first': 'Por favor toca una tarjeta de Habla Rápida primero',
+      'tap_quick_speak_first':
+          'Por favor toca una tarjeta de Habla Rápida primero',
       'speak': 'Hablar',
       'search_symbols': 'Buscar símbolos',
       'tap_to_type': 'Tocar para escribir',
@@ -814,8 +847,12 @@ class AppTranslations extends Translations {
       'text_to_speak': 'Texto a voz',
       'see_all': 'Ver todo',
       'search_categories': 'Buscar categorías...',
-      'no_results_found': 'No se encontraron resultados'
-
+      'no_results_found': 'No se encontraron resultados',
+      'see_whats_next': 'Ver lo que sigue',
+      'type_and_hear_it': 'Escribe y escúchalo',
+      'browse_all_categories': 'Explorar todo',
+      'swap_hint':
+          'Toca una tarjeta y luego otra para intercambiar sus lugares',
     },
   };
 }
