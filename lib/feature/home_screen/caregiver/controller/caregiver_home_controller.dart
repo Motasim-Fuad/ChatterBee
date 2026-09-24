@@ -436,74 +436,144 @@ class CaregiverHomeController extends GetxController
 
   void _openAacButtonPicker({required String title}) {
     final buttons = allAacButtons;
+    final query = ''.obs;
+
     Get.bottomSheet(
-      Container(
-        height: Get.height * 0.72,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-              child: Text(title,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w700)),
+      Builder(builder: (ctx) {
+        final mq = MediaQuery.of(ctx);
+        final inset = mq.viewInsets.bottom;
+        final baseH = mq.size.height * 0.72;
+        final maxH = mq.size.height - inset - 80;
+        final sheetH = baseH < maxH ? baseH : maxH;
+
+        return Padding(
+          padding: EdgeInsets.only(bottom: inset),
+          child: Container(
+            height: sheetH,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
-            Expanded(
-              child: buttons.isEmpty
-                  ? Center(child: Text('no_categories_available'.tr))
-                  : GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: 0.82,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  child: Text(title,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w700)),
                 ),
-                itemCount: buttons.length,
-                itemBuilder: (_, i) {
-                  final item = buttons[i];
-                  return GestureDetector(
-                    onTap: () {
-                      Get.back();
-                      applyAacButtonToQuickSpeak(item);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF7F7F7),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: item.imageIcon != null &&
-                                item.imageIcon!.isNotEmpty
-                                ? Image.network(
-                              AppUrl.mediaUrl(item.imageIcon) ?? '',
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.image_outlined),
-                            )
-                                : const Icon(Icons.image_outlined),
-                          ),
-                          Text(item.word ?? '',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
-                        ],
+                // ───────── Search bar ─────────
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+                  child: Container(
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F7F7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE3E3E9)),
+                    ),
+                    child: TextField(
+                      onChanged: (v) => query.value = v,
+                      onTapOutside: (_) =>
+                          FocusManager.instance.primaryFocus?.unfocus(),
+                      decoration: InputDecoration(
+                        hintText: 'search_symbols'.tr,
+                        hintStyle:
+                        TextStyle(fontSize: 14, color: Colors.grey[400]),
+                        prefixIcon: const Icon(Icons.search,
+                            color: Color(0xFF7BC5D3), size: 20),
+                        border: InputBorder.none,
+                        contentPadding:
+                        const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                ),
+                Expanded(
+                  child: Obx(() {
+                    final q = query.value.trim().toLowerCase();
+                    final filtered = q.isEmpty
+                        ? buttons
+                        : buttons
+                        .where((b) =>
+                        (b.word ?? '').toLowerCase().contains(q))
+                        .toList();
+
+                    if (buttons.isEmpty) {
+                      return Center(
+                          child: Text('no_categories_available'.tr));
+                    }
+                    if (filtered.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.search_off_outlined,
+                                size: 48, color: Colors.grey[300]),
+                            const SizedBox(height: 8),
+                            Text('no_results_found'.tr,
+                                style: TextStyle(color: Colors.grey[500])),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return GridView.builder(
+                      keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        childAspectRatio: 0.82,
+                      ),
+                      itemCount: filtered.length,
+                      itemBuilder: (_, i) {
+                        final item = filtered[i];
+                        return GestureDetector(
+                          onTap: () {
+                            Get.back();
+                            applyAacButtonToQuickSpeak(item);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF7F7F7),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: item.imageIcon != null &&
+                                      item.imageIcon!.isNotEmpty
+                                      ? Image.network(
+                                    AppUrl.mediaUrl(item.imageIcon) ?? '',
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) =>
+                                    const Icon(Icons.image_outlined),
+                                  )
+                                      : const Icon(Icons.image_outlined),
+                                ),
+                                Text(item.word ?? '',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }),
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
     );
   }
 
