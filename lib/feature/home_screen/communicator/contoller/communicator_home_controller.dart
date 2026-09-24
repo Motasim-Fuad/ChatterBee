@@ -35,6 +35,8 @@ class CommunicatorHomeController extends GetxController
   final RxInt selectedQsId = (-1).obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+
+  /// 0 = Home page, 1 = All Categories page (PageView current page)
   final RxInt homePageIndex = 0.obs;
   final pageController = PageController();
 
@@ -69,6 +71,13 @@ class CommunicatorHomeController extends GetxController
   }
 
   String get _currentLang => currentLang;
+
+  // Home <-> All Categories page switch
+  void goToPage(int i) {
+    if (!pageController.hasClients) return;
+    pageController.animateToPage(i,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+  }
 
   // API call with buddy mode + lang routing
   Future<void> loadContent() async {

@@ -24,7 +24,10 @@ int _crossAxisCount(BuildContext context) {
 
 class CommunicatorAllCategoriesScreen
     extends GetView<CommunicatorHomeController> {
-  const CommunicatorAllCategoriesScreen({super.key});
+  /// true hole home-er PageView-er 2nd page hishebe dekhabe
+  /// (back = home page-e ferot, status bar padding nei).
+  final bool embedded;
+  const CommunicatorAllCategoriesScreen({super.key, this.embedded = false});
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +36,16 @@ class CommunicatorAllCategoriesScreen
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
+        primary: !embedded,
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               size: 18, color: Color(0xFF1A1A1A)),
-          onPressed: () => Get.back(),
+          onPressed: () => embedded ? controller.goToPage(0) : Get.back(),
         ),
         title: Text(
-          'tap_to_talk'.tr,
+          'all_categories'.tr,
           style: GoogleFonts.nunito(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -132,6 +136,7 @@ class CommunicatorAllCategoriesScreen
                   onRefresh: controller.refresh,
                   color: const Color(0xFFFFC857),
                   child: GridView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     gridDelegate:
                     SliverGridDelegateWithFixedCrossAxisCount(

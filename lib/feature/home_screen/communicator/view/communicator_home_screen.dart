@@ -5,6 +5,7 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/feature/home_screen/communicator/view/communicator_all_categories_screen.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -21,437 +22,397 @@ Color _parseColor(String hex, Color fallback) {
   }
 }
 
-int _crossAxisCount(BuildContext context) {
-  final w = MediaQuery.of(context).size.width;
-  if (w >= 900) return 6;
-  if (w >= 600) return 4;
-  return 3;
-}
+/// Home Quick Speak: 15 ta word + 1 ta "See all" = 16 cell (4 x 4).
+const int _kMaxHomeQs = 15;
 
-const int _kMaxHome = 8;
-
-class _ExploreItem {
-  final String labelKey;
-  final IconData icon;
-  final Color color;
-  final String route;
-  const _ExploreItem({
-    required this.labelKey,
-    required this.icon,
-    required this.color,
-    required this.route,
-  });
-}
+int _homeQsCols(BuildContext context) =>
+    MediaQuery.of(context).size.width >= 600 ? 8 : 4;
 
 
 class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
   const CommunicatorHomeScreen({super.key});
 
-  static const List<_ExploreItem> _exploreItems = [
-    _ExploreItem(
-      labelKey: 'my_schedule',
-      icon: Icons.calendar_month_outlined,
-      color: Color(0xFFFDD268),
-      route: AppRoutes.ACTIVITIES,
-    ),
-    _ExploreItem(
-      labelKey: 'text_to_speak',
-      icon: Icons.keyboard_voice_outlined,
-      color: Color(0xFFB5CFD1),
-      route: AppRoutes.TEXT_TO_SPEAK,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final profileController = Get.put(ProfileController());
+    Get.put(ProfileController());
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: SafeArea(
-        child: Obx(() {
-          if (controller.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFFFFC857)),
-            );
-          }
-
-          if (controller.loadError.value.isNotEmpty) {
-            return _DashboardLoadError(
-              message: controller.loadError.value,
-              onRetry: controller.loadContent,
-            );
-          }
-
-          return OrientationBuilder(builder: (context, _) {
-            final cols = _crossAxisCount(context);
-
-            return GestureDetector(
-              onHorizontalDragEnd: (details) {
-                final v = details.primaryVelocity ?? 0;
-                if (v < -250) controller.homePageIndex.value = 1;
-                if (v > 250) controller.homePageIndex.value = 0;
-              },
-              child: RefreshIndicator(
-              onRefresh: controller.refresh,
-              color: const Color(0xFFFFC857),
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Image.asset(ImagesLink.logo,
-                                  height: 47, fit: BoxFit.contain),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.search, color: Color(0xFF1A1A1A)),
-                                onPressed: () => controller.isSearchOpen.toggle(),
-                              ),
-                          GestureDetector(
-                            onTap: () => Get.toNamed(AppRoutes.PROFILE),
-                            child: CustomPaint(
-                              size: const Size(48, 48),
-                              painter: DashedCirclePainter(
-                                color: const Color(0xFFB5CFD1),
-                                strokeWidth: 1.0,
-                                dashWidth: 4.0,
-                                dashSpace: 3.1,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3),
-                                child: Obx(() => CircleAvatar(
-                                  radius: 22,
-                                  backgroundColor: Colors.grey.shade200,
-                                  backgroundImage: profileController
-                                      .avatarUrl.value.isNotEmpty
-                                      ? CachedNetworkImageProvider(
-                                      profileController.avatarUrl.value)
-                                      : null,
-                                  child: profileController
-                                      .avatarUrl.value.isEmpty
-                                      ? const Icon(Icons.person,
-                                      size: 26, color: Colors.grey)
-                                      : null,
-                                )),
-                              ),
-                            ),
-                          ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+        child: Column(children: [
+          Expanded(
+            child: PageView(
+              controller: controller.pageController,
+              onPageChanged: (i) => controller.homePageIndex.value = i,
+              children: const [
+                _CommHomePage(),
+                CommunicatorAllCategoriesScreen(embedded: true),
+              ],
+            ),
+          ),
+          Obx(() => Padding(
+            padding: const EdgeInsets.only(bottom: 8, top: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                2,
+                    (i) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: controller.homePageIndex.value == i
+                        ? const Color(0xFFFFC857)
+                        : Colors.grey.shade300,
                   ),
-
-                  SliverToBoxAdapter(
-                    child: Obx(() {
-                      if (!controller.isSearchOpen.value) {
-                        return const SizedBox.shrink();
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                        child: TextField(
-                          onChanged: (v) => controller.searchQuery.value = v,
-                          onTapOutside: (_) =>
-                              FocusManager.instance.primaryFocus?.unfocus(),
-                          decoration: InputDecoration(
-                            hintText: 'search_symbols'.tr,
-                            prefixIcon: const Icon(Icons.search),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Color(0xFFE3E3E9)),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-                      child: Obx(() => SentenceBar(
-                        hint: 'select_quick_speak_hint'.tr,
-                        lang: controller.currentLang,
-                        isCooldown: controller.isSpeakCooldown.value,
-                        cooldownCount: controller.cooldownCount.value,
-                        onSpeak: controller.speakQuickSpeak,
-                        onClear: controller.clearQuickSpeak,
-                      )),
-                    ),
-                  ),
-
-                  SliverToBoxAdapter(
-                    child: Obx(() => controller.homePageIndex.value == 0
-                        ? Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                      child: CommSectionHeader(title: 'quick_speak'.tr),
-                    )
-                        : const SizedBox.shrink()),
-                  ),
-
-                  Obx(() {
-                    if (controller.homePageIndex.value != 0) {
-                      return const SliverToBoxAdapter(child: SizedBox.shrink());
-                    }
-                    final qsList = controller.filteredQuickSpeaks;
-                    final hasMore = qsList.length > _kMaxHome;
-                    final showCount = hasMore ? _kMaxHome : qsList.length;
-                    final cellCount = 1 + showCount + (hasMore ? 1 : 0);
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                      sliver: SliverGrid(
-                        delegate: SliverChildBuilderDelegate(
-                              (_, i) {
-                            if (i == 0) {
-                              return CommCard(
-                                imageUrl: null,
-                                label: 'tap_to_type'.tr,
-                                bgColor: const Color(0xFFE8F6F8),
-                                icon: Icons.keyboard_alt_outlined,
-                                isSelected: false,
-                                onTap: controller.promptTypedText,
-                              );
-                            }
-                            if (hasMore && i == showCount + 1) {
-                              return CommSeeAllCard(
-                                onTap: () => Get.toNamed(
-                                    AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS),
-                              );
-                            }
-                            final qs = qsList[i - 1];
-                            return Obx(() => CommCard(
-                              imageUrl: AppUrl.mediaUrl(qs.imageIcon),
-                              label: qs.word ?? '',
-                              bgColor: _parseColor(
-                                  qs.color, const Color(0xFFFFD700)),
-                              isSelected:
-                              controller.selectedQsId.value == qs.id,
-                              onTap: () => controller.onQuickSpeakTap(qs),
-                            ));
-                          },
-                          childCount: cellCount,
-                        ),
-                        gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: cols,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.82,
-                        ),
-                      ),
-                    );
-                  }),
-
-                  SliverToBoxAdapter(
-                    child: Obx(() => Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                      child: CommSectionHeader(
-                          title: controller.homePageIndex.value == 0
-                              ? 'tap_to_talk'.tr
-                              : 'all_categories'.tr),
-                    )),
-                  ),
-
-                  Obx(() {
-                    if (controller.homePageIndex.value == 0) {
-                      final words = controller.homeTalkButtons;
-                      if (words.isEmpty) {
-                        return SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Text('no_categories_available'.tr,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.grey[500])),
-                          ),
-                        );
-                      }
-                      return SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                        sliver: SliverGrid(
-                          delegate: SliverChildBuilderDelegate(
-                            (_, i) {
-                              final item = words[i];
-                              return CommCard(
-                                imageUrl: AppUrl.mediaUrl(item.imageIcon),
-                                label: item.word ?? '',
-                                bgColor: _parseColor(
-                                    item.color, const Color(0xFFFFD700)),
-                                isSelected: false,
-                                onTap: () => controller.onSearchItemTap(item),
-                              );
-                            },
-                            childCount: words.length,
-                          ),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: cols,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            childAspectRatio: 0.82,
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (controller.filteredCategories.isEmpty) {
-                      return SliverToBoxAdapter(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Column(
-                              children: [
-                                Icon(Icons.category_outlined,
-                                    size: 60, color: Colors.grey[300]),
-                                const SizedBox(height: 12),
-                                Text('no_categories_available'.tr,
-                                    style:
-                                    TextStyle(color: Colors.grey[500])),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    final cats = controller.filteredCategories;
-                    return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                      sliver: SliverGrid(
-                        delegate: SliverChildBuilderDelegate(
-                              (_, i) {
-                            final cat = cats[i];
-                            return CommCard(
-                              imageUrl: AppUrl.mediaUrl(cat.imageIcon),
-                              label: cat.name,
-                              subLabel: cat.subCategoriesCount > 0
-                                  ? '${cat.subCategoriesCount} ${'sub_count_suffix'.tr}'
-                                  : null,
-                              bgColor: _parseColor(
-                                  cat.color, const Color(0xFFB5CFD1)),
-                              isSelected: false,
-                              onTap: () => controller.onCategoryTap(cat),
-                            );
-                          },
-                          childCount: cats.length,
-                        ),
-                        gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: cols,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.82,
-                        ),
-                      ),
-                    );
-                  }),
-
-                  Obx(() {
-                    if (controller.homePageIndex.value == 0) {
-                      return const SliverToBoxAdapter(child: SizedBox.shrink());
-                    }
-                    return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 10),
-                      child: CommSectionHeader(title: 'explore_more'.tr),
-                    ),
-                  );
-                  }),
-
-                  Obx(() {
-                    if (controller.homePageIndex.value == 0) {
-                      return const SliverToBoxAdapter(child: SizedBox.shrink());
-                    }
-                    return SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                    sliver: SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                            (_, i) {
-                          final item = _exploreItems[i];
-                          return CommCard(
-                            label: item.labelKey.tr,
-                            bgColor: item.color,
-                            icon: item.icon,
-                            isSelected: false,
-                            onTap: item.route == AppRoutes.ACTIVITIES
-                                ? controller.openSchedule
-                                : () => Get.toNamed(item.route),
-                          );
-                        },
-                        childCount: _exploreItems.length,
-                      ),
-                      gridDelegate:
-                      SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: cols,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.82,
-                      ),
-                    ),
-                  );
-                  }),
-
-                  SliverToBoxAdapter(
-                    child: Obx(() => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: controller.homePageIndex.value == 0
-                                ? null
-                                : () => controller.homePageIndex.value = 0,
-                            icon: const Icon(Icons.chevron_left),
-                          ),
-                          Icon(
-                            controller.homePageIndex.value == 0
-                                ? Icons.circle
-                                : Icons.circle_outlined,
-                            size: 10,
-                            color: const Color(0xFFFFC857),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            controller.homePageIndex.value == 1
-                                ? Icons.circle
-                                : Icons.circle_outlined,
-                            size: 10,
-                            color: const Color(0xFFFFC857),
-                          ),
-                          IconButton(
-                            onPressed: controller.homePageIndex.value == 1
-                                ? null
-                                : () => controller.homePageIndex.value = 1,
-                            icon: const Icon(Icons.chevron_right),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ),
-
-                  const SliverToBoxAdapter(child: SizedBox(height: 80)),
-                ],
+                ),
               ),
             ),
-            );
-          });
-        }),
+          )),
+        ]),
       ),
     );
   }
 }
+
+
+class _CommHomePage extends StatelessWidget {
+  const _CommHomePage();
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<CommunicatorHomeController>();
+    final profileController = Get.find<ProfileController>();
+
+    return Obx(() {
+      final empty =
+          controller.quickSpeaks.isEmpty && controller.categories.isEmpty;
+
+      if (controller.isLoading.value && empty) {
+        return const Center(
+          child: CircularProgressIndicator(color: Color(0xFFFFC857)),
+        );
+      }
+
+      if (controller.loadError.value.isNotEmpty && empty) {
+        return _DashboardLoadError(
+          message: controller.loadError.value,
+          onRetry: controller.loadContent,
+        );
+      }
+
+      final cols = _homeQsCols(context);
+
+      return RefreshIndicator(
+        onRefresh: controller.refresh,
+        color: const Color(0xFFFFC857),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            // ───────── Top bar: logo, search, profile ─────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Image.asset(ImagesLink.logo,
+                            height: 47, fit: BoxFit.contain),
+                      ),
+                    ),
+                    Row(children: [
+                      IconButton(
+                        icon: const Icon(Icons.search,
+                            color: Color(0xFF1A1A1A)),
+                        onPressed: () => controller.isSearchOpen.toggle(),
+                      ),
+                      GestureDetector(
+                        onTap: () => Get.toNamed(AppRoutes.PROFILE),
+                        child: CustomPaint(
+                          size: const Size(48, 48),
+                          painter: DashedCirclePainter(
+                            color: const Color(0xFFB5CFD1),
+                            strokeWidth: 1.0,
+                            dashWidth: 4.0,
+                            dashSpace: 3.1,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(3),
+                            child: Obx(() => CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Colors.grey.shade200,
+                              backgroundImage: profileController
+                                  .avatarUrl.value.isNotEmpty
+                                  ? CachedNetworkImageProvider(
+                                  profileController.avatarUrl.value)
+                                  : null,
+                              child: profileController
+                                  .avatarUrl.value.isEmpty
+                                  ? const Icon(Icons.person,
+                                  size: 26, color: Colors.grey)
+                                  : null,
+                            )),
+                          ),
+                        ),
+                      ),
+                    ]),
+                  ],
+                ),
+              ),
+            ),
+
+            // ───────── Search box ─────────
+            SliverToBoxAdapter(
+              child: Obx(() {
+                if (!controller.isSearchOpen.value) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: TextField(
+                    onChanged: (v) => controller.searchQuery.value = v,
+                    onTapOutside: (_) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    decoration: InputDecoration(
+                      hintText: 'search_symbols'.tr,
+                      prefixIcon: const Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide:
+                        const BorderSide(color: Color(0xFFE3E3E9)),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+
+            // ───────── Sentence bar ─────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Obx(() => SentenceBar(
+                  hint: 'select_quick_speak_hint'.tr,
+                  lang: controller.currentLang,
+                  isCooldown: controller.isSpeakCooldown.value,
+                  cooldownCount: controller.cooldownCount.value,
+                  onSpeak: controller.speakQuickSpeak,
+                  onClear: controller.clearQuickSpeak,
+                )),
+              ),
+            ),
+
+            // ───────── Quick Speak header ─────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: CommSectionHeader(title: 'quick_speak'.tr),
+              ),
+            ),
+
+            // ───────── Quick Speak grid: 15 + See all ─────────
+            Obx(() {
+              final searching =
+                  controller.searchQuery.value.trim().isNotEmpty;
+              final qsList = searching
+                  ? controller.filteredQuickSpeaks
+                  : controller.quickSpeaks.toList();
+              // search cholle matching item-o dekhabe
+              final itemResults = searching
+                  ? controller.filteredItems
+                  : const <CommItemModel>[];
+              final selectedId = controller.selectedQsId.value;
+
+              if (qsList.isEmpty && itemResults.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 8),
+                    child: Text(
+                        searching
+                            ? 'no_results_found'.tr
+                            : 'no_quick_speaks_hint'.tr,
+                        style: TextStyle(
+                            color: Colors.grey[500], fontSize: 13)),
+                  ),
+                );
+              }
+
+              final showCount = searching
+                  ? qsList.length
+                  : (qsList.length > _kMaxHomeQs
+                  ? _kMaxHomeQs
+                  : qsList.length);
+              // normal mode: last cell = See all
+              final cellCount =
+                  showCount + itemResults.length + (searching ? 0 : 1);
+
+              return SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                        (_, i) {
+                      if (!searching && i == showCount) {
+                        return CommSeeAllCard(
+                          onTap: () => Get.toNamed(
+                              AppRoutes.COMMUNICATOR_ALL_QUICK_SPEAKS),
+                        );
+                      }
+                      if (i < showCount) {
+                        final qs = qsList[i];
+                        return CommCard(
+                          imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                          label: qs.word ?? '',
+                          bgColor: _parseColor(
+                              qs.color, const Color(0xFFFFD700)),
+                          isSelected: selectedId == qs.id,
+                          onTap: () => controller.onQuickSpeakTap(qs),
+                        );
+                      }
+                      final item = itemResults[i - showCount];
+                      return CommCard(
+                        imageUrl: AppUrl.mediaUrl(item.imageIcon),
+                        label: item.word ?? '',
+                        bgColor: _parseColor(
+                            item.color, const Color(0xFFFFD700)),
+                        isSelected: false,
+                        onTap: () => controller.onSearchItemTap(item),
+                      );
+                    },
+                    childCount: cellCount,
+                  ),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: cols,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.82,
+                  ),
+                ),
+              );
+            }),
+
+            // ───────── Explore more (3 ta button) ─────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: CommSectionHeader(title: 'explore_more'.tr),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: LayoutBuilder(builder: (_, c) {
+                  final perRow = c.maxWidth >= 560 ? 3 : 2;
+                  final w = (c.maxWidth - 12 * (perRow - 1)) / perRow;
+                  final cards = <Widget>[
+                    _ExploreCard(
+                      icon: Icons.calendar_month_outlined,
+                      color: const Color(0xFFFDD268),
+                      title: 'my_schedule'.tr,
+                      subtitle: 'see_whats_next'.tr,
+                      onTap: controller.openSchedule,
+                    ),
+                    _ExploreCard(
+                      icon: Icons.keyboard_alt_outlined,
+                      color: const Color(0xFFB5CFD1),
+                      title: 'text_to_speak'.tr,
+                      subtitle: 'type_and_hear_it'.tr,
+                      onTap: () => Get.toNamed(AppRoutes.TEXT_TO_SPEAK),
+                    ),
+                    _ExploreCard(
+                      icon: Icons.grid_view_rounded,
+                      color: const Color(0xFF7BC5D3),
+                      title: 'all_categories'.tr,
+                      subtitle: 'browse_all_categories'.tr,
+                      onTap: () => controller.goToPage(1),
+                    ),
+                  ];
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: cards
+                        .map((e) => SizedBox(width: w, height: 76, child: e))
+                        .toList(),
+                  );
+                }),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+
+class _ExploreCard extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  const _ExploreCard({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.22),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                color: color.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(10)),
+            child: Icon(icon, color: const Color(0xFF1A1A1A), size: 22),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.nunito(
+                        fontSize: 13, fontWeight: FontWeight.w800)),
+                Text(subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.nunito(
+                        fontSize: 10.5, color: Colors.grey[600])),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, size: 18, color: Colors.black54),
+        ]),
+      ),
+    );
+  }
+}
+
 
 class _DashboardLoadError extends StatelessWidget {
   final String message;
@@ -697,57 +658,57 @@ class CommSpeakBar extends StatelessWidget {
           ),
           child: hasText
               ? Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: color,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(6),
-                        child: imageUrl.isNotEmpty
-                            ? CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                width: 40,
-                                height: 40,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => ColoredBox(color: color),
-                                errorWidget: (_, __, ___) => const Icon(
-                                  Icons.image_outlined,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.image_outlined, color: Colors.white),
-                      ),
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: imageUrl.isNotEmpty
+                      ? CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => ColoredBox(color: color),
+                    errorWidget: (_, __, ___) => const Icon(
+                      Icons.image_outlined,
+                      color: Colors.white,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        text,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.nunito(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF1A1A1A),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    hint,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.nunito(
-                        fontSize: 15, color: Colors.grey[400]),
+                  )
+                      : const Icon(Icons.image_outlined, color: Colors.white),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.nunito(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF1A1A1A),
                   ),
                 ),
+              ),
+            ],
+          )
+              : Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              hint,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.nunito(
+                  fontSize: 15, color: Colors.grey[400]),
+            ),
+          ),
         ),
       ),
       const SizedBox(width: 10),
