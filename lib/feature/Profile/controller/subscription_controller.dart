@@ -1,5 +1,6 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
+import 'package:chatter_bee/feature/Profile/view/pro_feature_popup.dart'; // path ঠিক করে নিন
 import 'package:chatter_bee/services/revenueCat_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 
 class SubscriptionController extends GetxController {
   final selectedPlan = 'monthly'.obs;
-  final isLoading    = false.obs;
+  final isLoading = false.obs;
 
   // Read Pro status from the global controller
   bool get isProUser => ProStatusController.to.isProUser.value;
@@ -16,41 +17,46 @@ class SubscriptionController extends GetxController {
   Package? _monthlyPackage;
   Package? _annuallyPackage;
 
-  // Monthly Price
+  // Prices
   String get monthlyPrice =>
       _monthlyPackage?.storeProduct.priceString ?? '\$2.99';
 
   String get annuallyPrice =>
       _annuallyPackage?.storeProduct.priceString ?? '\$29.99';
 
-  // Monthly Trial Text
+  // Trial texts
   String get monthlyTrialText {
     final days =
         _monthlyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
-    return days != null ? '$days-day free trial': '3-day free trial';
+    return days != null ? '$days-day free trial' : '3-day free trial';
   }
 
   String get annuallyTrialText {
     final days =
         _annuallyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
-    return days != null ? '$days-week free trial': '1-week free trial';
-  }
-
-  // Continue Button Text
-  String get continueButtonText {
-    if (isProUser) return 'Already Subscribed';
-    return selectedPlan.value == 'monthly'
-        ? 'Start $monthlyTrialText'
-        : 'Start $annuallyTrialText';
+    return days != null ? '$days-week free trial' : '1-week free trial';
   }
 
   bool isPlanSelected(String plan) => selectedPlan.value == plan;
-  void selectPlan(String plan)     => selectedPlan.value = plan;
+  void selectPlan(String plan) => selectedPlan.value = plan;
 
   Package? get selectedPackage =>
-      selectedPlan.value == 'monthly'? _monthlyPackage : _annuallyPackage;
+      selectedPlan.value == 'monthly' ? _monthlyPackage : _annuallyPackage;
 
-  // On Init
+  // Plan card tap -> select plan + show popup
+  void onPlanTapped(String plan) {
+    if (isProUser) {
+      Get.snackbar('Already Pro', 'You have an active subscription.',
+          snackPosition: SnackPosition.TOP);
+      return;
+    }
+    selectPlan(plan);
+    Get.dialog(
+      const ProFeaturePopup(),
+      barrierColor: Colors.black54,
+    );
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -83,7 +89,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // Continue
+  // Called from popup's "Unlock with ChatterBee Pro"
   void onContinuePressed() {
     if (isProUser) {
       Get.snackbar('Already Pro', 'You have an active subscription.',

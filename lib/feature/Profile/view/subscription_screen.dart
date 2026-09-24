@@ -44,271 +44,240 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
           );
         }
 
-        return Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (ProStatusController.to.isProUser.value)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFC107).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                              color: const Color(0xFFFFC107), width: 1.2),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.workspace_premium_rounded,
-                                color: Color(0xFFFFC107)),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                'You have an active Pro subscription',
-                                style: GoogleFonts.nunito(
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    Text(
-                      'unlock_pro'.tr,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.nunito(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'unlock_pro_desc'.tr,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.nunito(
-                          fontSize: 14, color: Colors.black, height: 1.5),
-                    ),
-                    const SizedBox(height: 24),
-
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.shade300, width: 1),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  'ChatterBee Basic (Free)',
-                                  style: GoogleFonts.nunito(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.grey.shade600),
-                                ),
-                              ),
-                              Text(
-                                '\$0',
-                                style: GoogleFonts.nunito(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey.shade600),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          ...[
-                            'free_feature_1'.tr,
-                          ].map(
-                                (f) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Text(
-                                f,
-                                style: GoogleFonts.nunito(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade500,
-                                    height: 1.4),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    _buildPlanCard(
-                      planType: 'monthly',
-                      title: 'ChatterBee Pro (Monthly)',
-                      price: controller.monthlyPrice,
-                      period: '/ month',
-                      trialText: controller.monthlyTrialText,
-                      features: [
-                        'pro_feature_1'.tr,
-                        'pro_feature_2'.tr,
-                        'pro_feature_3'.tr,
-                        'pro_feature_4'.tr,
-                        'pro_feature_5'.tr,
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        _buildPlanCard(
-                          planType: 'annually',
-                          title: 'ChatterBee Pro (Annual)',
-                          price: controller.annuallyPrice,
-                          period: '/ year',
-                          trialText: controller.annuallyTrialText,
-                          features: [
-                            'pro_annual_includes'.tr,
-                          ],
-                        ),
-                        Positioned(
-                          top: -10,
-                          right: 16,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFC107),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'Best Value',
-                              style: GoogleFonts.nunito(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    TextButton(
-                      onPressed: controller.restorePurchases,
-                      child: Text(
-                        'Restore purchases',
-                        style: GoogleFonts.nunito(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-
-
-                    const SizedBox(height: 8),
-
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Platform.isIOS
-                          ? Text(
-                        'Payment will be charged to your Apple ID account at confirmation of purchase. '
-                            'Subscription automatically renews unless canceled at least 24 hours before '
-                            'the end of the current period. You can manage or cancel your subscription in '
-                            'your App Store account settings.',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.nunito(
-                          fontSize: 11,
-                          color: Colors.grey[500],
-                          height: 1.5,
-                        ),
-                      )
-                          : const SizedBox.shrink(),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                   Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () => launchUrl(
-                            Uri.parse('https://chatterbeeapp.com/sample-page/'),
-                            mode: LaunchMode.externalApplication,
-                          ),
-                          child: Text(
-                            'Terms of Use',
-                            style: GoogleFonts.nunito(
-                              fontSize: 12,
-                              color: const Color(0xFFFFC107),
-                              decoration: TextDecoration.underline,
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (ProStatusController.to.isProUser.value)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFC107).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border:
+                    Border.all(color: const Color(0xFFFFC107), width: 1.2),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.workspace_premium_rounded,
+                          color: Color(0xFFFFC107)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'You have an active Pro subscription',
+                          style: GoogleFonts.nunito(
                               fontWeight: FontWeight.w600,
-                            ),
+                              color: Colors.black),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              Text(
+                'unlock_pro'.tr,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'unlock_pro_desc'.tr,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                    fontSize: 14, color: Colors.black, height: 1.5),
+              ),
+              const SizedBox(height: 24),
+
+              // Free plan card
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.shade300, width: 1),
+                ),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'ChatterBee Basic (Free)',
+                            style: GoogleFonts.nunito(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.grey.shade600),
                           ),
                         ),
                         Text(
-                          ' |  ',
-                          style: GoogleFonts.nunito(fontSize: 12, color: Colors.grey[400]),
-                        ),
-                        GestureDetector(
-                          onTap: () => launchUrl(
-                            Uri.parse('https://chatterbeeapp.com/privacy-policy/'),
-                            mode: LaunchMode.externalApplication,
-                          ),
-                          child: Text(
-                            'Privacy Policy',
-                            style: GoogleFonts.nunito(
-                              fontSize: 12,
-                              color: const Color(0xFFFFC107),
-                              decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          '\$0',
+                          style: GoogleFonts.nunito(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.grey.shade600),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 16),
-
+                    ...[
+                      'free_feature_1'.tr,
+                    ].map(
+                          (f) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          f,
+                          style: GoogleFonts.nunito(
+                              fontSize: 13,
+                              color: Colors.grey.shade500,
+                              height: 1.4),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Obx(() => SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: ProStatusController.to.isProUser.value
-                      ? null
-                      : controller.onContinuePressed,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    disabledBackgroundColor: Colors.grey.shade300,
-                    foregroundColor: Colors.black,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+              _buildPlanCard(
+                planType: 'monthly',
+                title: 'ChatterBee Pro (Monthly)',
+                price: controller.monthlyPrice,
+                period: '/ month',
+                trialText: controller.monthlyTrialText,
+                features: [
+                  'pro_feature_1'.tr,
+                  'pro_feature_2'.tr,
+                  'pro_feature_3'.tr,
+                  'pro_feature_4'.tr,
+                  'pro_feature_5'.tr,
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  _buildPlanCard(
+                    planType: 'annually',
+                    title: 'ChatterBee Pro (Annual)',
+                    price: controller.annuallyPrice,
+                    period: '/ year',
+                    trialText: controller.annuallyTrialText,
+                    features: [
+                      'pro_annual_includes'.tr,
+                    ],
                   ),
-                  child: Text(
-                    controller.continueButtonText,
-                    style: GoogleFonts.nunito(
-                        fontSize: 16, fontWeight: FontWeight.w700),
+                  Positioned(
+                    top: -10,
+                    right: 16,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFC107),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Best Value',
+                        style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              TextButton(
+                onPressed: controller.restorePurchases,
+                child: Text(
+                  'Restore purchases',
+                  style: GoogleFonts.nunito(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                    decoration: TextDecoration.underline,
                   ),
                 ),
-              )),
-            ),
-          ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Platform.isIOS
+                    ? Text(
+                  'Payment will be charged to your Apple ID account at confirmation of purchase. '
+                      'Subscription automatically renews unless canceled at least 24 hours before '
+                      'the end of the current period. You can manage or cancel your subscription in '
+                      'your App Store account settings.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.nunito(
+                    fontSize: 11,
+                    color: Colors.grey[500],
+                    height: 1.5,
+                  ),
+                )
+                    : const SizedBox.shrink(),
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => launchUrl(
+                      Uri.parse('https://chatterbeeapp.com/sample-page/'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    child: Text(
+                      'Terms of Use',
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        color: const Color(0xFFFFC107),
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    ' |  ',
+                    style: GoogleFonts.nunito(
+                        fontSize: 12, color: Colors.grey[400]),
+                  ),
+                  GestureDetector(
+                    onTap: () => launchUrl(
+                      Uri.parse('https://chatterbeeapp.com/privacy-policy/'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    child: Text(
+                      'Privacy Policy',
+                      style: GoogleFonts.nunito(
+                        fontSize: 12,
+                        color: const Color(0xFFFFC107),
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+            ],
+          ),
         );
       }),
     );
@@ -326,16 +295,15 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
     return Obx(() {
       final isSelected = controller.isPlanSelected(planType);
       return GestureDetector(
-        onTap: () => controller.selectPlan(planType),
+        onTap: () => controller.onPlanTapped(planType),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isSelected
-                  ? const Color(0xFFFFC107)
-                  : Colors.grey.shade300,
+              color:
+              isSelected ? const Color(0xFFFFC107) : Colors.grey.shade300,
               width: isSelected ? 2 : 1,
             ),
             boxShadow: isSelected
@@ -383,7 +351,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                     ),
                   ),
                   const SizedBox(width: 12),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,7 +373,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                                 color: Colors.green.shade300, width: 1),
                           ),
                           child: Text(
-                            '$trialText',
+                            trialText,
                             style: GoogleFonts.nunito(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -416,7 +383,6 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                       ],
                     ),
                   ),
-
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -436,9 +402,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
-
               ...features.map(
                     (f) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
