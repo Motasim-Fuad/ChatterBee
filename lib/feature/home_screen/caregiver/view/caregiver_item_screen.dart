@@ -5,7 +5,7 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_item_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
-    show CgFolderCard, CgFolderPainter;
+    show CgFolderCard, CgAACButtonCard, CgFolderPainter;
 import 'package:chatter_bee/models/caregiver_models/caregiver_content_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -125,34 +125,34 @@ class CaregiverItemScreen extends StatelessWidget {
           Expanded(child: OrientationBuilder(builder: (context, _) {
             final cols = _crossAxisCount(context);
             return RefreshIndicator(
-            onRefresh: controller.refresh,
-            color: const Color(0xFFFFC857),
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: cols,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.82,
-              ),
-              itemCount: extra + items.length,
-              itemBuilder: (_, i) {
-                if (extra == 1 && i == 0) {
-                  return CgFolderCard(
-                    imageUrl: null,
-                    label: 'tap_to_type'.tr,
-                    bgColor: const Color(0xFFE8F6F8),
-                    icon: Icons.keyboard_alt_outlined,
-                    isSelected: false,
-                    showEditBtn: false,
-                    onTap: controller.promptTypedText,
-                  );
-                }
-                final item = items[i - extra];
-                final isSelected = controller.isEditMode.value
-                    ? selectedIds.contains(item.id)
-                    : selectedId == item.id;
-                return CgFolderCard(
+              onRefresh: controller.refresh,
+              color: const Color(0xFFFFC857),
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: cols,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.82,
+                ),
+                itemCount: extra + items.length,
+                itemBuilder: (_, i) {
+                  if (extra == 1 && i == 0) {
+                    return CgAACButtonCard(
+                      imageUrl: null,
+                      label: 'tap_to_type'.tr,
+                      bgColor: const Color(0xFFE8F6F8),
+                      icon: Icons.keyboard_alt_outlined,
+                      isSelected: false,
+                      showEditBtn: false,
+                      onTap: controller.promptTypedText,
+                    );
+                  }
+                  final item = items[i - extra];
+                  final isSelected = controller.isEditMode.value
+                      ? selectedIds.contains(item.id)
+                      : selectedId == item.id;
+                  return CgAACButtonCard(
                     imageUrl: AppUrl.mediaUrl(item.imageIcon),
                     label: item.word ?? '',
                     bgColor: _parseColor(
@@ -168,8 +168,8 @@ class CaregiverItemScreen extends StatelessWidget {
                     },
                     onEditTap: () => controller.showEditSheet(item),
                   );
-              },
-            ),
+                },
+              ),
             );
           })),
         ]);
@@ -208,37 +208,37 @@ class _CaregiverSpeakBar extends StatelessWidget {
           ),
           child: hasText
               ? Row(children: [
-                  Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                        color: itemColor,
-                        borderRadius: BorderRadius.circular(8)),
-                    clipBehavior: Clip.antiAlias,
-                    child: imageUrl != null && imageUrl!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: imageUrl!,
-                            fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) => const Icon(
-                                Icons.image_outlined,
-                                color: Colors.white,
-                                size: 20))
-                        : const Icon(Icons.image_outlined,
-                            color: Colors.white, size: 20),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(text,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.nunito(fontSize: 16)),
-                  ),
-                ])
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                  color: itemColor,
+                  borderRadius: BorderRadius.circular(8)),
+              clipBehavior: Clip.antiAlias,
+              child: imageUrl != null && imageUrl!.isNotEmpty
+                  ? CachedNetworkImage(
+                  imageUrl: imageUrl!,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => const Icon(
+                      Icons.image_outlined,
+                      color: Colors.white,
+                      size: 20))
+                  : const Icon(Icons.image_outlined,
+                  color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.nunito(fontSize: 16)),
+            ),
+          ])
               : Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('tap_an_item'.tr,
-                      style: GoogleFonts.nunito(
-                          fontSize: 16, color: Colors.grey[400]))),
+              alignment: Alignment.centerLeft,
+              child: Text('tap_an_item'.tr,
+                  style: GoogleFonts.nunito(
+                      fontSize: 16, color: Colors.grey[400]))),
         ),
       ),
       const SizedBox(width: 10),
@@ -266,16 +266,16 @@ class _CaregiverBarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-              color: onTap == null ? color.withOpacity(.45) : color,
-              borderRadius: BorderRadius.circular(12)),
-          child: Center(child: child),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+          color: onTap == null ? color.withOpacity(.45) : color,
+          borderRadius: BorderRadius.circular(12)),
+      child: Center(child: child),
+    ),
+  );
 }
 
 // Show Item Dialog

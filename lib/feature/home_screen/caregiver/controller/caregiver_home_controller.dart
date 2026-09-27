@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:chatter_bee/Repository/caregiver_repository/caregiver_customization_repository.dart';
@@ -57,6 +58,10 @@ class CaregiverHomeController extends GetxController
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+
+  // Debounce timer for the search box — avoids re-filtering thousands of
+  // items on every single keystroke.
+  Timer? _searchDebounce;
 
   // Home <-> All Categories swipe
   final PageController pageController = PageController();
@@ -146,6 +151,12 @@ class CaregiverHomeController extends GetxController
     }
   }
 
+  /// Cache-first content load:
+  /// 1) If we don't already have data in memory, paint instantly from the
+  ///    last-cached response (if any) so re-opening the app / switching
+  ///    communicator never shows a blank spinner for data we already had.
+  /// 2) Always refresh from the network afterwards and replace whatever
+  ///    is shown once the fresh response comes back.
   Future<void> loadContent() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) {
@@ -155,9 +166,25 @@ class CaregiverHomeController extends GetxController
       return;
     }
 
-    isLoading.value = true;
     loadError.value = '';
     final lang = _currentLang;
+    final hadDataAlready = categories.isNotEmpty || quickSpeaks.isNotEmpty;
+
+    if (!hadDataAlready) {
+      final cached = await _repo.getCachedUserContent(
+        communicatorId,
+        buddyMode: isBuddyMode.value,
+        lang: lang,
+      );
+      if (cached != null) {
+        categories.assignAll(cached.categories);
+        quickSpeaks.assignAll(cached.quickSpeaks);
+        await _applySavedOrder();
+      }
+    }
+
+    // Only show the big spinner if we still have nothing on screen.
+    isLoading.value = categories.isEmpty && quickSpeaks.isEmpty;
 
     final response = isBuddyMode.value
         ? await _repo.getUserBuddyModeContent(communicatorId, lang: lang)
@@ -169,9 +196,8 @@ class CaregiverHomeController extends GetxController
       categories.assignAll(response.data!.categories);
       quickSpeaks.assignAll(response.data!.quickSpeaks);
       await _applySavedOrder();
-    } else {
-      categories.clear();
-      quickSpeaks.clear();
+    } else if (categories.isEmpty && quickSpeaks.isEmpty) {
+      // Only surface the error when we have nothing (cached or fresh) to show.
       loadError.value = response.message.isNotEmpty
           ? response.message
           : 'Failed to load content.';
@@ -179,6 +205,17 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> refresh() => loadContent();
+
+  /// Debounced search input — call this from the search TextField's
+  /// onChanged instead of setting [searchQuery] directly, so filtering
+  /// only runs 300ms after the user stops typing instead of on every
+  /// keystroke.
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      searchQuery.value = value;
+    });
+  }
 
   void toggleEditMode() {
     isEditMode.value = !isEditMode.value;
@@ -766,6 +803,7 @@ class CaregiverHomeController extends GetxController
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
+    _searchDebounce?.cancel();
     pageController.dispose();
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();

@@ -82,7 +82,7 @@ class CommunicatorAllQuickSpeaksScreen
                     itemCount: qsList.length + 1,
                     itemBuilder: (_, i) {
                       if (i == 0) {
-                        return CommCard(
+                        return AACButtonCard(
                           imageUrl: null,
                           label: 'tap_to_type'.tr,
                           bgColor: const Color(0xFFE8F6F8),
@@ -92,7 +92,7 @@ class CommunicatorAllQuickSpeaksScreen
                         );
                       }
                       final qs = qsList[i - 1];
-                      return Obx(() => CommCard(
+                      return Obx(() => AACButtonCard(
                         imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                         label: qs.word ?? '',
                         bgColor: _parseColor(

@@ -222,6 +222,9 @@ class _CgHomePage extends StatelessWidget {
             ),
 
             // ───────── Quick Speak grid: 15 + See all ─────────
+            // NOTE: AAC / quick-speak buttons now use CgAACButtonCard
+            // (rectangle), while category cards elsewhere keep
+            // using CgFolderCard (file-folder).
             Obx(() {
               final searching =
                   controller.searchQuery.value.trim().isNotEmpty;
@@ -262,7 +265,7 @@ class _CgHomePage extends StatelessWidget {
                         );
                       }
                       final qs = qsList[i];
-                      return CgFolderCard(
+                      return CgAACButtonCard(
                         imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                         label: qs.word ?? '',
                         bgColor:
@@ -662,6 +665,9 @@ class _CaregiverBarButton extends StatelessWidget {
 }
 
 
+/// ───────── Category card (FILE-FOLDER style) ─────────
+/// Kept unchanged intentionally: used for CATEGORY / SUB-CATEGORY tiles
+/// (caregiver_all_categories_screen.dart, caregiver_sub_catagory_screen.dart).
 class CgFolderCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -792,6 +798,145 @@ class CgFolderCard extends StatelessWidget {
   }
 }
 
+/// ───────── AAC / Quick-Speak item button (RECTANGLE style) ─────────
+/// Use this for individual AAC / quick-speak buttons (caregiver side):
+/// home Quick Speak grid, caregiver_all_quick_speaks_screen.dart,
+/// caregiver_item_screen.dart.
+class CgAACButtonCard extends StatelessWidget {
+  final String? imageUrl;
+  final String label;
+  final String? subLabel;
+  final Color bgColor;
+  final IconData? icon;
+  final bool isSelected;
+  final bool showEditBtn;
+  final VoidCallback onTap;
+  final VoidCallback? onEditTap;
+
+  const CgAACButtonCard({
+    super.key,
+    this.imageUrl,
+    required this.label,
+    this.subLabel,
+    required this.bgColor,
+    this.icon,
+    required this.isSelected,
+    required this.showEditBtn,
+    required this.onTap,
+    this.onEditTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: isSelected ? bgColor.withOpacity(0.15) : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? bgColor : const Color(0xFFE3E3E9),
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Stack(children: [
+            Positioned.fill(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: imgSize,
+                    height: imgSize,
+                    decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: imageUrl != null && imageUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                        imageUrl: imageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Icon(
+                            Icons.image_outlined,
+                            color: Colors.white,
+                            size: imgSize * 0.45),
+                      )
+                          : Icon(
+                        icon ?? Icons.image_outlined,
+                        color: icon != null
+                            ? bgColor._darken(30)
+                            : Colors.white,
+                        size: imgSize * 0.50,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text(label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1A1A1A))),
+                  ),
+                  if (subLabel != null)
+                    Text(subLabel!,
+                        style: TextStyle(
+                            fontSize: 9, color: Colors.grey[400])),
+                ],
+              ),
+            ),
+            if (showEditBtn)
+              Positioned(
+                top: 6,
+                right: 6,
+                child: GestureDetector(
+                  onTap: onEditTap,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    decoration: const BoxDecoration(
+                        color: Color(0xFFFFC857), shape: BoxShape.circle),
+                    child:
+                    const Icon(Icons.edit, size: 12, color: Colors.black),
+                  ),
+                ),
+              ),
+            if (isSelected)
+              Positioned(
+                top: 6,
+                left: 6,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration:
+                  BoxDecoration(color: bgColor, shape: BoxShape.circle),
+                  child:
+                  const Icon(Icons.check, color: Colors.white, size: 13),
+                ),
+              ),
+          ]),
+        );
+      }),
+    );
+  }
+}
+
 class CgSeeAllCard extends StatelessWidget {
   final VoidCallback onTap;
   const CgSeeAllCard({super.key, required this.onTap});
@@ -801,43 +946,38 @@ class CgSeeAllCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: LayoutBuilder(builder: (context, constraints) {
-        final tabH = constraints.maxHeight * 0.10;
-        final topPad = tabH + 6;
         final imgSize = (constraints.maxWidth * 0.52)
             .clamp(0.0, constraints.maxHeight * 0.42);
 
-        return CustomPaint(
-          painter: const CgFolderPainter(
-            cardColor: Color(0xFFEDF7F9),
-            tabColor: Color(0xFF7BC5D3),
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEDF7F9),
+            borderRadius: BorderRadius.circular(14),
+            border:
+            Border.all(color: const Color(0xFF7BC5D3).withOpacity(0.3)),
           ),
-          child: Stack(children: [
-            Positioned.fill(
-              top: topPad,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: imgSize,
-                    height: imgSize,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7BC5D3).withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(Icons.grid_view_rounded,
-                        color: const Color(0xFF7BC5D3), size: imgSize * 0.52),
-                  ),
-                  const SizedBox(height: 6),
-                  Text('see_all'.tr,
-                      style: GoogleFonts.nunito(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF7BC5D3))),
-                ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: imgSize,
+                height: imgSize,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7BC5D3).withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(Icons.grid_view_rounded,
+                    color: const Color(0xFF7BC5D3), size: imgSize * 0.52),
               ),
-            ),
-          ]),
+              const SizedBox(height: 6),
+              Text('see_all'.tr,
+                  style: GoogleFonts.nunito(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF7BC5D3))),
+            ],
+          ),
         );
       }),
     );
@@ -926,6 +1066,8 @@ class _AddBtn extends StatelessWidget {
 }
 
 
+/// Folder-shape painter — still used by CgFolderCard (categories/sub-categories).
+/// Do not remove.
 class CgFolderPainter extends CustomPainter {
   final Color cardColor;
   final Color tabColor;

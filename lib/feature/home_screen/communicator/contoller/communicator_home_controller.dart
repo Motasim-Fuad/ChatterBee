@@ -36,6 +36,10 @@ class CommunicatorHomeController extends GetxController
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
+  // Debounce timer for the search box — avoids re-filtering thousands of
+  // items on every single keystroke.
+  Timer? _searchDebounce;
+
   /// 0 = Home page, 1 = All Categories page (PageView current page)
   final RxInt homePageIndex = 0.obs;
   final pageController = PageController();
@@ -79,10 +83,15 @@ class CommunicatorHomeController extends GetxController
         duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
-  // API call with buddy mode + lang routing
+  /// Cache-first content load:
+  /// 1) If we don't already have data in memory, paint instantly from the
+  ///    last-cached response (if any) so re-opening the app never shows a
+  ///    blank spinner for data we already had.
+  /// 2) Always refresh from the network afterwards and replace whatever
+  ///    is shown once the fresh response comes back.
   Future<void> loadContent() async {
-    isLoading.value = true;
     loadError.value = '';
+    final hadDataAlready = categories.isNotEmpty || quickSpeaks.isNotEmpty;
 
     try {
       final profileRes = await _authRepository.getProfile();
@@ -96,6 +105,20 @@ class CommunicatorHomeController extends GetxController
     }
 
     final lang = _currentLang;
+
+    if (!hadDataAlready) {
+      final cached = await _repo.getCachedContent(
+        buddyMode: isBuddyMode.value,
+        lang: lang,
+      );
+      if (cached != null) {
+        categories.assignAll(cached.categories);
+        quickSpeaks.assignAll(cached.quickSpeaks);
+      }
+    }
+
+    // Only show the big spinner if we still have nothing on screen.
+    isLoading.value = categories.isEmpty && quickSpeaks.isEmpty;
 
     final res = isBuddyMode.value
         ? await _repo.getBuddyModeContent(lang: lang)
@@ -111,9 +134,8 @@ class CommunicatorHomeController extends GetxController
         }
       }
       quickSpeaks.assignAll(qs);
-    } else {
-      categories.clear();
-      quickSpeaks.clear();
+    } else if (categories.isEmpty && quickSpeaks.isEmpty) {
+      // Only surface the error when we have nothing (cached or fresh) to show.
       loadError.value = res.message.isNotEmpty
           ? res.message
           : 'failed_to_load_content'.tr;
@@ -122,6 +144,17 @@ class CommunicatorHomeController extends GetxController
   }
 
   Future<void> refresh() => loadContent();
+
+  /// Debounced search input — call this from the search TextField's
+  /// onChanged instead of setting [searchQuery] directly, so filtering
+  /// only runs 300ms after the user stops typing instead of on every
+  /// keystroke.
+  void onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 300), () {
+      searchQuery.value = value;
+    });
+  }
 
   void onQuickSpeakTap(CommQuickSpeakModel qs) {
     final word = qs.word ?? '';
@@ -295,6 +328,7 @@ class CommunicatorHomeController extends GetxController
   @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
+    _searchDebounce?.cancel();
     _cancelCooldown();
     _audioPlayer.dispose();
     pageController.dispose();

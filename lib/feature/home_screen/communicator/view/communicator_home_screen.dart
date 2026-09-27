@@ -218,6 +218,8 @@ class _CommHomePage extends StatelessWidget {
             ),
 
             // ───────── Quick Speak grid: 15 + See all ─────────
+            // NOTE: AAC / quick-speak buttons now use AACButtonCard (rectangle),
+            // while category cards elsewhere keep using CommCard (file-folder).
             Obx(() {
               final searching =
                   controller.searchQuery.value.trim().isNotEmpty;
@@ -267,7 +269,7 @@ class _CommHomePage extends StatelessWidget {
                       }
                       if (i < showCount) {
                         final qs = qsList[i];
-                        return CommCard(
+                        return AACButtonCard(
                           imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                           label: qs.word ?? '',
                           bgColor: _parseColor(
@@ -277,7 +279,7 @@ class _CommHomePage extends StatelessWidget {
                         );
                       }
                       final item = itemResults[i - showCount];
-                      return CommCard(
+                      return AACButtonCard(
                         imageUrl: AppUrl.mediaUrl(item.imageIcon),
                         label: item.word ?? '',
                         bgColor: _parseColor(
@@ -445,6 +447,9 @@ class _DashboardLoadError extends StatelessWidget {
 }
 
 
+/// ───────── Category card (FILE-FOLDER style) ─────────
+/// Kept unchanged intentionally: used for CATEGORY tiles
+/// (communicator_all_categories_screen.dart).
 class CommCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -554,6 +559,123 @@ class CommCard extends StatelessWidget {
   }
 }
 
+/// ───────── AAC / Quick-Speak item card (RECTANGLE style) ─────────
+/// Use this for individual AAC / quick-speak buttons anywhere in the app.
+class AACButtonCard extends StatelessWidget {
+  final String? imageUrl;
+  final String label;
+  final String? subLabel;
+  final Color bgColor;
+  final IconData? icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const AACButtonCard({
+    super.key,
+    this.imageUrl,
+    required this.label,
+    this.subLabel,
+    required this.bgColor,
+    this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final imgSize = (constraints.maxWidth * 0.52)
+            .clamp(0.0, constraints.maxHeight * 0.42);
+
+        return Container(
+          decoration: BoxDecoration(
+            color: isSelected ? bgColor.withOpacity(0.15) : Colors.white,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? bgColor : const Color(0xFFE3E3E9),
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Stack(children: [
+            Positioned.fill(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: imgSize,
+                    height: imgSize,
+                    decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: imageUrl != null && imageUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                        imageUrl: imageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Icon(
+                            Icons.image_outlined,
+                            color: Colors.white,
+                            size: imgSize * 0.45),
+                      )
+                          : Icon(
+                        icon ?? Icons.image_outlined,
+                        color: icon != null
+                            ? bgColor._darken(30)
+                            : Colors.white,
+                        size: imgSize * 0.50,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Text(label,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF1A1A1A))),
+                  ),
+                  if (subLabel != null)
+                    Text(subLabel!,
+                        style: TextStyle(
+                            fontSize: 9, color: Colors.grey[400])),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Positioned(
+                top: 6,
+                left: 6,
+                child: Container(
+                  width: 18,
+                  height: 18,
+                  decoration:
+                  BoxDecoration(color: bgColor, shape: BoxShape.circle),
+                  child:
+                  const Icon(Icons.check, color: Colors.white, size: 12),
+                ),
+              ),
+          ]),
+        );
+      }),
+    );
+  }
+}
+
 class CommSeeAllCard extends StatelessWidget {
   final VoidCallback onTap;
   const CommSeeAllCard({super.key, required this.onTap});
@@ -563,49 +685,44 @@ class CommSeeAllCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: LayoutBuilder(builder: (context, constraints) {
-        final tabH = constraints.maxHeight * 0.10;
-        final topPad = tabH + 6;
         final imgSize = (constraints.maxWidth * 0.52)
             .clamp(0.0, constraints.maxHeight * 0.42);
 
-        return CustomPaint(
-          painter: const CommFolderPainter(
-            cardColor: Color(0xFFEDF7F9),
-            tabColor: Color(0xFF7BC5D3),
+        return Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEDF7F9),
+            borderRadius: BorderRadius.circular(14),
+            border:
+            Border.all(color: const Color(0xFF7BC5D3).withOpacity(0.3)),
           ),
-          child: Stack(children: [
-            Positioned.fill(
-              top: topPad,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: imgSize,
-                    height: imgSize,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7BC5D3).withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.grid_view_rounded,
-                      color: const Color(0xFF7BC5D3),
-                      size: imgSize * 0.52,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'see_all'.tr,
-                    style: GoogleFonts.nunito(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF7BC5D3),
-                    ),
-                  ),
-                ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: imgSize,
+                height: imgSize,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7BC5D3).withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.grid_view_rounded,
+                  color: const Color(0xFF7BC5D3),
+                  size: imgSize * 0.52,
+                ),
               ),
-            ),
-          ]),
+              const SizedBox(height: 6),
+              Text(
+                'see_all'.tr,
+                style: GoogleFonts.nunito(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF7BC5D3),
+                ),
+              ),
+            ],
+          ),
         );
       }),
     );
@@ -879,6 +996,7 @@ class CommSectionHeader extends StatelessWidget {
   }
 }
 
+/// Folder-shape painter — still used by CommCard (categories). Do not remove.
 class CommFolderPainter extends CustomPainter {
   final Color cardColor;
   final Color tabColor;

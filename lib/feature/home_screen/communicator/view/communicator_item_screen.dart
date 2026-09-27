@@ -56,15 +56,15 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
         children: [
           Obx(() {
             return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: SentenceBar(
-              hint: 'tap_an_item'.tr,
-              onSpeak: controller.speakSelected,
-              onClear: controller.clearSelection,
-              isCooldown: controller.isSpeakCooldown.value,
-              cooldownCount: controller.cooldownCount.value,
-            ),
-          );
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+              child: SentenceBar(
+                hint: 'tap_an_item'.tr,
+                onSpeak: controller.speakSelected,
+                onClear: controller.clearSelection,
+                isCooldown: controller.isSpeakCooldown.value,
+                cooldownCount: controller.cooldownCount.value,
+              ),
+            );
           }),
 
           const SizedBox(height: 14),
@@ -91,7 +91,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
                       itemCount: items.length + 1,
                       itemBuilder: (_, i) {
                         if (i == 0) {
-                          return CommCard(
+                          return AACButtonCard(
                             imageUrl: null,
                             label: 'tap_to_type'.tr,
                             bgColor: const Color(0xFFE8F6F8),
@@ -123,6 +123,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
 }
 
 
+/// AAC item button (RECTANGLE style — was file-folder before).
 class _ItemCard extends StatelessWidget {
   final CommItemModel item;
   final bool isSelected;
@@ -139,90 +140,12 @@ class _ItemCard extends StatelessWidget {
     final imageUrl = AppUrl.mediaUrl(item.imageIcon);
     final bgColor = _parseColor(item.color, const Color(0xFFFFD700));
 
-    return GestureDetector(
+    return AACButtonCard(
+      imageUrl: imageUrl,
+      label: item.word ?? '',
+      bgColor: bgColor,
+      isSelected: isSelected,
       onTap: onTap,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final tabH = constraints.maxHeight * 0.10;
-          final topPad = tabH + 6;
-          final imgSize = (constraints.maxWidth * 0.52)
-              .clamp(0.0, constraints.maxHeight * 0.42);
-
-          return CustomPaint(
-            painter: _FolderPainter(
-              cardColor:
-              isSelected ? bgColor.withOpacity(0.15) : Colors.white,
-              tabColor: bgColor,
-              isSelected: isSelected,
-              selectedBorderColor: bgColor,
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  top: topPad,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: imgSize,
-                        height: imgSize,
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: imageUrl != null && imageUrl.isNotEmpty
-                              ? CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            errorWidget: (_, __, ___) => Icon(
-                                Icons.image_outlined,
-                                color: Colors.white,
-                                size: imgSize * 0.45),
-                          )
-                              : Icon(Icons.image_outlined,
-                              color: Colors.white,
-                              size: imgSize * 0.45),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          item.word ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.nunito(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(0xFF1A1A1A),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isSelected)
-                  Positioned(
-                    top: tabH - 8,
-                    left: 5,
-                    child: Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                          color: bgColor, shape: BoxShape.circle),
-                      child: const Icon(Icons.check,
-                          color: Colors.white, size: 12),
-                    ),
-                  ),
-              ],
-            ),
-          );
-        },
-      ),
     );
   }
 }
@@ -275,38 +198,38 @@ class _SpeakBar extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: hasText
                   ? Row(children: [
-                      Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: itemColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: imageUrl != null && imageUrl!.isNotEmpty
-                            ? CachedNetworkImage(
-                                imageUrl: imageUrl!,
-                                fit: BoxFit.cover,
-                                errorWidget: (_, __, ___) => const Icon(
-                                    Icons.image_outlined,
-                                    color: Colors.white,
-                                    size: 20),
-                              )
-                            : const Icon(Icons.image_outlined,
-                                color: Colors.white, size: 20),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(text,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.nunito(
-                                fontSize: 16, color: Colors.black87)),
-                      ),
-                    ])
-                  : Text(hint,
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: itemColor,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: imageUrl != null && imageUrl!.isNotEmpty
+                      ? CachedNetworkImage(
+                    imageUrl: imageUrl!,
+                    fit: BoxFit.cover,
+                    errorWidget: (_, __, ___) => const Icon(
+                        Icons.image_outlined,
+                        color: Colors.white,
+                        size: 20),
+                  )
+                      : const Icon(Icons.image_outlined,
+                      color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.nunito(
-                          fontSize: 16, color: Colors.grey[400])),
+                          fontSize: 16, color: Colors.black87)),
+                ),
+              ])
+                  : Text(hint,
+                  style: GoogleFonts.nunito(
+                      fontSize: 16, color: Colors.grey[400])),
             ),
           ),
         ),
@@ -450,81 +373,4 @@ class _BarBtn extends StatelessWidget {
       ),
     );
   }
-}
-
-
-class _FolderPainter extends CustomPainter {
-  final Color cardColor;
-  final Color tabColor;
-  final bool isSelected;
-  final Color selectedBorderColor;
-
-  const _FolderPainter({
-    required this.cardColor,
-    required this.tabColor,
-    this.isSelected = false,
-    this.selectedBorderColor = const Color(0xFFFFC857),
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    const radius = 16.0;
-    const topRightRadius = 8.0;
-    final tabWidth = size.width * 0.55;
-    final tabHeight = size.height * 0.10;
-    final tabSlantWidth = tabHeight * 0.5;
-
-    final path = Path()
-      ..moveTo(0, size.height - radius)
-      ..quadraticBezierTo(0, size.height, radius, size.height)
-      ..lineTo(size.width - radius, size.height)
-      ..quadraticBezierTo(
-          size.width, size.height, size.width, size.height - radius)
-      ..lineTo(size.width, topRightRadius)
-      ..quadraticBezierTo(size.width, 0, size.width - topRightRadius, 0)
-      ..lineTo(tabWidth + tabSlantWidth + radius, 0)
-      ..quadraticBezierTo(tabWidth + tabSlantWidth, 0,
-          tabWidth + tabSlantWidth, radius * 0.3)
-      ..lineTo(tabWidth, tabHeight)
-      ..lineTo(radius, tabHeight)
-      ..quadraticBezierTo(0, tabHeight, 0, tabHeight + radius)
-      ..lineTo(0, size.height - radius)
-      ..close();
-
-    canvas.drawShadow(path, Colors.black.withOpacity(0.10), 6.0, false);
-    canvas.drawPath(path, Paint()
-      ..color = cardColor
-      ..style = PaintingStyle.fill);
-
-    final tabPath = Path()
-      ..moveTo(0, 0)
-      ..lineTo(tabWidth + tabSlantWidth + radius, 0)
-      ..quadraticBezierTo(tabWidth + tabSlantWidth, 0,
-          tabWidth + tabSlantWidth, radius * 0.3)
-      ..lineTo(tabWidth, tabHeight)
-      ..lineTo(0, tabHeight)
-      ..close();
-
-    canvas.save();
-    canvas.clipPath(path);
-    canvas.drawPath(tabPath, Paint()
-      ..color = tabColor
-      ..style = PaintingStyle.fill);
-    canvas.restore();
-
-    if (isSelected) {
-      canvas.drawPath(
-          path,
-          Paint()
-            ..color = selectedBorderColor
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 2.0);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_FolderPainter old) =>
-      old.cardColor != cardColor ||
-          old.tabColor != tabColor ||
-          old.isSelected != isSelected;
 }

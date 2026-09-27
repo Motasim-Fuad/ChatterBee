@@ -1,7 +1,7 @@
 import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
-    show CgFolderCard;
+    show CgFolderCard, CgAACButtonCard;
 import 'package:chatter_bee/widgets/sentence_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -136,7 +136,7 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                   itemCount: extra + qsList.length,
                   itemBuilder: (_, i) {
                     if (extra == 1 && i == 0) {
-                      return CgFolderCard(
+                      return CgAACButtonCard(
                         imageUrl: null,
                         label: 'tap_to_type'.tr,
                         bgColor: const Color(0xFFE8F6F8),
@@ -149,7 +149,7 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                     // idx = quickSpeaks list-er asol index (swap er jonno)
                     final idx = i - extra;
                     final qs = qsList[idx];
-                    return CgFolderCard(
+                    return CgAACButtonCard(
                       imageUrl: AppUrl.mediaUrl(qs.imageIcon),
                       label: qs.word ?? '',
                       bgColor:
