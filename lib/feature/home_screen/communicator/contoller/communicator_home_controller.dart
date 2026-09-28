@@ -36,6 +36,7 @@ class CommunicatorHomeController extends GetxController
   final RxInt selectedQsId = (-1).obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+  final TextEditingController searchTextController = TextEditingController();
 
   
   final RxList<CommSearchItemResult> searchItems = <CommSearchItemResult>[].obs;
@@ -122,7 +123,23 @@ class CommunicatorHomeController extends GetxController
 
   Future<void> refresh() => loadContent();
 
-  
+  void toggleSearch() {
+    if (isSearchOpen.value) {
+      closeSearch();
+    } else {
+      isSearchOpen.value = true;
+    }
+  }
+
+  void closeSearch() {
+    _searchDebounce?.cancel();
+    searchTextController.clear();
+    searchQuery.value = '';
+    searchItems.clear();
+    isSearchOpen.value = false;
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
@@ -297,6 +314,7 @@ class CommunicatorHomeController extends GetxController
     _cancelCooldown();
     _audioPlayer.dispose();
     pageController.dispose();
+    searchTextController.dispose();
     super.onClose();
   }
 }

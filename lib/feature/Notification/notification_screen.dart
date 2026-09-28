@@ -112,7 +112,7 @@ class NotificationScreen extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const AppShimmerProfile();
+                return const AppShimmerNotifications();
               }
               return controller.selectedTab.value == 0
                   ? _buildNotificationContent(controller)

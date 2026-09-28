@@ -54,7 +54,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
       ),
       body: Obx(() {
         if (controller.isLoadingConnections.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerPeople();
         }
         return RefreshIndicator(
           onRefresh: controller.loadConnections,

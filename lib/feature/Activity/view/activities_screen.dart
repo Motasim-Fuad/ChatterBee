@@ -33,7 +33,7 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return const AppShimmerList();
+            return const AppShimmerSchedule();
           }
 
           return Column(

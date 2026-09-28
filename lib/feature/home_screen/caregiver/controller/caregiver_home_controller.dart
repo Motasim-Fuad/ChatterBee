@@ -60,6 +60,7 @@ class CaregiverHomeController extends GetxController
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
+  final TextEditingController searchTextController = TextEditingController();
 
   
   final RxList<SearchItemResult> searchItems = <SearchItemResult>[].obs;
@@ -191,7 +192,23 @@ class CaregiverHomeController extends GetxController
 
   Future<void> refresh() => loadContent();
 
-  
+  void toggleSearch() {
+    if (isSearchOpen.value) {
+      closeSearch();
+    } else {
+      isSearchOpen.value = true;
+    }
+  }
+
+  void closeSearch() {
+    _searchDebounce?.cancel();
+    searchTextController.clear();
+    searchQuery.value = '';
+    searchItems.clear();
+    isSearchOpen.value = false;
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
@@ -481,14 +498,14 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> _openAacButtonPicker({required String title}) async {
-    Get.dialog(
-      const AppShimmerBlocking(),
-      barrierDismissible: false,
-    );
-    final buttons = await _fetchAllAacButtons();
-    Get.back(); 
-
+    final buttons = <ItemLite>[].obs;
+    final loading = true.obs;
     final query = ''.obs;
+
+    _fetchAllAacButtons().then((list) {
+      buttons.assignAll(list);
+      loading.value = false;
+    });
 
     Get.bottomSheet(
       Builder(builder: (ctx) {
@@ -543,15 +560,19 @@ class CaregiverHomeController extends GetxController
                 ),
                 Expanded(
                   child: Obx(() {
+                    if (loading.value) {
+                      return const AppShimmerAacGrid();
+                    }
                     final q = query.value.trim().toLowerCase();
+                    final source = buttons.toList();
                     final filtered = q.isEmpty
-                        ? buttons
-                        : buttons
+                        ? source
+                        : source
                         .where((b) =>
                         (b.word ?? '').toLowerCase().contains(q))
                         .toList();
 
-                    if (buttons.isEmpty) {
+                    if (source.isEmpty) {
                       return Center(
                           child: Text('no_categories_available'.tr));
                     }
@@ -820,6 +841,7 @@ class CaregiverHomeController extends GetxController
     WidgetsBinding.instance.removeObserver(this);
     _searchDebounce?.cancel();
     pageController.dispose();
+    searchTextController.dispose();
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();
     _audioPlayer.dispose();

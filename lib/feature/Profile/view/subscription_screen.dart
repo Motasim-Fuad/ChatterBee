@@ -40,7 +40,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerCards();
+          return const AppShimmerPlans();
         }
 
         return SingleChildScrollView(

@@ -29,7 +29,7 @@ class CommunicatorInvitationsScreen
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerInvite();
         }
         return RefreshIndicator(
           onRefresh: controller.loadReceivedInvitations,

@@ -117,11 +117,15 @@ class _CgHomePage extends StatelessWidget {
                       ),
                     ),
                     Row(children: [
-                      IconButton(
-                        icon: const Icon(Icons.search,
-                            color: Color(0xFF1A1A1A)),
-                        onPressed: () => controller.isSearchOpen.toggle(),
-                      ),
+                      Obx(() => IconButton(
+                        icon: Icon(
+                          controller.isSearchOpen.value
+                              ? Icons.close
+                              : Icons.search,
+                          color: const Color(0xFF1A1A1A),
+                        ),
+                        onPressed: controller.toggleSearch,
+                      )),
                       GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes.PROFILE),
                         child: CustomPaint(
@@ -166,12 +170,18 @@ class _CgHomePage extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: TextField(
+                    controller: controller.searchTextController,
+                    autofocus: true,
                     onChanged: controller.onSearchChanged,
                     onTapOutside: (_) =>
                         FocusManager.instance.primaryFocus?.unfocus(),
                     decoration: InputDecoration(
                       hintText: 'search_symbols'.tr,
                       prefixIcon: const Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.close, color: Color(0xFF636F85)),
+                        onPressed: controller.closeSearch,
+                      ),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(

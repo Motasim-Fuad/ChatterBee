@@ -32,7 +32,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerForm();
         }
         return SingleChildScrollView(
           child: Padding(

@@ -37,7 +37,7 @@ class SupportScreen extends GetView<SupportController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerSupport();
         }
 
         if (controller.errorMessage.value.isNotEmpty) {

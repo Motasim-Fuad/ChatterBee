@@ -37,7 +37,7 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerPrivacy();
         }
 
         if (controller.policyContent.value.isEmpty) {

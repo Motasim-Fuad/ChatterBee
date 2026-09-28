@@ -24,7 +24,7 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const AppShimmerProfile();
+          return const AppShimmerForm();
         }
         return SingleChildScrollView(
           child: Padding(
