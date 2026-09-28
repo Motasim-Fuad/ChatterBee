@@ -166,7 +166,7 @@ class _CgHomePage extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: TextField(
-                    onChanged: (v) => controller.searchQuery.value = v,
+                    onChanged: controller.onSearchChanged,
                     onTapOutside: (_) =>
                         FocusManager.instance.primaryFocus?.unfocus(),
                     decoration: InputDecoration(
@@ -266,7 +266,7 @@ class _CgHomePage extends StatelessWidget {
                       }
                       final qs = qsList[i];
                       return CgAACButtonCard(
-                        imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                        imageUrl: qs.imageIcon,
                         label: qs.word ?? '',
                         bgColor:
                         _parseColor(qs.color, const Color(0xFFFFD700)),

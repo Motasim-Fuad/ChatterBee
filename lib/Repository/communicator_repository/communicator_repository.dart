@@ -9,13 +9,190 @@ import 'package:flutter/foundation.dart';
 class CommunicatorRepository {
   final ApiClient _client = ApiClient();
 
+  // ══════════════════════════════════════════════════════════════
+  // NEW — lightweight / lazy-loaded granular endpoints
+  // ⚠️ Paths below assume ApiClient's Dio baseUrl (no trailing slash) is prefixed with /api/ —
+  // `/api/` (matches AppUrl.baseUrl per the backend guide). Adjust the
+  // path strings here if AppUrl's convention differs. communicator_id
+  // is not needed here — a communicator's token already identifies them.
+  // ══════════════════════════════════════════════════════════════
+
+  Map<String, dynamic>? _unwrap(Map<String, dynamic> body) {
+    final rawData = body['data'] ?? body;
+    if (rawData is Map && body['success'] != false) {
+      return Map<String, dynamic>.from(rawData);
+    }
+    return null;
+  }
+
+  /// Lightweight categories list (counts only, no nested items/sub-categories).
+  Future<ApiResponse<CommCategoryListResponse>> getCategoriesLite({
+    required bool buddyMode,
+    String lang = 'en',
+  }) async {
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        '/api/communicator/categories/',
+        queryParameters: {'lang': lang, 'buddy_mode': buddyMode.toString()},
+      );
+      if (response.isSuccess && response.data != null) {
+        final body = response.data as Map<String, dynamic>;
+        final raw = _unwrap(body);
+        if (raw != null) {
+          return ApiResponse.success(
+            data: CommCategoryListResponse.fromJson(raw, lang: lang),
+            statusCode: response.statusCode,
+            message: body['message']?.toString() ?? 'Success',
+          );
+        }
+        return ApiResponse.error(
+          statusCode: response.statusCode,
+          message: body['message'] ?? 'Failed to load categories',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode,
+        message: response.message,
+        errorType: response.errorType,
+      );
+    } catch (e) {
+      debugPrint('CommunicatorRepository.getCategoriesLite error: $e');
+      return ApiResponse.error(
+        statusCode: 500,
+        message: 'Something went wrong. Please try again.',
+        errorType: ErrorType.unknown,
+      );
+    }
+  }
+
+  /// A category's direct items + its sub-categories (counts only).
+  Future<ApiResponse<CommCategoryItemsResponse>> getCategoryItems(
+      int categoryId, {
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        '/api/communicator/categories/$categoryId/items/',
+        queryParameters: {'lang': lang},
+      );
+      if (response.isSuccess && response.data != null) {
+        final body = response.data as Map<String, dynamic>;
+        final raw = _unwrap(body);
+        if (raw != null) {
+          return ApiResponse.success(
+            data: CommCategoryItemsResponse.fromJson(raw, lang: lang),
+            statusCode: response.statusCode,
+            message: body['message']?.toString() ?? 'Success',
+          );
+        }
+        return ApiResponse.error(
+          statusCode: response.statusCode,
+          message: body['message'] ?? 'Failed to load category',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode,
+        message: response.message,
+        errorType: response.errorType,
+      );
+    } catch (e) {
+      debugPrint('CommunicatorRepository.getCategoryItems error: $e');
+      return ApiResponse.error(
+        statusCode: 500,
+        message: 'Something went wrong. Please try again.',
+        errorType: ErrorType.unknown,
+      );
+    }
+  }
+
+  /// A sub-category's items.
+  Future<ApiResponse<CommSubCategoryItemsResponse>> getSubCategoryItems(
+      int subCategoryId, {
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        '/api/communicator/sub-categories/$subCategoryId/items/',
+        queryParameters: {'lang': lang},
+      );
+      if (response.isSuccess && response.data != null) {
+        final body = response.data as Map<String, dynamic>;
+        final raw = _unwrap(body);
+        if (raw != null) {
+          return ApiResponse.success(
+            data: CommSubCategoryItemsResponse.fromJson(raw, lang: lang),
+            statusCode: response.statusCode,
+            message: body['message']?.toString() ?? 'Success',
+          );
+        }
+        return ApiResponse.error(
+          statusCode: response.statusCode,
+          message: body['message'] ?? 'Failed to load sub-category',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode,
+        message: response.message,
+        errorType: response.errorType,
+      );
+    } catch (e) {
+      debugPrint('CommunicatorRepository.getSubCategoryItems error: $e');
+      return ApiResponse.error(
+        statusCode: 500,
+        message: 'Something went wrong. Please try again.',
+        errorType: ErrorType.unknown,
+      );
+    }
+  }
+
+  /// Server-side search across items + quick speaks.
+  Future<ApiResponse<CommSearchResponse>> search(
+      String query, {
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _client.get<Map<String, dynamic>>(
+        '/api/communicator/search/',
+        queryParameters: {'q': query, 'lang': lang},
+      );
+      if (response.isSuccess && response.data != null) {
+        final body = response.data as Map<String, dynamic>;
+        final raw = _unwrap(body);
+        if (raw != null) {
+          return ApiResponse.success(
+            data: CommSearchResponse.fromJson(raw, lang: lang),
+            statusCode: response.statusCode,
+            message: body['message']?.toString() ?? 'Success',
+          );
+        }
+        return ApiResponse.error(
+          statusCode: response.statusCode,
+          message: body['message'] ?? 'Search failed',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode,
+        message: response.message,
+        errorType: response.errorType,
+      );
+    } catch (e) {
+      debugPrint('CommunicatorRepository.search error: $e');
+      return ApiResponse.error(
+        statusCode: 500,
+        message: 'Something went wrong. Please try again.',
+        errorType: ErrorType.unknown,
+      );
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // LEGACY — full-payload endpoint. No longer used by the home screen,
+  // kept here only in case anything else still needs it.
+  // ══════════════════════════════════════════════════════════════
+
   String _cacheKey(String lang, bool buddyMode) =>
       'comm_content_cache_${lang}_${buddyMode ? 'buddy' : 'normal'}';
 
-  /// Instantly returns the last-cached content (if any) without touching
-  /// the network. Call this first so the UI can paint immediately, then
-  /// call [getContent] / [getBuddyModeContent] in the background to
-  /// refresh with the latest data.
   Future<CommunicatorContentModel?> getCachedContent({
     required bool buddyMode,
     String lang = 'en',
@@ -38,9 +215,7 @@ class CommunicatorRepository {
     try {
       await StorageService()
           .setString(_cacheKey(lang, buddyMode), jsonEncode(rawJson));
-    } catch (_) {
-      // A failed cache write should never break the actual data flow.
-    }
+    } catch (_) {}
   }
 
   // Get Content
@@ -91,19 +266,11 @@ class CommunicatorRepository {
         if (rawData is Map && body['success'] != false) {
           final rawJson = Map<String, dynamic>.from(rawData);
 
-          // NOTE: this response currently carries every category, every
-          // sub-category and every item (thousands of records) in one
-          // payload. Decoding/mapping that on the main isolate is what
-          // causes the loading freeze, so we push it to a background
-          // isolate with `compute`. This is a mitigation — the real fix
-          // is a lighter/paginated backend endpoint.
           final model = await compute(
             _parseCommunicatorContentIsolate,
             {'json': rawJson, 'lang': lang},
           );
 
-          // Cache the raw JSON (fire-and-forget) so the next app open
-          // can paint instantly from disk.
           unawaited(_saveToCache(lang, buddyMode, rawJson));
 
           return ApiResponse.success(

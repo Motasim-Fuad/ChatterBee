@@ -1,4 +1,3 @@
-import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -149,7 +148,7 @@ class CommunicatorAllCategoriesScreen
                     itemBuilder: (_, i) {
                       final cat = filtered[i];
                       return CommCard(
-                        imageUrl: AppUrl.mediaUrl(cat.imageIcon),
+                        imageUrl: cat.imageIcon, // already a full URL
                         label: cat.name,
                         subLabel: cat.subCategoriesCount > 0
                             ? '${cat.subCategoriesCount} ${'sub_count_suffix'.tr}'

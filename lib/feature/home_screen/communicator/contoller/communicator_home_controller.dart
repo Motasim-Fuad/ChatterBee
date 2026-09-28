@@ -26,7 +26,8 @@ class CommunicatorHomeController extends GetxController
   final RxBool isBuddyMode = false.obs;
   final RxString loadError = ''.obs;
 
-  final RxList<CommCategoryModel> categories = <CommCategoryModel>[].obs;
+  // Lightweight — counts only, no nested items/sub-categories.
+  final RxList<CommCategoryLite> categories = <CommCategoryLite>[].obs;
   final RxList<CommQuickSpeakModel> quickSpeaks = <CommQuickSpeakModel>[].obs;
 
   final RxString quickSpeakText = ''.obs;
@@ -36,8 +37,10 @@ class CommunicatorHomeController extends GetxController
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
-  // Debounce timer for the search box — avoids re-filtering thousands of
-  // items on every single keystroke.
+  // Server-side search results (item data is no longer loaded client-side).
+  final RxList<CommSearchItemResult> searchItems = <CommSearchItemResult>[].obs;
+  final RxBool isSearching = false.obs;
+
   Timer? _searchDebounce;
 
   /// 0 = Home page, 1 = All Categories page (PageView current page)
@@ -83,15 +86,10 @@ class CommunicatorHomeController extends GetxController
         duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
-  /// Cache-first content load:
-  /// 1) If we don't already have data in memory, paint instantly from the
-  ///    last-cached response (if any) so re-opening the app never shows a
-  ///    blank spinner for data we already had.
-  /// 2) Always refresh from the network afterwards and replace whatever
-  ///    is shown once the fresh response comes back.
+  /// Loads the lightweight categories list (counts only). Items load
+  /// lazily per-category/sub-category once the user taps into one.
   Future<void> loadContent() async {
     loadError.value = '';
-    final hadDataAlready = categories.isNotEmpty || quickSpeaks.isNotEmpty;
 
     try {
       final profileRes = await _authRepository.getProfile();
@@ -105,37 +103,17 @@ class CommunicatorHomeController extends GetxController
     }
 
     final lang = _currentLang;
-
-    if (!hadDataAlready) {
-      final cached = await _repo.getCachedContent(
-        buddyMode: isBuddyMode.value,
-        lang: lang,
-      );
-      if (cached != null) {
-        categories.assignAll(cached.categories);
-        quickSpeaks.assignAll(cached.quickSpeaks);
-      }
-    }
-
-    // Only show the big spinner if we still have nothing on screen.
     isLoading.value = categories.isEmpty && quickSpeaks.isEmpty;
 
-    final res = isBuddyMode.value
-        ? await _repo.getBuddyModeContent(lang: lang)
-        : await _repo.getContent(lang: lang);
+    final res = await _repo.getCategoriesLite(
+      buddyMode: isBuddyMode.value,
+      lang: lang,
+    );
 
     if (res.isSuccess && res.data != null) {
       categories.assignAll(res.data!.categories);
-      var qs = res.data!.quickSpeaks;
-      if (qs.isEmpty && isBuddyMode.value) {
-        final fallback = await _repo.getContent(lang: lang);
-        if (fallback.isSuccess && fallback.data != null) {
-          qs = fallback.data!.quickSpeaks;
-        }
-      }
-      quickSpeaks.assignAll(qs);
+      quickSpeaks.assignAll(res.data!.quickSpeaks);
     } else if (categories.isEmpty && quickSpeaks.isEmpty) {
-      // Only surface the error when we have nothing (cached or fresh) to show.
       loadError.value = res.message.isNotEmpty
           ? res.message
           : 'failed_to_load_content'.tr;
@@ -146,14 +124,30 @@ class CommunicatorHomeController extends GetxController
   Future<void> refresh() => loadContent();
 
   /// Debounced search input — call this from the search TextField's
-  /// onChanged instead of setting [searchQuery] directly, so filtering
-  /// only runs 300ms after the user stops typing instead of on every
-  /// keystroke.
+  /// onChanged instead of setting [searchQuery] directly.
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
       searchQuery.value = value;
+      _performSearch(value);
     });
+  }
+
+  Future<void> _performSearch(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) {
+      searchItems.clear();
+      return;
+    }
+    isSearching.value = true;
+    final res = await _repo.search(q, lang: _currentLang);
+    isSearching.value = false;
+
+    if (res.isSuccess && res.data != null) {
+      searchItems.assignAll(res.data!.items);
+    } else {
+      searchItems.clear();
+    }
   }
 
   void onQuickSpeakTap(CommQuickSpeakModel qs) {
@@ -176,7 +170,9 @@ class CommunicatorHomeController extends GetxController
     SentenceBarService.to.beginTyping();
   }
 
-  void onSearchItemTap(CommItemModel item) {
+  /// Tapping a server-search item result — treated the same as tapping a
+  /// quick speak (adds it to the sentence bar).
+  void onSearchItemTap(CommSearchItemResult item) {
     final qs = CommQuickSpeakModel(
       id: item.id,
       word: item.word,
@@ -184,8 +180,8 @@ class CommunicatorHomeController extends GetxController
       color: item.color,
       imageIcon: item.imageIcon,
       order: item.order,
-      isActive: item.isActive,
-      isDeleted: item.isDeleted,
+      isActive: true,
+      isDeleted: false,
     );
     onQuickSpeakTap(qs);
   }
@@ -196,38 +192,11 @@ class CommunicatorHomeController extends GetxController
     return quickSpeaks.where((e) => (e.word ?? '').toLowerCase().contains(q)).toList();
   }
 
-  List<CommCategoryModel> get filteredCategories {
+  /// Category name only — item-level matches now come from [searchItems].
+  List<CommCategoryLite> get filteredCategories {
     final q = searchQuery.value.trim().toLowerCase();
     if (q.isEmpty) return categories.toList();
     return categories.where((c) => c.name.toLowerCase().contains(q)).toList();
-  }
-
-  List<CommItemModel> get filteredItems {
-    final q = searchQuery.value.trim().toLowerCase();
-    if (q.isEmpty) return const [];
-    final out = <CommItemModel>[];
-    for (final cat in categories) {
-      out.addAll(cat.items.where((i) => (i.word ?? '').toLowerCase().contains(q)));
-      for (final sub in cat.subCategories) {
-        out.addAll(sub.items.where((i) => (i.word ?? '').toLowerCase().contains(q)));
-      }
-    }
-    return out;
-  }
-
-  List<CommItemModel> get homeTalkButtons {
-    final q = searchQuery.value.trim().toLowerCase();
-    final out = <CommItemModel>[];
-    for (final cat in categories) {
-      out.addAll(cat.items);
-      for (final sub in cat.subCategories) {
-        out.addAll(sub.items);
-      }
-    }
-    if (q.isEmpty) return out;
-    return out
-        .where((i) => (i.word ?? '').toLowerCase().contains(q))
-        .toList();
   }
 
   void speakQuickSpeak() {
@@ -312,9 +281,8 @@ class CommunicatorHomeController extends GetxController
   }
 
   // On Category Tap
-  void onCategoryTap(CommCategoryModel category) {
-    final liveSubs = category.subCategories.where((s) => !s.isDeleted).toList();
-    if (liveSubs.isEmpty) {
+  void onCategoryTap(CommCategoryLite category) {
+    if (category.subCategoriesCount == 0) {
       Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: category);
     } else {
       Get.toNamed(AppRoutes.COMMUNICATOR_SUB_CATEGORY, arguments: category);

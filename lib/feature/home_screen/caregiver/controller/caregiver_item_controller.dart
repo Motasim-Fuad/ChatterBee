@@ -24,15 +24,16 @@ class CaregiverItemController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isRecorderInitialized = false;
-  late final dynamic parent;
-  String get parentTitle => parent is SubCategoryModel
-      ? (parent as SubCategoryModel).name
-      : (parent as CategoryModel).name;
-  int get parentId => parent is SubCategoryModel
-      ? (parent as SubCategoryModel).id
-      : (parent as CategoryModel).id;
 
-  final RxList<ItemModel> items = <ItemModel>[].obs;
+  /// CategoryLite (direct-item category) or SubCategoryLite.
+  late final dynamic parent;
+  String get parentTitle =>
+      parent is SubCategoryLite ? (parent as SubCategoryLite).name : (parent as CategoryLite).name;
+  int get parentId =>
+      parent is SubCategoryLite ? (parent as SubCategoryLite).id : (parent as CategoryLite).id;
+  bool get _isSubCategory => parent is SubCategoryLite;
+
+  final RxList<ItemLite> items = <ItemLite>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isEditMode = false.obs;
   final RxSet<int> selectedIds = <int>{}.obs;
@@ -50,7 +51,7 @@ class CaregiverItemController extends GetxController {
   final RxBool isPlayingFormAudio = false.obs;
   final RxBool formLoading = false.obs;
 
-  ItemModel? _editingItem;
+  ItemLite? _editingItem;
 
   String get itemInitialWord => _editingItem?.word ?? '';
 
@@ -72,14 +73,11 @@ class CaregiverItemController extends GetxController {
   void onInit() {
     super.onInit();
     parent = Get.arguments;
-    if (parent is SubCategoryModel) {
-      items.value = (parent as SubCategoryModel).items;
-    } else if (parent is CategoryModel) {
-      items.value = (parent as CategoryModel).items;
-    } else {
-      throw ArgumentError('Caregiver item screen requires a category or sub-category');
+    if (parent is! SubCategoryLite && parent is! CategoryLite) {
+      throw ArgumentError(
+          'Caregiver item screen requires a CategoryLite or SubCategoryLite');
     }
-    _initAudio();
+    _loadItems();
   }
 
   Future<void> _initAudio() async {
@@ -121,44 +119,44 @@ class CaregiverItemController extends GetxController {
     }
   }
 
-  Future<void> refresh() async {
+  /// Loads this category's/sub-category's items lazily.
+  Future<void> _loadItems() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) return;
 
     isLoading.value = true;
     final lang = _currentLang;
 
-    final response = _isBuddyMode
-        ? await _repo.getUserBuddyModeContent(communicatorId, lang: lang)
-        : await _repo.getUserContent(communicatorId, lang: lang);
-
-    isLoading.value = false;
-
-    if (response.isSuccess && response.data != null) {
-      for (final cat in response.data!.categories) {
-        if (parent is CategoryModel && cat.id == (parent as CategoryModel).id) {
-          items.value = cat.items;
-          break;
-        }
-        if (parent is SubCategoryModel) {
-          final sub = cat.subCategories.firstWhereOrNull(
-              (s) => s.id == (parent as SubCategoryModel).id);
-          if (sub != null) {
-            items.value = sub.items;
-            break;
-          }
-        }
+    if (_isSubCategory) {
+      final res = await _repo.getSubCategoryItems(parentId,
+          communicatorId: communicatorId, lang: lang);
+      isLoading.value = false;
+      if (res.isSuccess && res.data != null) {
+        items.value = res.data!.items;
       }
-      if (Get.isRegistered<CaregiverHomeController>()) {
-        Get.find<CaregiverHomeController>().loadContent();
+    } else {
+      final res = await _repo.getCategoryItems(parentId,
+          communicatorId: communicatorId, lang: lang);
+      isLoading.value = false;
+      if (res.isSuccess && res.data != null) {
+        items.value = res.data!.items;
       }
     }
   }
 
+  Future<void> refresh() async {
+    await _loadItems();
+    if (Get.isRegistered<CaregiverHomeController>()) {
+      Get.find<CaregiverHomeController>().loadContent();
+    }
+  }
 
-  Future<void> playItemAudio(ItemModel item) async {
+  Future<void> playItemAudio(ItemLite item) async {
     if (item.speak != null && item.speak!.isNotEmpty) {
-      final url = AppUrl.mediaUrl(item.speak);
+      // New endpoints already return a full URL for speak/image.
+      final url = item.speak!.startsWith('http')
+          ? item.speak
+          : AppUrl.mediaUrl(item.speak);
       if (url == null) return;
 
       if (playingItemId.value == item.id) {
@@ -177,7 +175,7 @@ class CaregiverItemController extends GetxController {
     }
   }
 
-  void onItemTap(ItemModel item) {
+  void onItemTap(ItemLite item) {
     selectedItemId.value = item.id;
     SentenceBarService.to.addToken(
       text: item.word ?? '',
@@ -220,7 +218,7 @@ class CaregiverItemController extends GetxController {
     _showItemSheet('add_item'.tr);
   }
 
-  void showEditSheet(ItemModel item) {
+  void showEditSheet(ItemLite item) {
     _editingItem = item;
     formColorHex.value = item.color.isNotEmpty ? item.color : '#FFD700';
     formImageFile.value = null;

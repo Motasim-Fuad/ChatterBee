@@ -11,13 +11,155 @@ import 'package:flutter/foundation.dart';
 class CaregiverCustomizationRepository {
   final ApiClient _apiClient = ApiClient();
 
+  // ══════════════════════════════════════════════════════════════
+  // NEW — lightweight / lazy-loaded granular endpoints
+  // ⚠️ Paths below assume ApiClient's Dio baseUrl (no trailing slash) is prefixed with /api/ —
+  // `/api/` (matches AppUrl.baseUrl per the backend guide). Adjust the
+  // path strings here if AppUrl's convention differs.
+  // ══════════════════════════════════════════════════════════════
+
+  /// Lightweight categories list (counts only, no nested items/sub-categories).
+  /// Use this for the home / all-categories screens.
+  Future<ApiResponse<CategoryListResponse>> getCategoriesLite(
+      int communicatorId, {
+        required bool buddyMode,
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _apiClient.get(
+        '/api/caregiver/categories/',
+        queryParameters: {
+          'communicator_id': communicatorId.toString(),
+          'lang': lang,
+          'buddy_mode': buddyMode.toString(),
+        },
+      );
+      if (response.isSuccess && response.data != null) {
+        final raw = response.data is Map
+            ? Map<String, dynamic>.from(response.data as Map)
+            : <String, dynamic>{};
+        return ApiResponse.success(
+          data: CategoryListResponse.fromJson(raw, lang: lang),
+          statusCode: 200,
+          message: 'Success',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode ?? 500,
+        message: response.message,
+      );
+    } catch (e) {
+      return ApiResponse.error(statusCode: 500, message: e.toString());
+    }
+  }
+
+  /// A single category's direct items + its sub-categories (counts only for
+  /// the sub-categories — their items load lazily too, via
+  /// [getSubCategoryItems]). Call this when the user taps into a category.
+  Future<ApiResponse<CategoryItemsResponse>> getCategoryItems(
+      int categoryId, {
+        required int communicatorId,
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _apiClient.get(
+        '/api/caregiver/categories/$categoryId/items/',
+        queryParameters: {
+          'communicator_id': communicatorId.toString(),
+          'lang': lang,
+        },
+      );
+      if (response.isSuccess && response.data != null) {
+        final raw = Map<String, dynamic>.from(response.data as Map);
+        return ApiResponse.success(
+          data: CategoryItemsResponse.fromJson(raw, lang: lang),
+          statusCode: 200,
+          message: 'Success',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode ?? 500,
+        message: response.message,
+      );
+    } catch (e) {
+      return ApiResponse.error(statusCode: 500, message: e.toString());
+    }
+  }
+
+  /// A single sub-category's items. Call this when the user taps into a
+  /// sub-category.
+  Future<ApiResponse<SubCategoryItemsResponse>> getSubCategoryItems(
+      int subCategoryId, {
+        required int communicatorId,
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _apiClient.get(
+        '/api/caregiver/sub-categories/$subCategoryId/items/',
+        queryParameters: {
+          'communicator_id': communicatorId.toString(),
+          'lang': lang,
+        },
+      );
+      if (response.isSuccess && response.data != null) {
+        final raw = Map<String, dynamic>.from(response.data as Map);
+        return ApiResponse.success(
+          data: SubCategoryItemsResponse.fromJson(raw, lang: lang),
+          statusCode: 200,
+          message: 'Success',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode ?? 500,
+        message: response.message,
+      );
+    } catch (e) {
+      return ApiResponse.error(statusCode: 500, message: e.toString());
+    }
+  }
+
+  /// Server-side search across items + quick speaks (used by the debounced
+  /// search box, now that item data isn't all loaded on the client anymore).
+  Future<ApiResponse<SearchResponse>> search(
+      String query, {
+        required int communicatorId,
+        String lang = 'en',
+      }) async {
+    try {
+      final response = await _apiClient.get(
+        '/api/caregiver/search/',
+        queryParameters: {
+          'q': query,
+          'communicator_id': communicatorId.toString(),
+          'lang': lang,
+        },
+      );
+      if (response.isSuccess && response.data != null) {
+        final raw = Map<String, dynamic>.from(response.data as Map);
+        return ApiResponse.success(
+          data: SearchResponse.fromJson(raw, lang: lang),
+          statusCode: 200,
+          message: 'Success',
+        );
+      }
+      return ApiResponse.error(
+        statusCode: response.statusCode ?? 500,
+        message: response.message,
+      );
+    } catch (e) {
+      return ApiResponse.error(statusCode: 500, message: e.toString());
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // LEGACY — full-payload endpoint. Kept only for the "add to quick
+  // speak" picker (which still needs a flat list of every AAC button
+  // to choose from). Not used for the home screen anymore.
+  // ══════════════════════════════════════════════════════════════
+
   String _cacheKey(int communicatorId, String lang, bool buddyMode) =>
       'cg_content_cache_${communicatorId}_${lang}_${buddyMode ? 'buddy' : 'normal'}';
 
-  /// Instantly returns the last-cached content (if any) without touching
-  /// the network. Call this first so the UI can paint immediately, then
-  /// call [getUserContent] / [getUserBuddyModeContent] in the background
-  /// to refresh with the latest data.
   Future<UserContentModel?> getCachedUserContent(
       int communicatorId, {
         required bool buddyMode,
@@ -28,8 +170,6 @@ class CaregiverCustomizationRepository {
       StorageService().getString(_cacheKey(communicatorId, lang, buddyMode));
       if (raw == null || raw.isEmpty) return null;
       final json = jsonDecode(raw) as Map<String, dynamic>;
-      // Parse off the UI thread — the cached payload can still contain
-      // thousands of nested items.
       return await compute(
         _parseUserContentIsolate,
         {'json': json, 'lang': lang},
@@ -50,12 +190,9 @@ class CaregiverCustomizationRepository {
         _cacheKey(communicatorId, lang, buddyMode),
         jsonEncode(rawJson),
       );
-    } catch (_) {
-      // A failed cache write should never break the actual data flow.
-    }
+    } catch (_) {}
   }
 
-  // Loads user content in normal mode
   Future<ApiResponse<UserContentModel>> getUserContent(
       int communicatorId, {
         String lang = 'en',
@@ -68,7 +205,6 @@ class CaregiverCustomizationRepository {
     );
   }
 
-  // Loads user content in buddy mode
   Future<ApiResponse<UserContentModel>> getUserBuddyModeContent(
       int communicatorId, {
         String lang = 'en',
@@ -94,19 +230,11 @@ class CaregiverCustomizationRepository {
             ? Map<String, dynamic>.from(response.data as Map)
             : <String, dynamic>{};
 
-        // NOTE: this response currently carries every category, every
-        // sub-category and every item (thousands of records) in one
-        // payload. Decoding/mapping that on the main isolate is what
-        // causes the loading freeze, so we push it to a background
-        // isolate with `compute`. This is a mitigation — the real fix
-        // is a lighter/paginated backend endpoint.
         final model = await compute(
           _parseUserContentIsolate,
           {'json': rawJson, 'lang': lang},
         );
 
-        // Cache the raw JSON (fire-and-forget) so the next app open /
-        // communicator switch can paint instantly from disk.
         unawaited(_saveToCache(communicatorId, lang, buddyMode, rawJson));
 
         return ApiResponse.success(

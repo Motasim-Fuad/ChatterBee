@@ -6,7 +6,6 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
-import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/sentence_bar_service.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
@@ -18,12 +17,18 @@ class CommunicatorItemController extends GetxController {
   final CommunicatorRepository _repo = CommunicatorRepository();
   final AudioPlayer _audioPlayer = AudioPlayer();
 
+  /// CommCategoryLite (direct-item category) or CommSubCategoryLite.
   late final dynamic parent;
-  String get parentTitle => parent is CommSubCategoryModel
-      ? (parent as CommSubCategoryModel).name
-      : (parent as CommCategoryModel).name;
+  String get parentTitle => parent is CommSubCategoryLite
+      ? (parent as CommSubCategoryLite).name
+      : (parent as CommCategoryLite).name;
+  int get _parentId => parent is CommSubCategoryLite
+      ? (parent as CommSubCategoryLite).id
+      : (parent as CommCategoryLite).id;
+  bool get _isSubCategory => parent is CommSubCategoryLite;
 
-  final RxList<CommItemModel> items = <CommItemModel>[].obs;
+  final RxList<CommItemLite> items = <CommItemLite>[].obs;
+  final RxBool isLoading = false.obs;
   final RxInt playingId = (-1).obs;
 
   final RxString selectedWord = ''.obs;
@@ -40,13 +45,11 @@ class CommunicatorItemController extends GetxController {
   void onInit() {
     super.onInit();
     parent = Get.arguments;
-    if (parent is CommSubCategoryModel) {
-      items.value = (parent as CommSubCategoryModel).items;
-    } else if (parent is CommCategoryModel) {
-      items.value = (parent as CommCategoryModel).items;
-    } else {
-      throw ArgumentError('Communicator item screen requires a category or sub-category');
+    if (parent is! CommSubCategoryLite && parent is! CommCategoryLite) {
+      throw ArgumentError(
+          'Communicator item screen requires a CommCategoryLite or CommSubCategoryLite');
     }
+    _loadItems();
   }
 
   // Current language
@@ -58,46 +61,34 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  // Buddy mode from CommunicatorHomeController
-  bool get _isBuddyMode {
-    try {
-      return Get.find<CommunicatorHomeController>().isBuddyMode.value;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  // Refresh using the buddy-mode + language endpoint
-  Future<void> refresh() async {
+  /// Loads this category's/sub-category's items lazily.
+  Future<void> _loadItems() async {
+    isLoading.value = true;
     final lang = _currentLang;
 
-    final res = _isBuddyMode
-        ? await _repo.getBuddyModeContent(lang: lang)
-        : await _repo.getContent(lang: lang);
-
-    if (res.isSuccess && res.data != null) {
-      for (final cat in res.data!.categories) {
-        if (parent is CommCategoryModel && cat.id == (parent as CommCategoryModel).id) {
-          items.value = cat.items;
-          break;
-        }
-        if (parent is CommSubCategoryModel) {
-          final sub = cat.subCategories.firstWhereOrNull(
-              (s) => s.id == (parent as CommSubCategoryModel).id);
-          if (sub != null) {
-            items.value = sub.items;
-            break;
-          }
-        }
+    if (_isSubCategory) {
+      final res = await _repo.getSubCategoryItems(_parentId, lang: lang);
+      isLoading.value = false;
+      if (res.isSuccess && res.data != null) {
+        items.value = res.data!.items;
       }
-
-      if (Get.isRegistered<CommunicatorHomeController>()) {
-        Get.find<CommunicatorHomeController>().loadContent();
+    } else {
+      final res = await _repo.getCategoryItems(_parentId, lang: lang);
+      isLoading.value = false;
+      if (res.isSuccess && res.data != null) {
+        items.value = res.data!.items;
       }
     }
   }
 
-  void onItemTap(CommItemModel item) {
+  Future<void> refresh() async {
+    await _loadItems();
+    if (Get.isRegistered<CommunicatorHomeController>()) {
+      Get.find<CommunicatorHomeController>().loadContent();
+    }
+  }
+
+  void onItemTap(CommItemLite item) {
     selectedItemId.value = item.id;
     SentenceBarService.to.addToken(
       text: item.word ?? '',
@@ -161,7 +152,9 @@ class CommunicatorItemController extends GetxController {
 
   // Play Audio Internal
   Future<void> _playAudioInternal(int id, String? audioPath) async {
-    final url = AppUrl.mediaUrl(audioPath);
+    // New endpoints already return a full URL for speak/image.
+    final url =
+    audioPath != null && audioPath.startsWith('http') ? audioPath : AppUrl.mediaUrl(audioPath);
     if (url == null) return;
 
     try {

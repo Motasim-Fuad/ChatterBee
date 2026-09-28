@@ -50,7 +50,8 @@ class CaregiverHomeController extends GetxController
   final RxBool isQsEditMode = false.obs;
   final RxSet<int> selectedCategoryIds = <int>{}.obs;
 
-  final RxList<CategoryModel> categories = <CategoryModel>[].obs;
+  // Lightweight — counts only, no nested items/sub-categories.
+  final RxList<CategoryLite> categories = <CategoryLite>[].obs;
   final RxList<QuickSpeakModel> quickSpeaks = <QuickSpeakModel>[].obs;
   final RxInt selectedQuickSpeakId = (-1).obs;
   final RxString selectedQuickSpeakText = ''.obs;
@@ -59,8 +60,11 @@ class CaregiverHomeController extends GetxController
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
-  // Debounce timer for the search box — avoids re-filtering thousands of
-  // items on every single keystroke.
+  // Server-side search results (item data is no longer loaded client-side).
+  final RxList<SearchItemResult> searchItems = <SearchItemResult>[].obs;
+  final RxBool isSearching = false.obs;
+
+  // Debounce timer for the search box.
   Timer? _searchDebounce;
 
   // Home <-> All Categories swipe
@@ -70,12 +74,12 @@ class CaregiverHomeController extends GetxController
   // Quick speak swap: je card prothom select kora hoyeche tar index
   final RxInt swapFromIndex = (-1).obs;
 
-  List<CategoryModel> get apiCategories => categories;
+  List<CategoryLite> get apiCategories => categories;
 
   final RxString catColorHex = '#B5CFD1'.obs;
   final Rx<File?> catImageFile = Rx<File?>(null);
   final RxBool catFormLoading = false.obs;
-  CategoryModel? _editingCategory;
+  CategoryLite? _editingCategory;
 
   final RxString qsColorHex = '#FFD700'.obs;
   final Rx<File?> qsImageFile = Rx<File?>(null);
@@ -151,12 +155,8 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-  /// Cache-first content load:
-  /// 1) If we don't already have data in memory, paint instantly from the
-  ///    last-cached response (if any) so re-opening the app / switching
-  ///    communicator never shows a blank spinner for data we already had.
-  /// 2) Always refresh from the network afterwards and replace whatever
-  ///    is shown once the fresh response comes back.
+  /// Loads the lightweight categories list (counts only). Items load
+  /// lazily per-category/sub-category once the user taps into one.
   Future<void> loadContent() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) {
@@ -168,27 +168,13 @@ class CaregiverHomeController extends GetxController
 
     loadError.value = '';
     final lang = _currentLang;
-    final hadDataAlready = categories.isNotEmpty || quickSpeaks.isNotEmpty;
-
-    if (!hadDataAlready) {
-      final cached = await _repo.getCachedUserContent(
-        communicatorId,
-        buddyMode: isBuddyMode.value,
-        lang: lang,
-      );
-      if (cached != null) {
-        categories.assignAll(cached.categories);
-        quickSpeaks.assignAll(cached.quickSpeaks);
-        await _applySavedOrder();
-      }
-    }
-
-    // Only show the big spinner if we still have nothing on screen.
     isLoading.value = categories.isEmpty && quickSpeaks.isEmpty;
 
-    final response = isBuddyMode.value
-        ? await _repo.getUserBuddyModeContent(communicatorId, lang: lang)
-        : await _repo.getUserContent(communicatorId, lang: lang);
+    final response = await _repo.getCategoriesLite(
+      communicatorId,
+      buddyMode: isBuddyMode.value,
+      lang: lang,
+    );
 
     isLoading.value = false;
 
@@ -197,7 +183,6 @@ class CaregiverHomeController extends GetxController
       quickSpeaks.assignAll(response.data!.quickSpeaks);
       await _applySavedOrder();
     } else if (categories.isEmpty && quickSpeaks.isEmpty) {
-      // Only surface the error when we have nothing (cached or fresh) to show.
       loadError.value = response.message.isNotEmpty
           ? response.message
           : 'Failed to load content.';
@@ -207,14 +192,34 @@ class CaregiverHomeController extends GetxController
   Future<void> refresh() => loadContent();
 
   /// Debounced search input — call this from the search TextField's
-  /// onChanged instead of setting [searchQuery] directly, so filtering
-  /// only runs 300ms after the user stops typing instead of on every
-  /// keystroke.
+  /// onChanged instead of setting [searchQuery] directly.
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
       searchQuery.value = value;
+      _performSearch(value);
     });
+  }
+
+  Future<void> _performSearch(String query) async {
+    final q = query.trim();
+    if (q.isEmpty) {
+      searchItems.clear();
+      return;
+    }
+    final communicatorId = CommunicatorSessionService.to.communicatorId.value;
+    if (communicatorId == 0) return;
+
+    isSearching.value = true;
+    final res =
+    await _repo.search(q, communicatorId: communicatorId, lang: _currentLang);
+    isSearching.value = false;
+
+    if (res.isSuccess && res.data != null) {
+      searchItems.assignAll(res.data!.items);
+    } else {
+      searchItems.clear();
+    }
   }
 
   void toggleEditMode() {
@@ -241,10 +246,10 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-  void onCategoryTap(CategoryModel category) {
+  void onCategoryTap(CategoryLite category) {
     if (isEditMode.value) {
       toggleCategorySelection(category.id);
-    } else if (category.subCategories.isEmpty) {
+    } else if (category.subCategoriesCount == 0) {
       Get.toNamed('/item-screen', arguments: category);
     } else {
       Get.toNamed('/sub-category', arguments: category);
@@ -262,8 +267,6 @@ class CaregiverHomeController extends GetxController
   }
 
   // ───────── Quick Speak tap / swap ─────────
-  /// Normal mode: word select hobe.
-  /// Edit mode: prothom tap = source select, dwitiyo tap = duita card swap.
   void onQuickSpeakTap(int index, QuickSpeakModel qs) {
     if (!isQsEditMode.value) {
       selectQuickSpeak(qs);
@@ -272,7 +275,7 @@ class CaregiverHomeController extends GetxController
     if (swapFromIndex.value == -1) {
       swapFromIndex.value = index;
     } else if (swapFromIndex.value == index) {
-      swapFromIndex.value = -1; // same card abar tap = cancel
+      swapFromIndex.value = -1;
     } else {
       swapQuickSpeaks(swapFromIndex.value, index);
       swapFromIndex.value = -1;
@@ -301,7 +304,6 @@ class CaregiverHomeController extends GetxController
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
           _qsOrderKey, jsonEncode(quickSpeaks.map((e) => e.id).toList()));
-      // TODO: backend-e quick speak order update API thakle ekhane call koro
     } catch (e) {
       debugPrint('save qs order error: $e');
     }
@@ -343,17 +345,11 @@ class CaregiverHomeController extends GetxController
     await SentenceBarService.to.speakAll(lang: _currentLang);
   }
 
-  /// Sob category + sub-category er item ekta flat list e.
-  /// Shudhu Quick Speak picker e use hoy.
-  List<ItemModel> get allAacButtons {
-    final out = <ItemModel>[];
-    for (final cat in categories) {
-      out.addAll(cat.items);
-      for (final sub in cat.subCategories) {
-        out.addAll(sub.items);
-      }
-    }
-    return out;
+  /// Category name only — item-level matches now come from [searchItems].
+  List<CategoryLite> get filteredCategories {
+    final q = searchQuery.value.trim().toLowerCase();
+    if (q.isEmpty) return categories.toList();
+    return categories.where((c) => c.name.toLowerCase().contains(q)).toList();
   }
 
   List<QuickSpeakModel> get filteredQuickSpeaks {
@@ -362,19 +358,6 @@ class CaregiverHomeController extends GetxController
     return quickSpeaks
         .where((e) => (e.word ?? '').toLowerCase().contains(q))
         .toList();
-  }
-
-  List<CategoryModel> get filteredCategories {
-    final q = searchQuery.value.trim().toLowerCase();
-    if (q.isEmpty) return categories.toList();
-    bool matchesItem(ItemModel item) =>
-        (item.word ?? '').toLowerCase().contains(q);
-    return categories.where((c) {
-      if (c.name.toLowerCase().contains(q)) return true;
-      if (c.items.any(matchesItem)) return true;
-      return c.subCategories.any((s) =>
-      s.name.toLowerCase().contains(q) || s.items.any(matchesItem));
-    }).toList();
   }
 
   void openSchedule() {
@@ -393,7 +376,7 @@ class CaregiverHomeController extends GetxController
     _openSheet(_CategorySheet(controller: this, title: 'add_category'.tr));
   }
 
-  void showEditCategorySheet(CategoryModel cat) {
+  void showEditCategorySheet(CategoryLite cat) {
     _editingCategory = cat;
     catColorHex.value = cat.color.isNotEmpty ? cat.color : '#B5CFD1';
     catImageFile.value = null;
@@ -461,18 +444,54 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-  void showAddQuickSpeakSheet() {
+  Future<void> showAddQuickSpeakSheet() async {
     _editingQuickSpeak = null;
-    _openAacButtonPicker(title: 'add_to_quick_speak'.tr);
+    await _openAacButtonPicker(title: 'add_to_quick_speak'.tr);
   }
 
-  void showEditQuickSpeakSheet(QuickSpeakModel qs) {
+  Future<void> showEditQuickSpeakSheet(QuickSpeakModel qs) async {
     _editingQuickSpeak = qs;
-    _openAacButtonPicker(title: 'swap_quick_speak'.tr);
+    await _openAacButtonPicker(title: 'swap_quick_speak'.tr);
   }
 
-  void _openAacButtonPicker({required String title}) {
-    final buttons = allAacButtons;
+  /// AAC buttons for the picker still need the full nested item tree, so
+  /// this falls back to the legacy full-payload endpoint — but only when
+  /// the picker is actually opened, not on every home load.
+  Future<List<ItemLite>> _fetchAllAacButtons() async {
+    final communicatorId = CommunicatorSessionService.to.communicatorId.value;
+    final lang = _currentLang;
+    final full = isBuddyMode.value
+        ? await _repo.getUserBuddyModeContent(communicatorId, lang: lang)
+        : await _repo.getUserContent(communicatorId, lang: lang);
+    if (!full.isSuccess || full.data == null) return const [];
+
+    final out = <ItemLite>[];
+    ItemLite toLite(ItemModel e) => ItemLite(
+      id: e.id,
+      word: e.word,
+      imageIcon: e.imageIcon,
+      speak: e.speak,
+      color: e.color,
+      order: e.order,
+    );
+    for (final cat in full.data!.categories) {
+      out.addAll(cat.items.map(toLite));
+      for (final sub in cat.subCategories) {
+        out.addAll(sub.items.map(toLite));
+      }
+    }
+    return out;
+  }
+
+  Future<void> _openAacButtonPicker({required String title}) async {
+    Get.dialog(
+      const Center(
+          child: CircularProgressIndicator(color: Color(0xFFFFC857))),
+      barrierDismissible: false,
+    );
+    final buttons = await _fetchAllAacButtons();
+    Get.back(); // close loading dialog
+
     final query = ''.obs;
 
     Get.bottomSheet(
@@ -614,7 +633,7 @@ class CaregiverHomeController extends GetxController
     );
   }
 
-  Future<void> applyAacButtonToQuickSpeak(ItemModel item) async {
+  Future<void> applyAacButtonToQuickSpeak(ItemLite item) async {
     qsFormLoading.value = true;
     File? image;
     final url = AppUrl.mediaUrl(item.imageIcon);
@@ -971,78 +990,6 @@ class _QuickSpeakSheetState extends State<_QuickSpeakSheet> {
           Obx(() => c.qsImageFile.value != null
               ? _ImagePreview(file: c.qsImageFile.value!, onRemove: c.removeQsImage)
               : _PickImageBtn(onTap: c.pickQsImage)),
-          if (false) ...[
-            const SizedBox(height: 16),
-            Text('voice_audio_speak'.tr,
-                style: const TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 8),
-            Obx(() {
-              final hasAudio = c.qsAudioFile.value != null;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(children: [
-                    _AudioBtn(
-                      icon: c.qsIsRecording.value ? Icons.stop : Icons.mic,
-                      color: c.qsIsRecording.value ? Colors.red : const Color(0xFFFFC857),
-                      label: c.qsIsRecording.value ? 'stop'.tr : 'record'.tr,
-                      onTap: c.toggleQsRecording,
-                    ),
-                    if (hasAudio) ...[
-                      const SizedBox(width: 10),
-                      _AudioBtn(
-                        icon: c.qsIsPlayingAudio.value ? Icons.stop : Icons.play_arrow,
-                        color: const Color(0xFF4CAF50),
-                        label: c.qsIsPlayingAudio.value ? 'stop'.tr : 'play'.tr,
-                        onTap: c.toggleQsPlayback,
-                      ),
-                      const SizedBox(width: 10),
-                      _AudioBtn(
-                        icon: Icons.delete_outline,
-                        color: Colors.red,
-                        label: 'delete'.tr,
-                        onTap: c.removeQsAudio,
-                      ),
-                    ],
-                  ]),
-                  if (c.qsIsRecording.value) ...[
-                    const SizedBox(height: 8),
-                    Row(children: [
-                      Container(width: 8, height: 8,
-                          decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
-                      const SizedBox(width: 6),
-                      Text('recording_indicator'.tr,
-                          style: const TextStyle(color: Colors.red, fontSize: 12)),
-                    ]),
-                  ],
-                  if (hasAudio && !c.qsIsRecording.value) ...[
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE8F5E9),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.audio_file, color: Color(0xFF4CAF50), size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            c.qsAudioFileName.value.isEmpty ? 'audio_ready'.tr : c.qsAudioFileName.value,
-                            style: const TextStyle(color: Color(0xFF4CAF50), fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text('record_voice_hint'.tr,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[500])),
-                ],
-              );
-            }),
-          ],
           const SizedBox(height: 24),
           Obx(() => _SaveBtn(
             loading: c.qsFormLoading.value,
@@ -1156,33 +1103,6 @@ class _SaveBtn extends StatelessWidget {
             : Text('save'.tr,
             style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 16)),
       ),
-    );
-  }
-}
-
-class _AudioBtn extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String label;
-  final VoidCallback onTap;
-  const _AudioBtn({required this.icon, required this.color, required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(children: [
-        Container(
-          width: 44, height: 44,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.15), shape: BoxShape.circle,
-            border: Border.all(color: color.withOpacity(0.3)),
-          ),
-          child: Icon(icon, color: color, size: 22),
-        ),
-        const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 10, color: color, fontWeight: FontWeight.w600)),
-      ]),
     );
   }
 }

@@ -13,12 +13,12 @@ class CaregiverSubCategoryController extends GetxController {
   CaregiverCustomizationRepository();
   final ImagePicker _picker = ImagePicker();
 
-  late final CategoryModel parentCategory;
+  late final CategoryLite parentCategory;
 
-  final RxList<SubCategoryModel> subCategories = <SubCategoryModel>[].obs;
+  final RxList<SubCategoryLite> subCategories = <SubCategoryLite>[].obs;
 
   /// Category er nijer direct item (sub-category chhara).
-  final RxList<ItemModel> directItems = <ItemModel>[].obs;
+  final RxList<ItemLite> directItems = <ItemLite>[].obs;
 
   final RxBool isLoading = false.obs;
   final RxBool isEditMode = false.obs;
@@ -28,16 +28,15 @@ class CaregiverSubCategoryController extends GetxController {
   final Rx<File?> formImageFile = Rx<File?>(null);
   final RxBool formLoading = false.obs;
 
-  SubCategoryModel? _editingSub;
+  SubCategoryLite? _editingSub;
 
   String get subInitialName => _editingSub?.name ?? '';
 
   @override
   void onInit() {
     super.onInit();
-    parentCategory = Get.arguments as CategoryModel;
-    subCategories.value = parentCategory.subCategories;
-    directItems.value = parentCategory.items;
+    parentCategory = Get.arguments as CategoryLite;
+    _load();
   }
 
   // Normalize Lang
@@ -62,30 +61,29 @@ class CaregiverSubCategoryController extends GetxController {
     }
   }
 
-  Future<void> refresh() async {
+  /// Loads this category's sub-categories + its own direct items lazily.
+  Future<void> _load() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) return;
 
     isLoading.value = true;
     final lang = _currentLang;
 
-    final response = _isBuddyMode
-        ? await _repo.getUserBuddyModeContent(communicatorId, lang: lang)
-        : await _repo.getUserContent(communicatorId, lang: lang);
+    final res = await _repo.getCategoryItems(parentCategory.id,
+        communicatorId: communicatorId, lang: lang);
 
     isLoading.value = false;
 
-    if (response.isSuccess && response.data != null) {
-      final updated = response.data!.categories
-          .firstWhereOrNull((c) => c.id == parentCategory.id);
-      if (updated != null) {
-        subCategories.value = updated.subCategories;
-        directItems.value = updated.items;
-      }
+    if (res.isSuccess && res.data != null) {
+      subCategories.value = res.data!.subCategories;
+      directItems.value = res.data!.items;
+    }
+  }
 
-      if (Get.isRegistered<CaregiverHomeController>()) {
-        Get.find<CaregiverHomeController>().loadContent();
-      }
+  Future<void> refresh() async {
+    await _load();
+    if (Get.isRegistered<CaregiverHomeController>()) {
+      Get.find<CaregiverHomeController>().loadContent();
     }
   }
 
@@ -102,7 +100,7 @@ class CaregiverSubCategoryController extends GetxController {
     }
   }
 
-  void onSubCategoryTap(SubCategoryModel sub) {
+  void onSubCategoryTap(SubCategoryLite sub) {
     if (isEditMode.value) {
       toggleSelection(sub.id);
     } else {
@@ -122,7 +120,7 @@ class CaregiverSubCategoryController extends GetxController {
     _openSheet('add_sub_category'.tr);
   }
 
-  void showEditSheet(SubCategoryModel sub) {
+  void showEditSheet(SubCategoryLite sub) {
     _editingSub = sub;
     formColorHex.value = sub.color.isNotEmpty ? sub.color : '#B5CFD1';
     formImageFile.value = null;

@@ -12,17 +12,17 @@ class CommunicatorSubCategoryController extends GetxController {
   final CommunicatorRepository _repo = CommunicatorRepository();
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  late final CommCategoryModel parentCategory;
+  late final CommCategoryLite parentCategory;
 
-  final RxList<CommSubCategoryModel> subCategories =
-      <CommSubCategoryModel>[].obs;
+  final RxList<CommSubCategoryLite> subCategories = <CommSubCategoryLite>[].obs;
+  final RxBool isLoading = false.obs;
   final RxInt playingId = (-1).obs;
 
   @override
   void onInit() {
     super.onInit();
-    parentCategory = Get.arguments as CommCategoryModel;
-    subCategories.value = parentCategory.subCategories;
+    parentCategory = Get.arguments as CommCategoryLite;
+    _load();
   }
 
   // Current language
@@ -34,44 +34,35 @@ class CommunicatorSubCategoryController extends GetxController {
     }
   }
 
-  // Buddy mode from CommunicatorHomeController
-  bool get _isBuddyMode {
-    try {
-      return Get.find<CommunicatorHomeController>().isBuddyMode.value;
-    } catch (_) {
-      return false;
-    }
-  }
-
-  // Refresh using the buddy-mode + language endpoint
-  Future<void> refresh() async {
+  /// Loads this category's sub-categories lazily.
+  Future<void> _load() async {
+    isLoading.value = true;
     final lang = _currentLang;
 
-    final res = _isBuddyMode
-        ? await _repo.getBuddyModeContent(lang: lang)
-        : await _repo.getContent(lang: lang);
+    final res = await _repo.getCategoryItems(parentCategory.id, lang: lang);
+
+    isLoading.value = false;
 
     if (res.isSuccess && res.data != null) {
-      final updated = res.data!.categories
-          .firstWhereOrNull((c) => c.id == parentCategory.id);
-      if (updated != null) subCategories.value = updated.subCategories;
-
-      if (Get.isRegistered<CommunicatorHomeController>()) {
-        Get.find<CommunicatorHomeController>().loadContent();
-      }
+      subCategories.value = res.data!.subCategories;
     }
   }
 
-  void onSubCategoryTap(CommSubCategoryModel sub) {
-    if (sub.items.isEmpty && sub.itemsCount == 0) {
-      Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: sub);
-    } else {
-      Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: sub);
+  Future<void> refresh() async {
+    await _load();
+    if (Get.isRegistered<CommunicatorHomeController>()) {
+      Get.find<CommunicatorHomeController>().loadContent();
     }
+  }
+
+  void onSubCategoryTap(CommSubCategoryLite sub) {
+    Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: sub);
   }
 
   Future<void> playAudio(int id, String? audioPath) async {
-    final url = AppUrl.mediaUrl(audioPath);
+    final url = audioPath != null && audioPath.startsWith('http')
+        ? audioPath
+        : AppUrl.mediaUrl(audioPath);
     if (url == null) return;
 
     if (playingId.value == id) {

@@ -1,4 +1,3 @@
-import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart'
     show CgFolderCard;
@@ -207,10 +206,10 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
                             .selectedCategoryIds
                             .contains(cat.id);
                         return CgFolderCard(
-                          imageUrl: AppUrl.mediaUrl(cat.imageIcon),
+                          imageUrl: cat.imageIcon, // already a full URL
                           label: cat.name,
-                          subLabel: cat.subCategories.isNotEmpty
-                              ? '${cat.subCategories.length} ${'sub_count_suffix'.tr}'
+                          subLabel: cat.subCategoriesCount > 0
+                              ? '${cat.subCategoriesCount} ${'sub_count_suffix'.tr}'
                               : null,
                           bgColor: _parseColor(
                               cat.color, const Color(0xFFB5CFD1)),

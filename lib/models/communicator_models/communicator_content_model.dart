@@ -257,3 +257,304 @@ class CommQuickSpeakModel {
     );
   }
 }
+
+// ══════════════════════════════════════════════════════════════════
+// Lightweight / lazy-loaded models — new granular endpoints.
+// NOTE: image_icon/speak here arrive as FULL URLs already (not relative
+// paths), unlike the legacy models above. Do NOT pass these through
+// AppUrl.mediaUrl() again — use imageIcon / speak directly.
+// ══════════════════════════════════════════════════════════════════
+
+class CommCategoryListResponse {
+  final bool isCustomized;
+  final bool isBuddyMode;
+  final String? updatedAt;
+  final String? etag;
+  final List<CommCategoryLite> categories;
+  final List<CommQuickSpeakModel> quickSpeaks;
+  final int totalCategories;
+  final int totalQuickSpeaks;
+
+  CommCategoryListResponse({
+    required this.isCustomized,
+    required this.isBuddyMode,
+    this.updatedAt,
+    this.etag,
+    required this.categories,
+    required this.quickSpeaks,
+    required this.totalCategories,
+    required this.totalQuickSpeaks,
+  });
+
+  factory CommCategoryListResponse.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    final data = json['data'] ?? json;
+    return CommCategoryListResponse(
+      isCustomized: data['is_customized'] ?? false,
+      isBuddyMode: data['is_buddy_mode'] ?? false,
+      updatedAt: data['updated_at'],
+      etag: data['etag'],
+      categories: (data['categories'] as List? ?? [])
+          .whereType<Map>()
+          .map((e) => CommCategoryLite.fromJson(Map<String, dynamic>.from(e),
+          lang: lang))
+          .toList(),
+      quickSpeaks:
+      (data['quick_speaks'] as List? ?? data['quickspeaks'] as List? ?? [])
+          .whereType<Map>()
+          .map((e) => CommQuickSpeakModel.fromJson(
+          Map<String, dynamic>.from(e),
+          lang: lang))
+          .toList(),
+      totalCategories: data['total_categories'] ?? 0,
+      totalQuickSpeaks: data['total_quickspeaks'] ?? 0,
+    );
+  }
+}
+
+class CommCategoryLite {
+  final int id;
+  final String name;
+  final String? imageIcon;
+  final String color;
+  final int order;
+  final int itemsCount;
+  final int subCategoriesCount;
+
+  CommCategoryLite({
+    required this.id,
+    required this.name,
+    this.imageIcon,
+    required this.color,
+    required this.order,
+    required this.itemsCount,
+    required this.subCategoriesCount,
+  });
+
+  factory CommCategoryLite.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    return CommCategoryLite(
+      id: json['id'] ?? 0,
+      name: _resolveName(json, lang),
+      imageIcon: json['image_icon'],
+      color: json['color'] ?? '#B5CFD1',
+      order: json['order'] ?? 0,
+      itemsCount: json['items_count'] ?? 0,
+      subCategoriesCount: json['sub_categories_count'] ?? 0,
+    );
+  }
+}
+
+class CommSubCategoryLite {
+  final int id;
+  final String name;
+  final String? imageIcon;
+  final String color;
+  final int order;
+  final int itemsCount;
+
+  CommSubCategoryLite({
+    required this.id,
+    required this.name,
+    this.imageIcon,
+    required this.color,
+    required this.order,
+    required this.itemsCount,
+  });
+
+  factory CommSubCategoryLite.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    return CommSubCategoryLite(
+      id: json['id'] ?? 0,
+      name: _resolveName(json, lang),
+      imageIcon: json['image_icon'],
+      color: json['color'] ?? '#B5CFD1',
+      order: json['order'] ?? 0,
+      itemsCount: json['items_count'] ?? 0,
+    );
+  }
+}
+
+class CommItemLite {
+  final int id;
+  final String? word;
+  final String? imageIcon;
+  final String? speak;
+  final String color;
+  final int order;
+
+  CommItemLite({
+    required this.id,
+    this.word,
+    this.imageIcon,
+    this.speak,
+    required this.color,
+    required this.order,
+  });
+
+  factory CommItemLite.fromJson(Map<String, dynamic> json, {String lang = 'en'}) {
+    return CommItemLite(
+      id: json['id'] ?? 0,
+      word: _resolveWord(json, lang) ?? json['word'],
+      imageIcon: json['image_icon'],
+      speak: _resolveSpeak(json, lang) ?? json['speak'],
+      color: json['color'] ?? '#FFD700',
+      order: json['order'] ?? 0,
+    );
+  }
+}
+
+class CommCategoryItemsResponse {
+  final CommCategoryLite category;
+  final List<CommItemLite> items;
+  final List<CommSubCategoryLite> subCategories;
+  final int totalItems;
+  final int totalSubCategories;
+
+  CommCategoryItemsResponse({
+    required this.category,
+    required this.items,
+    required this.subCategories,
+    required this.totalItems,
+    required this.totalSubCategories,
+  });
+
+  factory CommCategoryItemsResponse.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    final data = json['data'] ?? json;
+    final catJson = Map<String, dynamic>.from(data['category'] ?? {});
+    final itemsJson = (data['items'] as List? ?? []);
+    final subsJson = (data['sub_categories'] as List? ?? []);
+    return CommCategoryItemsResponse(
+      category: CommCategoryLite(
+        id: catJson['id'] ?? 0,
+        name: _resolveName(catJson, lang),
+        imageIcon: catJson['image_icon'],
+        color: catJson['color'] ?? '#B5CFD1',
+        order: catJson['order'] ?? 0,
+        itemsCount: data['total_items'] ?? itemsJson.length,
+        subCategoriesCount: data['total_sub_categories'] ?? subsJson.length,
+      ),
+      items: itemsJson
+          .whereType<Map>()
+          .map((e) =>
+          CommItemLite.fromJson(Map<String, dynamic>.from(e), lang: lang))
+          .toList(),
+      subCategories: subsJson
+          .whereType<Map>()
+          .map((e) => CommSubCategoryLite.fromJson(
+          Map<String, dynamic>.from(e),
+          lang: lang))
+          .toList(),
+      totalItems: data['total_items'] ?? itemsJson.length,
+      totalSubCategories: data['total_sub_categories'] ?? subsJson.length,
+    );
+  }
+}
+
+class CommSubCategoryItemsResponse {
+  final CommSubCategoryLite subCategory;
+  final List<CommItemLite> items;
+  final int totalItems;
+
+  CommSubCategoryItemsResponse({
+    required this.subCategory,
+    required this.items,
+    required this.totalItems,
+  });
+
+  factory CommSubCategoryItemsResponse.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    final data = json['data'] ?? json;
+    final subJson = Map<String, dynamic>.from(data['sub_category'] ?? {});
+    final itemsJson = (data['items'] as List? ?? []);
+    return CommSubCategoryItemsResponse(
+      subCategory: CommSubCategoryLite(
+        id: subJson['id'] ?? 0,
+        name: _resolveName(subJson, lang),
+        imageIcon: subJson['image_icon'],
+        color: subJson['color'] ?? '#B5CFD1',
+        order: subJson['order'] ?? 0,
+        itemsCount: data['total_items'] ?? itemsJson.length,
+      ),
+      items: itemsJson
+          .whereType<Map>()
+          .map((e) =>
+          CommItemLite.fromJson(Map<String, dynamic>.from(e), lang: lang))
+          .toList(),
+      totalItems: data['total_items'] ?? itemsJson.length,
+    );
+  }
+}
+
+class CommSearchItemResult {
+  final int id;
+  final String? word;
+  final String? imageIcon;
+  final String? speak;
+  final String color;
+  final int order;
+  final int? categoryId;
+  final String? categoryName;
+
+  CommSearchItemResult({
+    required this.id,
+    this.word,
+    this.imageIcon,
+    this.speak,
+    required this.color,
+    required this.order,
+    this.categoryId,
+    this.categoryName,
+  });
+
+  factory CommSearchItemResult.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    return CommSearchItemResult(
+      id: json['id'] ?? 0,
+      word: _resolveWord(json, lang) ?? json['word'],
+      imageIcon: json['image_icon'],
+      speak: _resolveSpeak(json, lang) ?? json['speak'],
+      color: json['color'] ?? '#FFD700',
+      order: json['order'] ?? 0,
+      categoryId: json['category_id'],
+      categoryName: json['category_name'],
+    );
+  }
+}
+
+class CommSearchResponse {
+  final String query;
+  final List<CommSearchItemResult> items;
+  final List<CommQuickSpeakModel> quickSpeaks;
+  final int totalResults;
+
+  CommSearchResponse({
+    required this.query,
+    required this.items,
+    required this.quickSpeaks,
+    required this.totalResults,
+  });
+
+  factory CommSearchResponse.fromJson(Map<String, dynamic> json,
+      {String lang = 'en'}) {
+    final data = json['data'] ?? json;
+    return CommSearchResponse(
+      query: data['search_query'] ?? '',
+      items: (data['items'] as List? ?? [])
+          .whereType<Map>()
+          .map((e) => CommSearchItemResult.fromJson(
+          Map<String, dynamic>.from(e),
+          lang: lang))
+          .toList(),
+      quickSpeaks:
+      (data['quickspeaks'] as List? ?? data['quick_speaks'] as List? ?? [])
+          .whereType<Map>()
+          .map((e) => CommQuickSpeakModel.fromJson(
+          Map<String, dynamic>.from(e),
+          lang: lang))
+          .toList(),
+      totalResults: data['total_results'] ?? 0,
+    );
+  }
+}

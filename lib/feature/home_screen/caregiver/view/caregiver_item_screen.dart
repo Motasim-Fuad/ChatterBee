@@ -153,7 +153,7 @@ class CaregiverItemScreen extends StatelessWidget {
                       ? selectedIds.contains(item.id)
                       : selectedId == item.id;
                   return CgAACButtonCard(
-                    imageUrl: AppUrl.mediaUrl(item.imageIcon),
+                    imageUrl: item.imageIcon,
                     label: item.word ?? '',
                     bgColor: _parseColor(
                         item.color, const Color(0xFFFFD700)),
@@ -283,10 +283,10 @@ class _CaregiverBarButton extends StatelessWidget {
 void _showItemDialog(
     BuildContext context,
     CaregiverItemController controller,
-    ItemModel item,
+    ItemLite item,
     ) {
   final bgColor = _parseColor(item.color, const Color(0xFFFFD700));
-  final imageUrl = AppUrl.mediaUrl(item.imageIcon);
+  final imageUrl = item.imageIcon; // full URL from new endpoint
   final hasAudio = item.speak != null;
 
   showGeneralDialog(

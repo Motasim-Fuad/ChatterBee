@@ -150,7 +150,7 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                     final idx = i - extra;
                     final qs = qsList[idx];
                     return CgAACButtonCard(
-                      imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                      imageUrl: qs.imageIcon,
                       label: qs.word ?? '',
                       bgColor:
                       _parseColor(qs.color, const Color(0xFFFFD700)),

@@ -93,7 +93,7 @@ class CommunicatorAllQuickSpeaksScreen
                       }
                       final qs = qsList[i - 1];
                       return Obx(() => AACButtonCard(
-                        imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                        imageUrl: qs.imageIcon,
                         label: qs.word ?? '',
                         bgColor: _parseColor(
                             qs.color, const Color(0xFFFFD700)),

@@ -75,6 +75,11 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
                 final cols = _crossAxisCount(context);
                 return Obx(() {
                   final items = controller.items.toList();
+                  if (controller.isLoading.value && items.isEmpty) {
+                    return const Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFFFFC857)));
+                  }
                   return RefreshIndicator(
                     onRefresh: controller.refresh,
                     color: const Color(0xFFFFC857),
@@ -125,7 +130,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
 
 /// AAC item button (RECTANGLE style — was file-folder before).
 class _ItemCard extends StatelessWidget {
-  final CommItemModel item;
+  final CommItemLite item;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -137,7 +142,7 @@ class _ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = AppUrl.mediaUrl(item.imageIcon);
+    final imageUrl = item.imageIcon; // already a full URL from the new endpoint
     final bgColor = _parseColor(item.color, const Color(0xFFFFD700));
 
     return AACButtonCard(

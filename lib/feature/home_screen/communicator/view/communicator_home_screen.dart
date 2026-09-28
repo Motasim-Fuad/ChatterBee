@@ -175,7 +175,7 @@ class _CommHomePage extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: TextField(
-                    onChanged: (v) => controller.searchQuery.value = v,
+                    onChanged: controller.onSearchChanged,
                     onTapOutside: (_) =>
                         FocusManager.instance.primaryFocus?.unfocus(),
                     decoration: InputDecoration(
@@ -228,8 +228,8 @@ class _CommHomePage extends StatelessWidget {
                   : controller.quickSpeaks.toList();
               // search cholle matching item-o dekhabe
               final itemResults = searching
-                  ? controller.filteredItems
-                  : const <CommItemModel>[];
+                  ? controller.searchItems
+                  : const <CommSearchItemResult>[];
               final selectedId = controller.selectedQsId.value;
 
               if (qsList.isEmpty && itemResults.isEmpty) {
@@ -270,7 +270,7 @@ class _CommHomePage extends StatelessWidget {
                       if (i < showCount) {
                         final qs = qsList[i];
                         return AACButtonCard(
-                          imageUrl: AppUrl.mediaUrl(qs.imageIcon),
+                          imageUrl: qs.imageIcon,
                           label: qs.word ?? '',
                           bgColor: _parseColor(
                               qs.color, const Color(0xFFFFD700)),
@@ -280,7 +280,7 @@ class _CommHomePage extends StatelessWidget {
                       }
                       final item = itemResults[i - showCount];
                       return AACButtonCard(
-                        imageUrl: AppUrl.mediaUrl(item.imageIcon),
+                        imageUrl: item.imageIcon,
                         label: item.word ?? '',
                         bgColor: _parseColor(
                             item.color, const Color(0xFFFFD700)),

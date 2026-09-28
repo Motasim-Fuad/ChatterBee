@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_sub_category_controller.dart';
 import 'package:chatter_bee/models/communicator_models/communicator_content_model.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +52,14 @@ class CommunicatorSubCategoryScreen
           final cols = _crossAxisCount(context);
           return Obx(() {
             final subs = controller.subCategories.toList();
+
+            // Sub-categories load lazily now — show a spinner instead of
+            // flashing the empty state while the request is in flight.
+            if (controller.isLoading.value && subs.isEmpty) {
+              return const Center(
+                  child: CircularProgressIndicator(color: Color(0xFFFFC857)));
+            }
+
             if (subs.isEmpty) {
               return Center(
                 child: Column(
@@ -71,25 +78,25 @@ class CommunicatorSubCategoryScreen
               );
             }
             return RefreshIndicator(
-            onRefresh: controller.refresh,
-            color: const Color(0xFFFFC857),
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: cols,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.82,
+              onRefresh: controller.refresh,
+              color: const Color(0xFFFFC857),
+              child: GridView.builder(
+                padding: const EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: cols,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.82,
+                ),
+                itemCount: subs.length,
+                itemBuilder: (_, i) {
+                  final sub = subs[i];
+                  return _SubCategoryCard(
+                    sub: sub,
+                    onTap: () => controller.onSubCategoryTap(sub),
+                  );
+                },
               ),
-              itemCount: subs.length,
-              itemBuilder: (_, i) {
-                final sub = subs[i];
-                return _SubCategoryCard(
-                  sub: sub,
-                  onTap: () => controller.onSubCategoryTap(sub),
-                );
-              },
-            ),
             );
           });
         },
@@ -100,14 +107,14 @@ class CommunicatorSubCategoryScreen
 
 
 class _SubCategoryCard extends StatelessWidget {
-  final CommSubCategoryModel sub;
+  final CommSubCategoryLite sub;
   final VoidCallback onTap;
 
   const _SubCategoryCard({required this.sub, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = AppUrl.mediaUrl(sub.imageIcon);
+    final imageUrl = sub.imageIcon; // already a full URL from the new endpoint
     final bgColor = _parseColor(sub.color, const Color(0xFFB5CFD1));
 
     return GestureDetector(
@@ -142,6 +149,8 @@ class _SubCategoryCard extends StatelessWidget {
                               ? CachedNetworkImage(
                             imageUrl: imageUrl,
                             fit: BoxFit.cover,
+                            memCacheWidth: 150,
+                            memCacheHeight: 150,
                             errorWidget: (_, __, ___) => Icon(
                                 Icons.image_outlined,
                                 color: Colors.white,
