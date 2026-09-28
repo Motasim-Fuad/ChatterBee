@@ -8,6 +8,7 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:chatter_bee/services/api_client.dart';
 import 'package:chatter_bee/utils/logger_utils.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:chatter_bee/routes/app_routes.dart';
 
@@ -310,20 +311,23 @@ class AuthRepository {
       if (refreshToken != null && refreshToken.isNotEmpty) {
         await _apiClient.post<Map<String, dynamic>>(AppUrl.logout, data: {'refresh': refreshToken});
       }
+      ApiClient().beginSessionTeardown();
       await NotificationControllerFCM.to.deleteFcmToken();
       await _clearAuthData();
       return ApiResponse.success(data: null, statusCode: 200, message: 'Logged out successfully');
     } catch (e) {
+      ApiClient().beginSessionTeardown();
       await _clearAuthData();
       return ApiResponse.success(data: null, statusCode: 200, message: 'Logged out successfully');
     }
   }
 
-  
   Future<void> handleUnauthorized() async {
+    ApiClient().beginSessionTeardown();
     try {
-      await NotificationControllerFCM.to.deleteFcmToken();
       await _clearAuthData();
+      if (Get.currentRoute == AppRoutes.SIGNINSCREEN) return;
+      FocusManager.instance.primaryFocus?.unfocus();
       Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       Get.snackbar('Session Expired', 'Please login again', snackPosition: SnackPosition.TOP);
     } catch (e) {
@@ -343,6 +347,7 @@ class AuthRepository {
       email: loginResponse.user.email,
       role: role,
     );
+    ApiClient().endSessionTeardown();
     await _storage.saveUserRole(role);
     await _storage.saveUserName(loginResponse.user.fullName);
     await _storage.setLoggedIn(true);
@@ -370,6 +375,7 @@ class AuthRepository {
       email: email,
       role: role,
     );
+    ApiClient().endSessionTeardown();
     await _storage.saveUserRole(role);
     await _storage.setLoggedIn(true);
   }

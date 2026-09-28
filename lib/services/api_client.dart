@@ -1,18 +1,24 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
+import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 import '../config/app_url.dart';
 import '../utils/logger_utils.dart';
 
 class ApiClient {
-  late Dio _dio;
+  static final ApiClient _instance = ApiClient._internal();
+  factory ApiClient() => _instance;
+
+  late final Dio _dio;
   final SecureStorageService _secureStorage = SecureStorageService();
 
   bool _isLoggingOut = false;
   Future<_RefreshResult>? _refreshInFlight;
 
-  ApiClient() {
+  ApiClient._internal() {
     _dio = Dio(
       BaseOptions(
         baseUrl: AppUrl.baseUrl,
@@ -28,13 +34,29 @@ class ApiClient {
     _setupInterceptors();
   }
 
+  void beginSessionTeardown() {
+    _isLoggingOut = true;
+  }
+
+  void endSessionTeardown() {
+    _isLoggingOut = false;
+  }
+
   void _setupInterceptors() {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
-          final token = await _secureStorage.getAccessToken();
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
+          _normalizePath(options);
+          if (!_isAnonymousAuthPath(options.path)) {
+            if (!_isLoggingOut) {
+              await _ensureFreshAccessToken();
+            }
+            final token = await _secureStorage.getAccessToken();
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+            } else {
+              options.headers.remove('Authorization');
+            }
           }
 
           LoggerUtils.logApi('REQUEST[${options.method}] => ${options.uri}');
@@ -57,36 +79,26 @@ class ApiClient {
           LoggerUtils.logError('Error Message: ${error.message}');
 
           if (error.response?.statusCode == 401) {
-            final isAuthRequest = error.requestOptions.path.contains('login') ||
-                error.requestOptions.path.contains('token/refresh');
+            final options = error.requestOptions;
+            if (!_shouldRecoverSession(options)) {
+              return handler.next(error);
+            }
 
-            final alreadyRetried = error.requestOptions.extra['authRetried'] == true;
-            if (!isAuthRequest && !alreadyRetried && !_isLoggingOut) {
-              final refreshResult = await _refreshTokenSingleFlight();
-
-              if (refreshResult == _RefreshResult.success) {
-                final options = error.requestOptions;
-                final token = await _secureStorage.getAccessToken();
+            final refreshResult = await _refreshTokenSingleFlight();
+            if (refreshResult == _RefreshResult.success) {
+              final token = await _secureStorage.getAccessToken();
+              if (token != null && token.isNotEmpty) {
                 options.headers['Authorization'] = 'Bearer $token';
-                options.extra['authRetried'] = true;
-
-                try {
-                  final response = await _dio.request(
-                    options.path,
-                    options: Options(
-                      method: options.method,
-                      headers: options.headers,
-                    ),
-                    data: options.data,
-                    queryParameters: options.queryParameters,
-                  );
-                  return handler.resolve(response);
-                } catch (e) {
-                  return handler.next(error);
-                }
-              } else if (refreshResult == _RefreshResult.sessionExpired) {
-                await _handleAutoLogout();
               }
+              options.extra['authRetried'] = true;
+              try {
+                return handler.resolve(await _dio.fetch(options));
+              } catch (_) {
+                return handler.next(error);
+              }
+            }
+            if (refreshResult == _RefreshResult.sessionExpired) {
+              await _handleAutoLogout();
             }
           }
 
@@ -108,11 +120,71 @@ class ApiClient {
     return future;
   }
 
+  void _normalizePath(RequestOptions options) {
+    final path = options.path;
+    if (path.startsWith('http://') || path.startsWith('https://')) return;
+    if (path.isNotEmpty && !path.startsWith('/')) {
+      options.path = '/$path';
+    }
+  }
+
+  bool _isAnonymousAuthPath(String path) {
+    final p = path.toLowerCase();
+    return p.contains('/login') ||
+        p.endsWith('login/') ||
+        p.contains('token/refresh') ||
+        p.contains('/register') ||
+        p.contains('password/reset') ||
+        p.contains('verify-email') ||
+        p.contains('resend-otp');
+  }
+
+  bool _isPublicAuthPath(String path) {
+    final p = path.toLowerCase();
+    return _isAnonymousAuthPath(path) || p.contains('/logout');
+  }
+
+  bool _shouldRecoverSession(RequestOptions options) {
+    if (_isLoggingOut) return false;
+    if (options.extra['authRetried'] == true) return false;
+    if (_isPublicAuthPath(options.path)) return false;
+    return true;
+  }
+
+  Future<void> _ensureFreshAccessToken() async {
+    final access = await _secureStorage.getAccessToken();
+    if (access == null || access.isEmpty) return;
+    if (!_isJwtExpiring(access)) return;
+    final result = await _refreshTokenSingleFlight();
+    if (result == _RefreshResult.sessionExpired) {
+      await _handleAutoLogout();
+    }
+  }
+
+  bool _isJwtExpiring(String token, {Duration skew = const Duration(seconds: 45)}) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return false;
+      var payload = parts[1].replaceAll('-', '+').replaceAll('_', '/');
+      final pad = payload.length % 4;
+      if (pad > 0) payload += '=' * (4 - pad);
+      final decoded = jsonDecode(utf8.decode(base64.decode(payload)));
+      if (decoded is! Map || decoded['exp'] is! num) return false;
+      final expiry = DateTime.fromMillisecondsSinceEpoch(
+        (decoded['exp'] as num).toInt() * 1000,
+        isUtc: true,
+      );
+      return DateTime.now().toUtc().isAfter(expiry.subtract(skew));
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<_RefreshResult> _refreshToken() async {
     try {
       final refreshToken = await _secureStorage.getRefreshToken();
       if (refreshToken == null || refreshToken.isEmpty) {
-        return _RefreshResult.sessionExpired;
+        return _RefreshResult.unauthenticated;
       }
 
       final refreshDio = Dio(BaseOptions(
@@ -122,18 +194,27 @@ class ApiClient {
         headers: const {'Content-Type': 'application/json', 'Accept': 'application/json'},
       ));
       final response = await refreshDio.post(
-        AppUrl.tokenRefresh,
+        '/api/auth/token/refresh/',
         data: {'refresh': refreshToken},
       );
 
       if (response.statusCode == 200) {
         final body = response.data;
         final payload = body is Map && body['data'] is Map ? body['data'] : body;
-        final newAccessToken = payload is Map ? payload['access'] : null;
+        if (payload is! Map) return _RefreshResult.temporaryFailure;
+        final newAccessToken = payload['access'];
         if (newAccessToken is! String || newAccessToken.isEmpty) {
           return _RefreshResult.temporaryFailure;
         }
-        await _secureStorage.saveAccessToken(newAccessToken);
+        final newRefresh = payload['refresh'];
+        if (newRefresh is String && newRefresh.isNotEmpty) {
+          await _secureStorage.saveTokens(
+            accessToken: newAccessToken,
+            refreshToken: newRefresh,
+          );
+        } else {
+          await _secureStorage.saveAccessToken(newAccessToken);
+        }
         LoggerUtils.logSuccess('Token refreshed successfully');
         return _RefreshResult.success;
       }
@@ -152,18 +233,15 @@ class ApiClient {
 
   Future<void> _handleAutoLogout() async {
     if (_isLoggingOut) return;
+    if (Get.currentRoute == AppRoutes.SIGNINSCREEN) return;
 
     _isLoggingOut = true;
-
     try {
       LoggerUtils.logWarning('Auto logout triggered due to 401');
-
       final authRepository = AuthRepository();
       await authRepository.handleUnauthorized();
     } catch (e) {
       LoggerUtils.logError('Auto logout error: $e');
-    } finally {
-      _isLoggingOut = false;
     }
   }
 
@@ -403,7 +481,7 @@ class ApiClient {
   }
 }
 
-enum _RefreshResult { success, sessionExpired, temporaryFailure }
+enum _RefreshResult { success, sessionExpired, temporaryFailure, unauthenticated }
 
 class ApiResponse<T> {
   final bool success;

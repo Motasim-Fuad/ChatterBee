@@ -34,6 +34,8 @@ class LoginController extends GetxController {
   @override
   void onClose() {
     emailFocusNode.removeListener(_onEmailFocusChanged);
+    emailFocusNode.unfocus();
+    passwordFocusNode.unfocus();
     emailController.dispose();
     passwordController.dispose();
     emailFocusNode.dispose();

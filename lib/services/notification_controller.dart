@@ -88,14 +88,16 @@ class NotificationControllerFCM extends GetxController {
 
       final response = await _fcmRepo.deleteFcmToken(tokenId: tokenId);
 
-      if (response.isSuccess || response.statusCode == 204) {
+      if (response.isSuccess ||
+          response.statusCode == 204 ||
+          response.statusCode == 404) {
         await _secureStorage.deleteFcmTokenId();
         isTokenRegistered.value = false;
-        if (kDebugMode) print('FCM token deleted successfully');
         return true;
       } else {
-        if (kDebugMode) print('Delete failed: ${response.message}');
-        return false;
+        await _secureStorage.deleteFcmTokenId();
+        isTokenRegistered.value = false;
+        return true;
       }
     } catch (e) {
       if (kDebugMode) print('deleteFcmToken error: $e');

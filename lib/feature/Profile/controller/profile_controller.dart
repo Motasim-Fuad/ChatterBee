@@ -438,11 +438,10 @@ class ProfileController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'logged_out'.tr,
-            snackPosition: SnackPosition.BOTTOM);
-        await Future.delayed(const Duration(milliseconds: 500));
+        Get.focusScope?.unfocus();
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       } else {
+        Get.focusScope?.unfocus();
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       }
     } catch (e) {
