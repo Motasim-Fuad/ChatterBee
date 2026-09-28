@@ -85,7 +85,7 @@ class UserData {
     };
   }
 
-  // Helper method to get role safely
+  
   String getRoleSafe() {
     if (role == null || role!.isEmpty) {
       return 'unknown';

@@ -40,7 +40,7 @@ class CommunicatorContentModel {
   }
 }
 
-// Helper: resolve name/speak from translations
+
 String _resolveName(Map<String, dynamic> json, String lang) {
   final translations = json['translations'];
   if (translations is Map) {
@@ -258,12 +258,6 @@ class CommQuickSpeakModel {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// Lightweight / lazy-loaded models — new granular endpoints.
-// NOTE: image_icon/speak here arrive as FULL URLs already (not relative
-// paths), unlike the legacy models above. Do NOT pass these through
-// AppUrl.mediaUrl() again — use imageIcon / speak directly.
-// ══════════════════════════════════════════════════════════════════
 
 class CommCategoryListResponse {
   final bool isCustomized;

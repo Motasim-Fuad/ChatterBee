@@ -25,7 +25,7 @@ class CommunicatorSubCategoryController extends GetxController {
     _load();
   }
 
-  // Current language
+  
   String get _currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
@@ -34,7 +34,7 @@ class CommunicatorSubCategoryController extends GetxController {
     }
   }
 
-  /// Loads this category's sub-categories lazily.
+  
   Future<void> _load() async {
     isLoading.value = true;
     final lang = _currentLang;

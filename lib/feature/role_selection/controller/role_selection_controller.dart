@@ -6,12 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RoleSelectionController extends GetxController {
   final RxString selectedRole = ''.obs;
 
-  // Select role
+  
   void selectRole(String role) {
     selectedRole.value = role;
   }
 
-  // Continue button - save role and go to signup
+  
   Future<void> continueToSignup() async {
     if (selectedRole.value.isEmpty) {
       Get.snackbar(
@@ -33,7 +33,7 @@ class RoleSelectionController extends GetxController {
     Get.toNamed(AppRoutes.SIGNUPSCREEN);
   }
 
-  // Back to login
+  
   void backToLogin() {
     Get.back();
   }

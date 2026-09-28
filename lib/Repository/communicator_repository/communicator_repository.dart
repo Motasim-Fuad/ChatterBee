@@ -9,14 +9,7 @@ import 'package:flutter/foundation.dart';
 class CommunicatorRepository {
   final ApiClient _client = ApiClient();
 
-  // ══════════════════════════════════════════════════════════════
-  // NEW — lightweight / lazy-loaded granular endpoints
-  // ⚠️ Paths below assume ApiClient's Dio baseUrl (no trailing slash) is prefixed with /api/ —
-  // `/api/` (matches AppUrl.baseUrl per the backend guide). Adjust the
-  // path strings here if AppUrl's convention differs. communicator_id
-  // is not needed here — a communicator's token already identifies them.
-  // ══════════════════════════════════════════════════════════════
-
+  
   Map<String, dynamic>? _unwrap(Map<String, dynamic> body) {
     final rawData = body['data'] ?? body;
     if (rawData is Map && body['success'] != false) {
@@ -25,7 +18,7 @@ class CommunicatorRepository {
     return null;
   }
 
-  /// Lightweight categories list (counts only, no nested items/sub-categories).
+  
   Future<ApiResponse<CommCategoryListResponse>> getCategoriesLite({
     required bool buddyMode,
     String lang = 'en',
@@ -65,7 +58,7 @@ class CommunicatorRepository {
     }
   }
 
-  /// A category's direct items + its sub-categories (counts only).
+  
   Future<ApiResponse<CommCategoryItemsResponse>> getCategoryItems(
       int categoryId, {
         String lang = 'en',
@@ -105,7 +98,7 @@ class CommunicatorRepository {
     }
   }
 
-  /// A sub-category's items.
+  
   Future<ApiResponse<CommSubCategoryItemsResponse>> getSubCategoryItems(
       int subCategoryId, {
         String lang = 'en',
@@ -145,7 +138,7 @@ class CommunicatorRepository {
     }
   }
 
-  /// Server-side search across items + quick speaks.
+  
   Future<ApiResponse<CommSearchResponse>> search(
       String query, {
         String lang = 'en',
@@ -185,11 +178,7 @@ class CommunicatorRepository {
     }
   }
 
-  // ══════════════════════════════════════════════════════════════
-  // LEGACY — full-payload endpoint. No longer used by the home screen,
-  // kept here only in case anything else still needs it.
-  // ══════════════════════════════════════════════════════════════
-
+  
   String _cacheKey(String lang, bool buddyMode) =>
       'comm_content_cache_${lang}_${buddyMode ? 'buddy' : 'normal'}';
 
@@ -218,21 +207,21 @@ class CommunicatorRepository {
     } catch (_) {}
   }
 
-  // Get Content
+  
   Future<ApiResponse<CommunicatorContentModel>> getContent(
       {String lang = 'en'}) async {
     return _fetchContent(AppUrl.getCommunicatorContent(lang: lang),
         buddyMode: false, lang: lang);
   }
 
-  // Get Buddy Mode Content
+  
   Future<ApiResponse<CommunicatorContentModel>> getBuddyModeContent(
       {String lang = 'en'}) async {
     return _fetchContent(AppUrl.getCommunicatorBuddyModeContent(lang: lang),
         buddyMode: true, lang: lang);
   }
 
-  // Records that an item or quick speak was pressed
+  
   Future<void> pressContent({
     required String contentType,
     required int contentId,
@@ -250,7 +239,7 @@ class CommunicatorRepository {
     }
   }
 
-  // Shared fetch logic
+  
   Future<ApiResponse<CommunicatorContentModel>> _fetchContent(
       String url, {
         required bool buddyMode,
@@ -302,9 +291,7 @@ class CommunicatorRepository {
   }
 }
 
-/// Top-level function so it can run inside a background isolate via
-/// [compute]. Must stay top-level (or static) — instance methods can't
-/// be sent across isolates.
+
 CommunicatorContentModel _parseCommunicatorContentIsolate(
     Map<String, dynamic> args) {
   final json = args['json'] as Map<String, dynamic>;

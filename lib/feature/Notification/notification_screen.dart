@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'notification_controller.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CustomSwitch extends StatefulWidget {
   final bool value;
@@ -111,7 +112,7 @@ class NotificationScreen extends StatelessWidget {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return const AppShimmerProfile();
               }
               return controller.selectedTab.value == 0
                   ? _buildNotificationContent(controller)
@@ -123,7 +124,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // Tab widget
+  
   Widget _buildTab(String text, bool isActive, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -144,7 +145,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // Notification list
+  
   Widget _buildNotificationContent(NotificationControllerdamo controller) {
     if (controller.notifications.isEmpty) {
       return Center(
@@ -271,7 +272,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  // Alert Settings
+  
   Widget _buildAlertSettingsContent(NotificationControllerdamo controller) {
     return ListView(
       padding: const EdgeInsets.all(20),

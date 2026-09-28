@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 class LoginScreen extends GetView<LoginController> {
@@ -252,14 +253,7 @@ class LoginScreen extends GetView<LoginController> {
                       elevation: 0,
                     ),
                     child: controller.isLoading.value
-                        ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                      ),
-                    )
+                        ? const AppShimmerCompact()
                         : Text(
                       'Sign In',
                       style: GoogleFonts.nunito(

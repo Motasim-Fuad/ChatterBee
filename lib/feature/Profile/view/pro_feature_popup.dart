@@ -37,7 +37,7 @@ class ProFeaturePopup extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header: bee + title
+                    
                     Row(
                       children: [
                         Image.asset(ImagesLink.logo, height: 70),
@@ -72,7 +72,7 @@ class ProFeaturePopup extends StatelessWidget {
                     ),
                     const SizedBox(height: 14),
 
-                    // Feature list
+                    
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -130,14 +130,14 @@ class ProFeaturePopup extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Unlock button
+                    
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          Get.back(); // close popup
-                          c.onContinuePressed(); // purchase selected plan
+                          Get.back(); 
+                          c.onContinuePressed(); 
                         },
                         icon: const Icon(Icons.lock_outline, size: 20),
                         label: Text('Unlock with ChatterBee Pro',
@@ -154,7 +154,7 @@ class ProFeaturePopup extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // Maybe later
+                    
                     SizedBox(
                       width: double.infinity,
                       height: 46,
@@ -173,7 +173,7 @@ class ProFeaturePopup extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // Restore
+                    
                     Wrap(
                       alignment: WrapAlignment.center,
                       children: [
@@ -200,7 +200,7 @@ class ProFeaturePopup extends StatelessWidget {
             ),
           ),
 
-          // Close (X) button
+          
           Positioned(
             top: -8,
             right: -4,

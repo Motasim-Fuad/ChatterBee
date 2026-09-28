@@ -29,7 +29,7 @@ class CommunicatorProfileController extends GetxController {
     {'type': 'female_child', 'key': 'female_child', 'icon': ImagesLink.femaleChild},
   ];
 
-  // Pro check helper
+  
   bool get _isPro => ProStatusController.to.isProUser.value;
 
   @override
@@ -60,7 +60,7 @@ class CommunicatorProfileController extends GetxController {
   String _capitalizeFirst(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase();
 
-  // Buddy Bee: block free users
+  
   void toggleBuddyBeeMode(bool value) {
     if (value && !_isPro) {
       _showProUpgradeDialog('buddy_bee_mode'.tr);
@@ -74,7 +74,7 @@ class CommunicatorProfileController extends GetxController {
   void selectVoiceType(String key) => selectedVoiceType.value = key;
   void selectLanguage(String language) => selectedLanguage.value = language;
 
-  // Shared Pro upgrade dialog
+  
   void _showProUpgradeDialog(String featureName) {
     ProAccessGate.show(featureName: featureName);
   }

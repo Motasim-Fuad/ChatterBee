@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/translations/app_translations.dart';
 import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/widgets/app_page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,6 +32,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF5E6F3)),
         useMaterial3: true,
       ),
+      customTransition: AppPageTransition(),
+      defaultTransition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 260),
       getPages: routes,
       initialRoute: AppRoutes.SPLASHSCREEN,
     ));

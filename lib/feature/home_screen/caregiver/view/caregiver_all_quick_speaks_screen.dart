@@ -146,7 +146,7 @@ class CaregiverAllQuickSpeaksScreen extends StatelessWidget {
                         onTap: controller.promptTypedText,
                       );
                     }
-                    // idx = quickSpeaks list-er asol index (swap er jonno)
+                    
                     final idx = i - extra;
                     final qs = qsList[idx];
                     return CgAACButtonCard(

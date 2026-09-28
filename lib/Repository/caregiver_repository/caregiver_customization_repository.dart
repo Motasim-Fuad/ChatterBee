@@ -11,15 +11,7 @@ import 'package:flutter/foundation.dart';
 class CaregiverCustomizationRepository {
   final ApiClient _apiClient = ApiClient();
 
-  // ══════════════════════════════════════════════════════════════
-  // NEW — lightweight / lazy-loaded granular endpoints
-  // ⚠️ Paths below assume ApiClient's Dio baseUrl (no trailing slash) is prefixed with /api/ —
-  // `/api/` (matches AppUrl.baseUrl per the backend guide). Adjust the
-  // path strings here if AppUrl's convention differs.
-  // ══════════════════════════════════════════════════════════════
-
-  /// Lightweight categories list (counts only, no nested items/sub-categories).
-  /// Use this for the home / all-categories screens.
+  
   Future<ApiResponse<CategoryListResponse>> getCategoriesLite(
       int communicatorId, {
         required bool buddyMode,
@@ -53,9 +45,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  /// A single category's direct items + its sub-categories (counts only for
-  /// the sub-categories — their items load lazily too, via
-  /// [getSubCategoryItems]). Call this when the user taps into a category.
+  
   Future<ApiResponse<CategoryItemsResponse>> getCategoryItems(
       int categoryId, {
         required int communicatorId,
@@ -86,8 +76,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  /// A single sub-category's items. Call this when the user taps into a
-  /// sub-category.
+  
   Future<ApiResponse<SubCategoryItemsResponse>> getSubCategoryItems(
       int subCategoryId, {
         required int communicatorId,
@@ -118,8 +107,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  /// Server-side search across items + quick speaks (used by the debounced
-  /// search box, now that item data isn't all loaded on the client anymore).
+  
   Future<ApiResponse<SearchResponse>> search(
       String query, {
         required int communicatorId,
@@ -151,12 +139,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // ══════════════════════════════════════════════════════════════
-  // LEGACY — full-payload endpoint. Kept only for the "add to quick
-  // speak" picker (which still needs a flat list of every AAC button
-  // to choose from). Not used for the home screen anymore.
-  // ══════════════════════════════════════════════════════════════
-
+  
   String _cacheKey(int communicatorId, String lang, bool buddyMode) =>
       'cg_content_cache_${communicatorId}_${lang}_${buddyMode ? 'buddy' : 'normal'}';
 
@@ -252,7 +235,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Create Category
+  
   Future<ApiResponse<dynamic>> createCategory({
     required String name,
     required String color,
@@ -279,7 +262,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Update Category
+  
   Future<ApiResponse<dynamic>> updateCategory({
     required int categoryId,
     required String name,
@@ -303,7 +286,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Create Sub Category
+  
   Future<ApiResponse<dynamic>> createSubCategory({
     required String name,
     required String color,
@@ -332,7 +315,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Update Sub Category
+  
   Future<ApiResponse<dynamic>> updateSubCategory({
     required int subCategoryId,
     required String name,
@@ -356,7 +339,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Create Item
+  
   Future<ApiResponse<dynamic>> createItem({
     required int categoryId,
     required String word,
@@ -388,7 +371,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Update Item
+  
   Future<ApiResponse<dynamic>> updateItem({
     required int itemId,
     required String word,
@@ -417,7 +400,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Create Quick Speak
+  
   Future<ApiResponse<dynamic>> createQuickSpeak({
     required String word,
     required String color,
@@ -447,7 +430,7 @@ class CaregiverCustomizationRepository {
     }
   }
 
-  // Update Quick Speak
+  
   Future<ApiResponse<dynamic>> updateQuickSpeak({
     required int quickSpeakId,
     required String word,
@@ -477,9 +460,7 @@ class CaregiverCustomizationRepository {
   }
 }
 
-/// Top-level function so it can run inside a background isolate via
-/// [compute]. Must stay top-level (or static) — instance methods can't
-/// be sent across isolates.
+
 UserContentModel _parseUserContentIsolate(Map<String, dynamic> args) {
   final json = args['json'] as Map<String, dynamic>;
   final lang = args['lang'] as String;

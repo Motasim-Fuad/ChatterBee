@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 Color _parseColor(String hex, Color fallback) {
@@ -76,9 +77,7 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
                 return Obx(() {
                   final items = controller.items.toList();
                   if (controller.isLoading.value && items.isEmpty) {
-                    return const Center(
-                        child: CircularProgressIndicator(
-                            color: Color(0xFFFFC857)));
+                    return const AppShimmerGrid();
                   }
                   return RefreshIndicator(
                     onRefresh: controller.refresh,
@@ -128,7 +127,6 @@ class CommunicatorItemScreen extends GetView<CommunicatorItemController> {
 }
 
 
-/// AAC item button (RECTANGLE style — was file-folder before).
 class _ItemCard extends StatelessWidget {
   final CommItemLite item;
   final bool isSelected;
@@ -142,7 +140,7 @@ class _ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = item.imageIcon; // already a full URL from the new endpoint
+    final imageUrl = item.imageIcon; 
     final bgColor = _parseColor(item.color, const Color(0xFFFFD700));
 
     return AACButtonCard(

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 Color _parseColor(String hex, Color fallback) {
@@ -21,7 +22,7 @@ Color _parseColor(String hex, Color fallback) {
   }
 }
 
-/// Home Quick Speak: 15 ta word + 1 ta "See all" = 16 cell (4 x 4).
+
 const int _kMaxHomeQs = 15;
 
 int _homeQsCols(BuildContext context) =>
@@ -90,8 +91,7 @@ class _CgHomePage extends StatelessWidget {
       if (controller.isLoading.value &&
           controller.quickSpeaks.isEmpty &&
           controller.categories.isEmpty) {
-        return const Center(
-            child: CircularProgressIndicator(color: Color(0xFFFFC857)));
+        return const AppShimmerHome();
       }
 
       final cols = _homeQsCols(context);
@@ -102,7 +102,7 @@ class _CgHomePage extends StatelessWidget {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // ───────── Top bar: logo, search, profile ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -157,7 +157,7 @@ class _CgHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Search box ─────────
+            
             SliverToBoxAdapter(
               child: Obx(() {
                 if (!controller.isSearchOpen.value) {
@@ -185,7 +185,7 @@ class _CgHomePage extends StatelessWidget {
               }),
             ),
 
-            // ───────── Sentence bar (mockup: logo-r niche) ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -197,7 +197,7 @@ class _CgHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Quick Speak header ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -221,14 +221,11 @@ class _CgHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Quick Speak grid: 15 + See all ─────────
-            // NOTE: AAC / quick-speak buttons now use CgAACButtonCard
-            // (rectangle), while category cards elsewhere keep
-            // using CgFolderCard (file-folder).
+            
             Obx(() {
               final searching =
                   controller.searchQuery.value.trim().isNotEmpty;
-              // search cholle filtered list; nahole original order (swap index thik thakbe)
+              
               final qsList = searching
                   ? controller.filteredQuickSpeaks
                   : controller.quickSpeaks.toList();
@@ -251,7 +248,7 @@ class _CgHomePage extends StatelessWidget {
               final showCount = qsList.length > _kMaxHomeQs
                   ? _kMaxHomeQs
                   : qsList.length;
-              final cellCount = showCount + 1; // last = See all
+              final cellCount = showCount + 1; 
 
               return SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
@@ -292,7 +289,7 @@ class _CgHomePage extends StatelessWidget {
               );
             }),
 
-            // ───────── Explore more (3 ta button) ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -528,7 +525,6 @@ class _CgBarAction extends StatelessWidget {
   );
 }
 
-// Show Cg Card Lift Dialog
 
 void showCgCardLiftDialog({
   required BuildContext context,
@@ -665,9 +661,6 @@ class _CaregiverBarButton extends StatelessWidget {
 }
 
 
-/// ───────── Category card (FILE-FOLDER style) ─────────
-/// Kept unchanged intentionally: used for CATEGORY / SUB-CATEGORY tiles
-/// (caregiver_all_categories_screen.dart, caregiver_sub_catagory_screen.dart).
 class CgFolderCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -798,10 +791,7 @@ class CgFolderCard extends StatelessWidget {
   }
 }
 
-/// ───────── AAC / Quick-Speak item button (RECTANGLE style) ─────────
-/// Use this for individual AAC / quick-speak buttons (caregiver side):
-/// home Quick Speak grid, caregiver_all_quick_speaks_screen.dart,
-/// caregiver_item_screen.dart.
+
 class CgAACButtonCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -1066,8 +1056,6 @@ class _AddBtn extends StatelessWidget {
 }
 
 
-/// Folder-shape painter — still used by CgFolderCard (categories/sub-categories).
-/// Do not remove.
 class CgFolderPainter extends CustomPainter {
   final Color cardColor;
   final Color tabColor;

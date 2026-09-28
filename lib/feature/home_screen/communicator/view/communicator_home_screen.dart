@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 Color _parseColor(String hex, Color fallback) {
@@ -22,7 +23,7 @@ Color _parseColor(String hex, Color fallback) {
   }
 }
 
-/// Home Quick Speak: 15 ta word + 1 ta "See all" = 16 cell (4 x 4).
+
 const int _kMaxHomeQs = 15;
 
 int _homeQsCols(BuildContext context) =>
@@ -91,9 +92,7 @@ class _CommHomePage extends StatelessWidget {
           controller.quickSpeaks.isEmpty && controller.categories.isEmpty;
 
       if (controller.isLoading.value && empty) {
-        return const Center(
-          child: CircularProgressIndicator(color: Color(0xFFFFC857)),
-        );
+        return const AppShimmerHome();
       }
 
       if (controller.loadError.value.isNotEmpty && empty) {
@@ -111,7 +110,7 @@ class _CommHomePage extends StatelessWidget {
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            // ───────── Top bar: logo, search, profile ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -166,7 +165,7 @@ class _CommHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Search box ─────────
+            
             SliverToBoxAdapter(
               child: Obx(() {
                 if (!controller.isSearchOpen.value) {
@@ -194,7 +193,7 @@ class _CommHomePage extends StatelessWidget {
               }),
             ),
 
-            // ───────── Sentence bar ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -209,7 +208,7 @@ class _CommHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Quick Speak header ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -217,16 +216,14 @@ class _CommHomePage extends StatelessWidget {
               ),
             ),
 
-            // ───────── Quick Speak grid: 15 + See all ─────────
-            // NOTE: AAC / quick-speak buttons now use AACButtonCard (rectangle),
-            // while category cards elsewhere keep using CommCard (file-folder).
+            
             Obx(() {
               final searching =
                   controller.searchQuery.value.trim().isNotEmpty;
               final qsList = searching
                   ? controller.filteredQuickSpeaks
                   : controller.quickSpeaks.toList();
-              // search cholle matching item-o dekhabe
+              
               final itemResults = searching
                   ? controller.searchItems
                   : const <CommSearchItemResult>[];
@@ -252,7 +249,7 @@ class _CommHomePage extends StatelessWidget {
                   : (qsList.length > _kMaxHomeQs
                   ? _kMaxHomeQs
                   : qsList.length);
-              // normal mode: last cell = See all
+              
               final cellCount =
                   showCount + itemResults.length + (searching ? 0 : 1);
 
@@ -300,7 +297,7 @@ class _CommHomePage extends StatelessWidget {
               );
             }),
 
-            // ───────── Explore more (3 ta button) ─────────
+            
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
@@ -447,9 +444,6 @@ class _DashboardLoadError extends StatelessWidget {
 }
 
 
-/// ───────── Category card (FILE-FOLDER style) ─────────
-/// Kept unchanged intentionally: used for CATEGORY tiles
-/// (communicator_all_categories_screen.dart).
 class CommCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -559,8 +553,7 @@ class CommCard extends StatelessWidget {
   }
 }
 
-/// ───────── AAC / Quick-Speak item card (RECTANGLE style) ─────────
-/// Use this for individual AAC / quick-speak buttons anywhere in the app.
+
 class AACButtonCard extends StatelessWidget {
   final String? imageUrl;
   final String label;
@@ -996,7 +989,7 @@ class CommSectionHeader extends StatelessWidget {
   }
 }
 
-/// Folder-shape painter — still used by CommCard (categories). Do not remove.
+
 class CommFolderPainter extends CustomPainter {
   final Color cardColor;
   final Color tabColor;

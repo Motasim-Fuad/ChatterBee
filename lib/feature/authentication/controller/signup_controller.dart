@@ -22,7 +22,7 @@ class SignUpController extends GetxController {
   bool _isLoading = false;
   final RxString emailError = ''.obs;
 
-  // Is Password Visible
+  
   bool get isPasswordVisible => _isPasswordVisible;
   bool get isLoading => _isLoading;
 
@@ -88,13 +88,13 @@ class SignUpController extends GetxController {
     }
   }
 
-  // Toggle password visibility
+  
   void togglePasswordVisibility() {
     _isPasswordVisible = !_isPasswordVisible;
     update();
   }
 
-  // Validate form inputs
+  
   bool _validateInputs() {
     emailError.value = '';
     if (firstNameController.text.trim().isEmpty) {
@@ -129,7 +129,7 @@ class SignUpController extends GetxController {
     return true;
   }
 
-  // Show error snackbar
+  
   void _showErrorSnackbar(String message) {
     Get.snackbar(
       'Error',
@@ -144,7 +144,7 @@ class SignUpController extends GetxController {
     );
   }
 
-  // Show success snackbar
+  
   void _showSuccessSnackbar(String message) {
     Get.snackbar(
       'Success',
@@ -159,7 +159,7 @@ class SignUpController extends GetxController {
     );
   }
 
-  // Show validation errors from API
+  
   void _showValidationErrors(Map<String, dynamic>? errors) {
     if (errors == null) return;
 
@@ -177,7 +177,7 @@ class SignUpController extends GetxController {
     }
   }
 
-  // Sign up method
+  
   Future<void> signUp() async {
     if (!_validateInputs()) return;
 
@@ -266,7 +266,7 @@ class SignUpController extends GetxController {
     }
   }
 
-  // Clear form inputs
+  
   void _clearForm() {
     firstNameController.clear();
     lastNameController.clear();
@@ -275,12 +275,12 @@ class SignUpController extends GetxController {
     _isPasswordVisible = false;
   }
 
-  // Navigate to sign in screen
+  
   void navigateToSignIn() {
     Get.toNamed(AppRoutes.SIGNINSCREEN);
   }
 
-  // Check if form is valid
+  
   bool get isFormValid {
     return firstNameController.text.trim().isNotEmpty &&
         lastNameController.text.trim().isNotEmpty &&

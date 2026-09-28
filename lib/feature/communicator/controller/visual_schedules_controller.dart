@@ -106,7 +106,7 @@ class VisualSchedulesController extends GetxController {
     }
   }
 
-  // On Edit Activity Tap
+  
   Future<void> onEditActivityTap(String scheduleId) async {
     print('Edit Activity button tapped for id: $scheduleId');
 
@@ -177,7 +177,7 @@ class VisualSchedulesController extends GetxController {
     );
   }
 
-  // Update Activity
+  
   void updateActivity({
     required String id,
     required String name,

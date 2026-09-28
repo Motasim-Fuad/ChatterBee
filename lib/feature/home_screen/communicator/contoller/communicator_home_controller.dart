@@ -26,7 +26,7 @@ class CommunicatorHomeController extends GetxController
   final RxBool isBuddyMode = false.obs;
   final RxString loadError = ''.obs;
 
-  // Lightweight — counts only, no nested items/sub-categories.
+  
   final RxList<CommCategoryLite> categories = <CommCategoryLite>[].obs;
   final RxList<CommQuickSpeakModel> quickSpeaks = <CommQuickSpeakModel>[].obs;
 
@@ -37,13 +37,13 @@ class CommunicatorHomeController extends GetxController
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
-  // Server-side search results (item data is no longer loaded client-side).
+  
   final RxList<CommSearchItemResult> searchItems = <CommSearchItemResult>[].obs;
   final RxBool isSearching = false.obs;
 
   Timer? _searchDebounce;
 
-  /// 0 = Home page, 1 = All Categories page (PageView current page)
+  
   final RxInt homePageIndex = 0.obs;
   final pageController = PageController();
 
@@ -79,15 +79,14 @@ class CommunicatorHomeController extends GetxController
 
   String get _currentLang => currentLang;
 
-  // Home <-> All Categories page switch
+  
   void goToPage(int i) {
     if (!pageController.hasClients) return;
     pageController.animateToPage(i,
         duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
-  /// Loads the lightweight categories list (counts only). Items load
-  /// lazily per-category/sub-category once the user taps into one.
+  
   Future<void> loadContent() async {
     loadError.value = '';
 
@@ -123,8 +122,7 @@ class CommunicatorHomeController extends GetxController
 
   Future<void> refresh() => loadContent();
 
-  /// Debounced search input — call this from the search TextField's
-  /// onChanged instead of setting [searchQuery] directly.
+  
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
@@ -170,8 +168,7 @@ class CommunicatorHomeController extends GetxController
     SentenceBarService.to.beginTyping();
   }
 
-  /// Tapping a server-search item result — treated the same as tapping a
-  /// quick speak (adds it to the sentence bar).
+  
   void onSearchItemTap(CommSearchItemResult item) {
     final qs = CommQuickSpeakModel(
       id: item.id,
@@ -192,7 +189,7 @@ class CommunicatorHomeController extends GetxController
     return quickSpeaks.where((e) => (e.word ?? '').toLowerCase().contains(q)).toList();
   }
 
-  /// Category name only — item-level matches now come from [searchItems].
+  
   List<CommCategoryLite> get filteredCategories {
     final q = searchQuery.value.trim().toLowerCase();
     if (q.isEmpty) return categories.toList();
@@ -219,7 +216,7 @@ class CommunicatorHomeController extends GetxController
     SentenceBarService.to.clear();
     _cancelCooldown();
   }
-  // Cooldown helpers
+  
   void _startCooldown() {
     _cancelCooldown();
 
@@ -244,7 +241,7 @@ class CommunicatorHomeController extends GetxController
     cooldownCount.value = 5;
   }
 
-  // Play Audio Internal
+  
   Future<void> _playAudioInternal(int id, String? audioPath) async {
     final url = AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -268,7 +265,7 @@ class CommunicatorHomeController extends GetxController
     playingId.value = -1;
   }
 
-  // Public — sub-screens may call this if they share the same AudioPlayer
+  
   Future<void> playAudio(int id, String? audioPath) async {
     final url = AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -280,7 +277,7 @@ class CommunicatorHomeController extends GetxController
     await _playAudioInternal(id, audioPath);
   }
 
-  // On Category Tap
+  
   void onCategoryTap(CommCategoryLite category) {
     if (category.subCategoriesCount == 0) {
       Get.toNamed(AppRoutes.COMMUNICATOR_ITEM, arguments: category);

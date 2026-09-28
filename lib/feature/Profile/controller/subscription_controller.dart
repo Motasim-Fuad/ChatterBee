@@ -1,7 +1,8 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
-import 'package:chatter_bee/feature/Profile/view/pro_feature_popup.dart'; // path ঠিক করে নিন
+import 'package:chatter_bee/feature/Profile/view/pro_feature_popup.dart';
 import 'package:chatter_bee/services/revenueCat_services.dart';
+import 'package:chatter_bee/widgets/paper_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,20 +12,20 @@ class SubscriptionController extends GetxController {
   final selectedPlan = 'monthly'.obs;
   final isLoading = false.obs;
 
-  // Read Pro status from the global controller
+  
   bool get isProUser => ProStatusController.to.isProUser.value;
 
   Package? _monthlyPackage;
   Package? _annuallyPackage;
 
-  // Prices
+  
   String get monthlyPrice =>
       _monthlyPackage?.storeProduct.priceString ?? '\$2.99';
 
   String get annuallyPrice =>
       _annuallyPackage?.storeProduct.priceString ?? '\$29.99';
 
-  // Trial texts
+  
   String get monthlyTrialText {
     final days =
         _monthlyPackage?.storeProduct.introductoryPrice?.periodNumberOfUnits;
@@ -43,7 +44,7 @@ class SubscriptionController extends GetxController {
   Package? get selectedPackage =>
       selectedPlan.value == 'monthly' ? _monthlyPackage : _annuallyPackage;
 
-  // Plan card tap -> select plan + show popup
+  
   void onPlanTapped(String plan) {
     if (isProUser) {
       Get.snackbar('Already Pro', 'You have an active subscription.',
@@ -51,8 +52,8 @@ class SubscriptionController extends GetxController {
       return;
     }
     selectPlan(plan);
-    Get.dialog(
-      const ProFeaturePopup(),
+    showPaperDialog(
+      child: const ProFeaturePopup(),
       barrierColor: Colors.black54,
     );
   }
@@ -89,7 +90,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // Called from popup's "Unlock with ChatterBee Pro"
+  
   void onContinuePressed() {
     if (isProUser) {
       Get.snackbar('Already Pro', 'You have an active subscription.',
@@ -123,7 +124,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // Restore
+  
   Future<void> restorePurchases() async {
     isLoading.value = true;
     try {
@@ -142,7 +143,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  // Show Success Sheet
+  
   void _showSuccessSheet() {
     Get.bottomSheet(
       Container(

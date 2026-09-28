@@ -2,6 +2,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/revenueCat_services.dart';
+import 'package:chatter_bee/widgets/paper_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -33,8 +34,8 @@ class ProAccessGate {
       'BuddyBee Encouragement',
       'Linked Caregiver Accounts',
     ];
-    Get.dialog(
-      Dialog(
+    showPaperDialog(
+      child: Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 20),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         child: SingleChildScrollView(

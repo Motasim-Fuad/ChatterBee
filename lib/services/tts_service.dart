@@ -45,7 +45,7 @@ class TtsService extends GetxService {
     isSpeaking.value = false;
   }
 
-  // app language code → TTS locale
+  
   String _mapLang(String lang) {
     switch (lang) {
       case 'es': return 'es-ES';

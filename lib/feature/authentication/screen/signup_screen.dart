@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 class SignUpScreen extends StatelessWidget {
@@ -259,14 +260,7 @@ class SignUpScreen extends StatelessWidget {
                             ),
                           ),
                           child: controller.isLoading
-                              ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2C3E50)),
-                            ),
-                          )
+                              ? const AppShimmerCompact()
                               : Text(
                             'Sign Up',
                             style: GoogleFonts.nunito(

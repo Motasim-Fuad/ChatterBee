@@ -31,7 +31,7 @@ class AddActivityController extends GetxController {
     selectedTime.value = _formatTime(now);
   }
 
-  // Time Picker
+  
   Future<void> selectTime(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
@@ -72,7 +72,7 @@ class AddActivityController extends GetxController {
         .toIso8601String();
   }
 
-  // Image Picker
+  
   Future<void> pickImage() async {
     await showScheduleImagePicker(
       onLibraryAsset: (asset) async {
@@ -101,7 +101,7 @@ class AddActivityController extends GetxController {
 
   void selectStatus(String value) => selectedStatus.value = value;
 
-  // Save
+  
   Future<void> saveActivity() async {
     final name = activityNameController.text.trim();
     if (name.isEmpty) {

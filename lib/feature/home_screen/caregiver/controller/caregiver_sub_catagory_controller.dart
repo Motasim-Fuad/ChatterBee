@@ -7,6 +7,7 @@ import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CaregiverSubCategoryController extends GetxController {
   final CaregiverCustomizationRepository _repo =
@@ -17,7 +18,7 @@ class CaregiverSubCategoryController extends GetxController {
 
   final RxList<SubCategoryLite> subCategories = <SubCategoryLite>[].obs;
 
-  /// Category er nijer direct item (sub-category chhara).
+  
   final RxList<ItemLite> directItems = <ItemLite>[].obs;
 
   final RxBool isLoading = false.obs;
@@ -39,7 +40,7 @@ class CaregiverSubCategoryController extends GetxController {
     _load();
   }
 
-  // Normalize Lang
+  
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -61,7 +62,7 @@ class CaregiverSubCategoryController extends GetxController {
     }
   }
 
-  /// Loads this category's sub-categories + its own direct items lazily.
+  
   Future<void> _load() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) return;
@@ -108,7 +109,7 @@ class CaregiverSubCategoryController extends GetxController {
     }
   }
 
-  /// Category er direct item gulo dekhate.
+  
   void openDirectItems() {
     Get.toNamed('/item-screen', arguments: parentCategory);
   }
@@ -332,8 +333,7 @@ class _SubCategorySheetState extends State<_SubCategorySheet> {
                   elevation: 0,
                 ),
                 child: c.formLoading.value
-                    ? const SizedBox(width: 20, height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                    ? const AppShimmerCompact()
                     : Text('save'.tr,
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 16)),
               ),

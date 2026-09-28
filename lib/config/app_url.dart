@@ -29,27 +29,27 @@ class AppUrl {
   static const String copyDefaultContent = '$baseUrl/api/caregiver/customization/copy-defaults/';
   static const String resetCustomization = '$baseUrl/api/caregiver/customization/reset/';
 
-  // Normal-mode caregiver content URL
+  
   static String getCaregiverContent(int communicatorId, {String lang = 'en'}) =>
       '$baseUrl/api/caregiver/customization/user/$communicatorId/?lang=$lang';
 
-  // Buddy-mode caregiver content URL
+  
   static String getCaregiverBuddyModeContent(int communicatorId, {String lang = 'en'}) =>
       '$baseUrl/api/caregiver/customization/buddy-mode/user/$communicatorId/?lang=$lang';
 
-  // Update category URL
+  
   static String updateUserCategory(int catagoryid) =>
       '$baseUrl/api/caregiver/customization/category/$catagoryid/';
 
-  // Update sub-category URL
+  
   static String updateUserSubCategory(int subcatagoryid) =>
       '$baseUrl/api/caregiver/customization/category/$subcatagoryid/';
 
-  // Update item URL
+  
   static String updateUserItem(int itemId) =>
       '$baseUrl/api/caregiver/customization/item/$itemId/';
 
-  // Update quick speak URL
+  
   static String updateUserQuickSpeak(int id) =>
       '$baseUrl/api/caregiver/customization/quickspeak/$id/';
 
@@ -58,11 +58,11 @@ class AppUrl {
   static const String createItem = '$baseUrl/api/caregiver/content/create-item/';
   static const String createQuickSpeak = '$baseUrl/api/caregiver/content/create-quickspeak/';
 
-  // Normal mode
+  
   static String getCommunicatorContent({String lang = 'en'}) =>
       '$baseUrl/api/communicator/content/?lang=$lang';
 
-  // Buddy mode
+  
   static String getCommunicatorBuddyModeContent({String lang = 'en'}) =>
       '$baseUrl/api/communicator/content/buddy-mode/?lang=$lang';
 
@@ -71,7 +71,7 @@ class AppUrl {
   static String activityDelete(int id) => '/api/activity/activities/$id/delete/';
   static String activityUpdate(int id) => '/api/activity/activities/$id/update/';
 
-  // Media Url
+  
   static String? mediaUrl(String? path) {
     if (path == null || path.isEmpty) return null;
     if (path.startsWith('http')) return path;

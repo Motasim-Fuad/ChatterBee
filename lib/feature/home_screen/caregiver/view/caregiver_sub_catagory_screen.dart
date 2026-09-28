@@ -4,6 +4,7 @@ import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_sc
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -92,16 +93,13 @@ class CaregiverSubCategoryScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-              child:
-              CircularProgressIndicator(color: Color(0xFFFFC857)));
+          return const AppShimmerGrid();
         }
 
         final subs = controller.subCategories.toList();
         final directItems = controller.directItems.toList();
 
-        // Direct item thakle prothom card hishebe "category er nijer item" dekhabe
-        // (edit mode e dekhabe na)
+        
         final extra =
         (directItems.isNotEmpty && !controller.isEditMode.value) ? 1 : 0;
 

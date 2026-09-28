@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class ProStatusController extends GetxController {
-  // Shared controller instance
+  
   static ProStatusController get to => Get.find();
 
   static const String _entitlementId = 'ChaterBee_Pro';
@@ -11,7 +11,7 @@ class ProStatusController extends GetxController {
   final isProUser    = false.obs;
   final isChecking   = true.obs;
 
-  // On Init
+  
   @override
   void onInit() {
     super.onInit();
@@ -19,7 +19,7 @@ class ProStatusController extends GetxController {
     _listenToStream();
   }
 
-  // Fetch current status once on app launch
+  
   Future<void> _initStatus() async {
     isChecking.value = true;
     try {
@@ -32,7 +32,7 @@ class ProStatusController extends GetxController {
     }
   }
 
-  // RevenueCat calls this listener when a subscription expires
+  
   void _listenToStream() {
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
     debugPrint('[PRO] Stream listener attached');
@@ -42,7 +42,7 @@ class ProStatusController extends GetxController {
     _updateStatus(info, source: 'STREAM');
   }
 
-  // Update Status
+  
   void _updateStatus(CustomerInfo info, {required String source}) {
     final active = info.entitlements.active.containsKey(_entitlementId);
     isProUser.value = active;
@@ -65,10 +65,10 @@ class ProStatusController extends GetxController {
     debugPrint('');
   }
 
-  // Manual refresh (pull-to-refresh or debug)
+  
   Future<void> refresh() => _initStatus();
 
-  // With permanent: true this is rarely called; kept as a safety net
+  
   @override
   void onClose() {
     Purchases.removeCustomerInfoUpdateListener(_onCustomerInfoUpdated);

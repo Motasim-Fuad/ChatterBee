@@ -44,7 +44,7 @@ class CommunicatorSessionService extends GetxService {
 
   bool get hasSelected => communicatorId.value != 0;
 
-  /// Caregiver: linked communicator. Communicator: own user id.
+  
   Future<int?> resolveActivityCommunicatorId() async {
     final role = StorageService().getUserRole()?.trim().toLowerCase();
     if (role == 'communicator') {

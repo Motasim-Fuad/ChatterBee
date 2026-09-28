@@ -3,6 +3,7 @@ import 'package:chatter_bee/models/profile_invitation_model/profile_invitation_m
 import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CaregiverInvitationController extends GetxController {
   final ProfileInvitationRepo _repo = ProfileInvitationRepo();
@@ -295,10 +296,7 @@ class CaregiverInvitationController extends GetxController {
                   elevation: 0,
                 ),
                 child: isSendingInvitation.value
-                    ? const SizedBox(
-                    width: 20, height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.black))
+                    ? const AppShimmerCompact()
                     : Text('send_invitation'.tr,
                     style: const TextStyle(
                         color: Colors.black,

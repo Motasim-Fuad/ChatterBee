@@ -23,8 +23,8 @@ int _crossAxisCount(BuildContext context) {
 
 class CommunicatorAllCategoriesScreen
     extends GetView<CommunicatorHomeController> {
-  /// true hole home-er PageView-er 2nd page hishebe dekhabe
-  /// (back = home page-e ferot, status bar padding nei).
+  
+  
   final bool embedded;
   const CommunicatorAllCategoriesScreen({super.key, this.embedded = false});
 
@@ -148,7 +148,7 @@ class CommunicatorAllCategoriesScreen
                     itemBuilder: (_, i) {
                       final cat = filtered[i];
                       return CommCard(
-                        imageUrl: cat.imageIcon, // already a full URL
+                        imageUrl: cat.imageIcon, 
                         label: cat.name,
                         subLabel: cat.subCategoriesCount > 0
                             ? '${cat.subCategoriesCount} ${'sub_count_suffix'.tr}'

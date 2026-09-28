@@ -4,6 +4,7 @@ import 'package:chatter_bee/feature/Profile/controller/privacy_policy_controller
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
   const PrivacyPolicyScreen({super.key});
@@ -36,7 +37,7 @@ class PrivacyPolicyScreen extends GetView<PrivacyPolicyController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
 
         if (controller.policyContent.value.isEmpty) {

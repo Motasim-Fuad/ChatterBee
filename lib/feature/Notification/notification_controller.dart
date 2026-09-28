@@ -39,7 +39,7 @@ class NotificationModel {
     );
   }
 
-  // Derive a display time string from sentAt
+  
   String get timeString {
     final h = sentAt.toLocal().hour;
     final m = sentAt.toLocal().minute.toString().padLeft(2, '0');
@@ -48,7 +48,7 @@ class NotificationModel {
     return '$hour:$m $period';
   }
 
-  // Helper: choose icon assets based on action / type
+  
   String get imagePath {
     final action = data?['action'] ?? '';
     if (action.contains('hungry'))      return ImagesLink.hungryImg;
@@ -81,7 +81,7 @@ class NotificationModel {
 class NotificationControllerdamo extends GetxController {
   final ApiClient _apiClient = ApiClient();
 
-  // Pro check
+  
   bool get _isPro => ProStatusController.to.isProUser.value;
 
   var buttonAlerts          = false.obs;
@@ -100,10 +100,10 @@ class NotificationControllerdamo extends GetxController {
     loadSettings();
   }
 
-  // Change Tab
+  
   void changeTab(int index) => selectedTab.value = index;
 
-  // Loads the notification list
+  
   Future<void> loadNotifications() async {
     isLoading.value = true;
     try {
@@ -124,7 +124,7 @@ class NotificationControllerdamo extends GetxController {
 
   Future<void> refreshNotifications() => loadNotifications();
 
-  // Loads notification preferences
+  
   Future<void> loadSettings() async {
     try {
       final response =
@@ -140,7 +140,7 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // push enabled is always true
+  
   Future<void> _saveSettings() async {
     try {
       await _apiClient.put<dynamic>(
@@ -157,7 +157,7 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // Toggle helpers (pro-gated)
+  
   void toggleButtonAlerts(bool value) {
     if (!_isPro) { _showProDialog('Button Alerts'); return; }
     buttonAlerts.value = value;
@@ -176,7 +176,7 @@ class NotificationControllerdamo extends GetxController {
     _saveSettings();
   }
 
-  // Mark As Read
+  
   Future<void> markAsRead(NotificationModel notification) async {
     try {
       final response = await _apiClient.post<dynamic>(
@@ -196,7 +196,7 @@ class NotificationControllerdamo extends GetxController {
     }
   }
 
-  // Removes a notification locally
+  
   void deleteNotification(NotificationModel notification) {
     notifications.remove(notification);
     Get.snackbar(
@@ -211,7 +211,7 @@ class NotificationControllerdamo extends GetxController {
     );
   }
 
-  // Opens the notification detail sheet
+  
   void onNotificationTap(NotificationModel notification) =>
       _showNotificationDialog(notification);
 
@@ -336,7 +336,7 @@ class NotificationControllerdamo extends GetxController {
     );
   }
 
-  // Notifications received today
+  
   List<NotificationModel> get todayNotifications {
     final now = DateTime.now();
     return notifications.where((n) {
@@ -361,7 +361,7 @@ class NotificationControllerdamo extends GetxController {
         .toList();
   }
 
-  // Notification Count
+  
   int get notificationCount => notifications.length;
   int get unreadCount => notifications.where((n) => !n.isRead).length;
 

@@ -26,13 +26,13 @@ class ForgotPasswordController extends GetxController {
     super.onClose();
   }
 
-  // Email validation method
+  
   bool _isValidEmail(String email) {
     return RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
         .hasMatch(email);
   }
 
-  // Validate email input
+  
   bool validateEmail() {
     final email = emailController.text.trim();
 
@@ -53,7 +53,7 @@ class ForgotPasswordController extends GetxController {
     return true;
   }
 
-  // Clear email error when user starts typing
+  
   void clearEmailError() {
     if (_emailError != null) {
       _emailError = null;
@@ -61,13 +61,13 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-  // Set loading state
+  
   void _setLoading(bool loading) {
     _isLoading = loading;
     update();
   }
 
-  // Send reset password email
+  
   Future<void> sendResetPasswordEmail() async {
     if (!validateEmail()) {
       return;
@@ -120,7 +120,7 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-  // Method to be called when email field changes
+  
   void onEmailChanged(String value) {
     clearEmailError();
   }

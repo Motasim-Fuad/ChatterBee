@@ -23,6 +23,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 const List<Map<String, String>> kColorOptions = [
   {'hex': '#B5CFD1', 'label': 'Teal'},
@@ -50,7 +51,7 @@ class CaregiverHomeController extends GetxController
   final RxBool isQsEditMode = false.obs;
   final RxSet<int> selectedCategoryIds = <int>{}.obs;
 
-  // Lightweight — counts only, no nested items/sub-categories.
+  
   final RxList<CategoryLite> categories = <CategoryLite>[].obs;
   final RxList<QuickSpeakModel> quickSpeaks = <QuickSpeakModel>[].obs;
   final RxInt selectedQuickSpeakId = (-1).obs;
@@ -60,18 +61,18 @@ class CaregiverHomeController extends GetxController
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
 
-  // Server-side search results (item data is no longer loaded client-side).
+  
   final RxList<SearchItemResult> searchItems = <SearchItemResult>[].obs;
   final RxBool isSearching = false.obs;
 
-  // Debounce timer for the search box.
+  
   Timer? _searchDebounce;
 
-  // Home <-> All Categories swipe
+  
   final PageController pageController = PageController();
   final RxInt currentPage = 0.obs;
 
-  // Quick speak swap: je card prothom select kora hoyeche tar index
+  
   final RxInt swapFromIndex = (-1).obs;
 
   List<CategoryLite> get apiCategories => categories;
@@ -139,7 +140,7 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-  // Normalize Lang
+  
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -155,8 +156,7 @@ class CaregiverHomeController extends GetxController
     }
   }
 
-  /// Loads the lightweight categories list (counts only). Items load
-  /// lazily per-category/sub-category once the user taps into one.
+  
   Future<void> loadContent() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) {
@@ -191,8 +191,7 @@ class CaregiverHomeController extends GetxController
 
   Future<void> refresh() => loadContent();
 
-  /// Debounced search input — call this from the search TextField's
-  /// onChanged instead of setting [searchQuery] directly.
+  
   void onSearchChanged(String value) {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 300), () {
@@ -266,7 +265,7 @@ class CaregiverHomeController extends GetxController
     );
   }
 
-  // ───────── Quick Speak tap / swap ─────────
+  
   void onQuickSpeakTap(int index, QuickSpeakModel qs) {
     if (!isQsEditMode.value) {
       selectQuickSpeak(qs);
@@ -345,7 +344,7 @@ class CaregiverHomeController extends GetxController
     await SentenceBarService.to.speakAll(lang: _currentLang);
   }
 
-  /// Category name only — item-level matches now come from [searchItems].
+  
   List<CategoryLite> get filteredCategories {
     final q = searchQuery.value.trim().toLowerCase();
     if (q.isEmpty) return categories.toList();
@@ -454,9 +453,7 @@ class CaregiverHomeController extends GetxController
     await _openAacButtonPicker(title: 'swap_quick_speak'.tr);
   }
 
-  /// AAC buttons for the picker still need the full nested item tree, so
-  /// this falls back to the legacy full-payload endpoint — but only when
-  /// the picker is actually opened, not on every home load.
+  
   Future<List<ItemLite>> _fetchAllAacButtons() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     final lang = _currentLang;
@@ -485,12 +482,11 @@ class CaregiverHomeController extends GetxController
 
   Future<void> _openAacButtonPicker({required String title}) async {
     Get.dialog(
-      const Center(
-          child: CircularProgressIndicator(color: Color(0xFFFFC857))),
+      const AppShimmerBlocking(),
       barrierDismissible: false,
     );
     final buttons = await _fetchAllAacButtons();
-    Get.back(); // close loading dialog
+    Get.back(); 
 
     final query = ''.obs;
 
@@ -518,7 +514,7 @@ class CaregiverHomeController extends GetxController
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w700)),
                 ),
-                // ───────── Search bar ─────────
+                
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
                   child: Container(
@@ -1098,8 +1094,7 @@ class _SaveBtn extends StatelessWidget {
           elevation: 0,
         ),
         child: loading
-            ? const SizedBox(width: 20, height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+            ? const AppShimmerCompact()
             : Text('save'.tr,
             style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 16)),
       ),

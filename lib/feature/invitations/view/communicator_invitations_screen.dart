@@ -5,6 +5,7 @@ import 'package:chatter_bee/models/profile_invitation_model/profile_invitation_m
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CommunicatorInvitationsScreen
     extends GetView<CommunicatorInvitationController> {
@@ -28,7 +29,7 @@ class CommunicatorInvitationsScreen
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
         return RefreshIndicator(
           onRefresh: controller.loadReceivedInvitations,
@@ -210,11 +211,7 @@ class _InvitationCard extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 10),
                     ),
                     child: isProcessing
-                        ? const SizedBox(
-                        width: 18, height: 18,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white))
+                        ? const AppShimmerCompact(width: 56, height: 10)
                         : Text('accept'.tr,
                         style: GoogleFonts.nunito(
                             fontSize: 14,

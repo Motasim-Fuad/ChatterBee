@@ -10,6 +10,7 @@ import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class ProfileController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -34,7 +35,7 @@ class ProfileController extends GetxController {
     loadUserProfile();
   }
 
-  // Load User Profile
+  
   Future<void> loadUserProfile() async {
     try {
       isLoading.value = true;
@@ -118,7 +119,7 @@ class ProfileController extends GetxController {
     final id = int.tryParse(
         (user['_communicator_id'] ?? user['id']).toString());
     if (id == null) return;
-    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+    Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
     final response = await _authRepository.switchAccount(targetUserId: id);
     if (Get.isDialogOpen ?? false) Get.back();
     if (response.isSuccess && response.data != null) {
@@ -139,7 +140,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  // Pick Image
+  
   Future<void> pickImage() async {
     try {
       await Get.bottomSheet(
@@ -234,7 +235,7 @@ class ProfileController extends GetxController {
         snackPosition: SnackPosition.BOTTOM);
   }
 
-  // On Subscription Tap
+  
   void onSubscriptionTap() => Get.toNamed(AppRoutes.SUBSCRIPTION);
 
   void onEditPersonalInfo() {
@@ -250,7 +251,7 @@ class ProfileController extends GetxController {
   void onPrivacyPolicyTap() => Get.toNamed(AppRoutes.PRIVACYPOLICY);
   void onSupportTap() => Get.toNamed(AppRoutes.SUPPORT);
 
-  // On Delete Account Tap
+  
   void onDeleteAccountTap() {
     Get.bottomSheet(
       Container(
@@ -327,7 +328,7 @@ class ProfileController extends GetxController {
     );
   }
 
-  // On Logout Tap
+  
   void onLogoutTap() {
     Get.bottomSheet(
       Container(
@@ -404,11 +405,10 @@ class ProfileController extends GetxController {
     );
   }
 
-  // Delete Account
+  
   Future<void> deleteAccount() async {
     try {
-      Get.dialog(const Center(child: CircularProgressIndicator()),
-          barrierDismissible: false);
+      Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
 
       final response = await _authRepository.deleteAccount();
       if (Get.isDialogOpen ?? false) Get.back();
@@ -429,11 +429,10 @@ class ProfileController extends GetxController {
     }
   }
 
-  // Logout
+  
   Future<void> logout() async {
     try {
-      Get.dialog(const Center(child: CircularProgressIndicator()),
-          barrierDismissible: false);
+      Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
 
       final response = await _authRepository.logout();
       if (Get.isDialogOpen ?? false) Get.back();

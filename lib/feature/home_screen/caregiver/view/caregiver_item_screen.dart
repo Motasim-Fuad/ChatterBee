@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -54,9 +55,8 @@ class CaregiverItemScreen extends StatelessWidget {
               color: const Color(0xFF1A1A1A)),
         ),
         actions: [
-          // IconButton(onPressed: (){
-          //   AppRoutes.CAREGIVER_Home_Screen;
-          // }, icon: Icon(Icons.home),),
+          
+          
           Obx(() => Padding(
             padding: const EdgeInsets.only(right: 8),
             child: GestureDetector(
@@ -103,9 +103,7 @@ class CaregiverItemScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-              child:
-              CircularProgressIndicator(color: Color(0xFFFFC857)));
+          return const AppShimmerGrid();
         }
 
         final extra = controller.isEditMode.value ? 0 : 1;
@@ -278,7 +276,6 @@ class _CaregiverBarButton extends StatelessWidget {
   );
 }
 
-// Show Item Dialog
 
 void _showItemDialog(
     BuildContext context,
@@ -286,7 +283,7 @@ void _showItemDialog(
     ItemLite item,
     ) {
   final bgColor = _parseColor(item.color, const Color(0xFFFFD700));
-  final imageUrl = item.imageIcon; // full URL from new endpoint
+  final imageUrl = item.imageIcon; 
   final hasAudio = item.speak != null;
 
   showGeneralDialog(

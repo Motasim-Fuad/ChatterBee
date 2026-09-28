@@ -3,6 +3,7 @@ import 'package:chatter_bee/config/app_url.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class ActivityForm extends StatelessWidget {
   final TextEditingController nameController;
@@ -194,14 +195,7 @@ class ActivityForm extends StatelessWidget {
                     borderRadius: BorderRadius.circular(14)),
               ),
               child: isSaving.value
-                  ? const SizedBox(
-                width: 22, height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.black54),
-                ),
-              )
+                  ? const AppShimmerCompact()
                   : Text(
                 saveButtonLabel,
                 style: GoogleFonts.nunito(

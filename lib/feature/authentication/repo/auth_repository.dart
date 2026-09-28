@@ -16,7 +16,7 @@ class AuthRepository {
   final SecureStorageService _secureStorage = SecureStorageService();
   final StorageService _storage = StorageService();
 
-  // Register Communicator
+  
   Future<ApiResponse<RegisterResponse>> registerCommunicator({
     required String email,
     required String password,
@@ -42,7 +42,7 @@ class AuthRepository {
     }
   }
 
-  // Register Caregiver
+  
   Future<ApiResponse<RegisterResponse>> registerCaregiver({
     required String email,
     required String password,
@@ -68,7 +68,7 @@ class AuthRepository {
     }
   }
 
-  // Login
+  
   Future<ApiResponse<LoginResponse>> login({
     required String email,
     required String password,
@@ -119,7 +119,7 @@ class AuthRepository {
     }
   }
 
-  // Verify Email
+  
   Future<ApiResponse<VerifyEmailResponse>> verifyEmail({required String email, required String otp}) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(AppUrl.verifyEmail, data: {'email': email, 'otp': otp});
@@ -133,7 +133,7 @@ class AuthRepository {
     }
   }
 
-  // Resend Otp
+  
   Future<ApiResponse<Map<String, dynamic>>> resendOtp({required String email}) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(AppUrl.resendOtp, data: {'email': email, "purpose": "verification"});
@@ -146,7 +146,7 @@ class AuthRepository {
     }
   }
 
-  // Forgot Password Request
+  
   Future<ApiResponse<ForgotPasswordResponse>> forgotPasswordRequest({required String email}) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(AppUrl.forgotPassword, data: {'email': email});
@@ -159,7 +159,7 @@ class AuthRepository {
     }
   }
 
-  // Verify Reset Password Otp
+  
   Future<ApiResponse<Map<String, dynamic>>> verifyResetPasswordOtp({required String email, required String otp}) async {
     try {
       final response = await _apiClient.post<Map<String, dynamic>>(AppUrl.verifyResetOtp, data: {'email': email, 'otp': otp});
@@ -172,7 +172,7 @@ class AuthRepository {
     }
   }
 
-  // Reset Password
+  
   Future<ApiResponse<ResetPasswordResponse>> resetPassword({
     required String email, required String otp,
     required String newPassword, required String confirmPassword,
@@ -191,7 +191,7 @@ class AuthRepository {
     }
   }
 
-  // Change Password
+  
   Future<ApiResponse<Map<String, dynamic>>> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -218,7 +218,7 @@ class AuthRepository {
     }
   }
 
-  // Get Profile
+  
   Future<ApiResponse<Map<String, dynamic>>> getProfile() async {
     try {
       LoggerUtils.logInfo('=== GET PROFILE ===');
@@ -234,7 +234,7 @@ class AuthRepository {
     }
   }
 
-  // Update Profile
+  
   Future<ApiResponse<Map<String, dynamic>>> updateProfile({
     String? fullName,
     bool? buddyMode,
@@ -282,7 +282,7 @@ class AuthRepository {
     }
   }
 
-  // Delete Account
+  
   Future<ApiResponse<Map<String, dynamic>>> deleteAccount() async {
     try {
       LoggerUtils.logInfo('=== DELETE ACCOUNT ===');
@@ -302,7 +302,7 @@ class AuthRepository {
     }
   }
 
-  // Logout
+  
   Future<ApiResponse<void>> logout() async {
     try {
       LoggerUtils.logInfo('=== LOGOUT ===');
@@ -319,7 +319,7 @@ class AuthRepository {
     }
   }
 
-  // Handle Unauthorized
+  
   Future<void> handleUnauthorized() async {
     try {
       await NotificationControllerFCM.to.deleteFcmToken();

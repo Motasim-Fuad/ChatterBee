@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/activities_controller.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class ActivitiesScreen extends GetView<ActivitiesController> {
   const ActivitiesScreen({super.key});
@@ -32,9 +33,7 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
       body: SafeArea(
         child: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFFFDD268)),
-            );
+            return const AppShimmerList();
           }
 
           return Column(

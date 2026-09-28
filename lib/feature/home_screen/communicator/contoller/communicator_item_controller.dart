@@ -17,7 +17,7 @@ class CommunicatorItemController extends GetxController {
   final CommunicatorRepository _repo = CommunicatorRepository();
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  /// CommCategoryLite (direct-item category) or CommSubCategoryLite.
+  
   late final dynamic parent;
   String get parentTitle => parent is CommSubCategoryLite
       ? (parent as CommSubCategoryLite).name
@@ -52,7 +52,7 @@ class CommunicatorItemController extends GetxController {
     _loadItems();
   }
 
-  // Current language
+  
   String get _currentLang {
     try {
       return LanguageController.to.currentLocale.value.languageCode;
@@ -61,7 +61,7 @@ class CommunicatorItemController extends GetxController {
     }
   }
 
-  /// Loads this category's/sub-category's items lazily.
+  
   Future<void> _loadItems() async {
     isLoading.value = true;
     final lang = _currentLang;
@@ -107,7 +107,7 @@ class CommunicatorItemController extends GetxController {
     TtsService.to.speak(text, lang: _currentLang);
   }
 
-  // Speak the full sentence (or the last word in immediate-only mode)
+  
   void speakSelected() {
     if (isSpeakCooldown.value) return;
     if (SentenceBarService.to.spokenText.isEmpty) return;
@@ -125,7 +125,7 @@ class CommunicatorItemController extends GetxController {
     _cancelCooldown();
   }
 
-  // Cooldown helpers
+  
   void _startCooldown() {
     _cancelCooldown();
 
@@ -150,9 +150,9 @@ class CommunicatorItemController extends GetxController {
     cooldownCount.value = 5;
   }
 
-  // Play Audio Internal
+  
   Future<void> _playAudioInternal(int id, String? audioPath) async {
-    // New endpoints already return a full URL for speak/image.
+    
     final url =
     audioPath != null && audioPath.startsWith('http') ? audioPath : AppUrl.mediaUrl(audioPath);
     if (url == null) return;
@@ -176,7 +176,7 @@ class CommunicatorItemController extends GetxController {
     playingId.value = -1;
   }
 
-  // Public legacy — kept for compatibility
+  
   Future<void> playAudio(int id, String? audioPath) async {
     if (playingId.value == id) {
       await _stopAudio();

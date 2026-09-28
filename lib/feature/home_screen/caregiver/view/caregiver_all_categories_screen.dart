@@ -22,8 +22,8 @@ int _crossAxisCount(BuildContext context) {
 
 
 class CaregiverAllCategoriesScreen extends StatelessWidget {
-  /// true hole home-er PageView-er 2nd page hishebe dekhabe
-  /// (back = home page-e ferot, status bar padding nei).
+  
+  
   final bool embedded;
   const CaregiverAllCategoriesScreen({super.key, this.embedded = false});
 
@@ -206,7 +206,7 @@ class CaregiverAllCategoriesScreen extends StatelessWidget {
                             .selectedCategoryIds
                             .contains(cat.id);
                         return CgFolderCard(
-                          imageUrl: cat.imageIcon, // already a full URL
+                          imageUrl: cat.imageIcon, 
                           label: cat.name,
                           subLabel: cat.subCategoriesCount > 0
                               ? '${cat.subCategoriesCount} ${'sub_count_suffix'.tr}'

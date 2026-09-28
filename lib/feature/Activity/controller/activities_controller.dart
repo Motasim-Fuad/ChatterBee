@@ -17,7 +17,7 @@ class ActivitiesController extends GetxController {
     fetchActivities();
   }
 
-  // Fetch
+  
   Future<void> fetchActivities() async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -36,7 +36,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // Today's Activities
+  
   List<ActivityModel> get todayActivities {
     final now = DateTime.now();
     return activities.where((a) {
@@ -51,14 +51,14 @@ class ActivitiesController extends GetxController {
     }).toList();
   }
 
-  // Add Optimistic
+  
   void onActivityAdded(ActivityModel activity) {
     activities.add(activity);
 
     _sortActivities();
   }
 
-  // Update Optimistic
+  
   void onActivityUpdated(ActivityModel updated) {
     final idx = activities.indexWhere((a) => a.id == updated.id);
     if (idx != -1) {
@@ -67,7 +67,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // Go To Add
+  
   Future<void> goToAddActivity() async {
     final result = await Get.toNamed('/add-activity');
     if (result != null && result is ActivityModel) {
@@ -85,7 +85,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // Go To Edit
+  
   Future<void> goToEditActivity(ActivityModel activity) async {
     final result = await Get.toNamed(
       '/edit-activity',
@@ -104,7 +104,7 @@ class ActivitiesController extends GetxController {
     }
   }
 
-  // Delete
+  
   Future<void> deleteActivity(ActivityModel activity) async {
     final confirmed = await _showDeleteConfirmation(activity.activityName);
     if (!confirmed) return;
@@ -156,7 +156,7 @@ class ActivitiesController extends GetxController {
     });
   }
 
-  // Confirm Delete Dialog
+  
   Future<bool> _showDeleteConfirmation(String name) async {
     final result = await Get.dialog<bool>(
       AlertDialog(

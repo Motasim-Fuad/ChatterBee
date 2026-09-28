@@ -4,6 +4,7 @@ import 'package:chatter_bee/feature/Profile/controller/support_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class SupportScreen extends GetView<SupportController> {
   const SupportScreen({super.key});
@@ -36,7 +37,7 @@ class SupportScreen extends GetView<SupportController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
 
         if (controller.errorMessage.value.isNotEmpty) {

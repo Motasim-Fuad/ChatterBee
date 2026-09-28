@@ -6,6 +6,7 @@ import 'package:chatter_bee/models/profile_invitation_model/profile_invitation_m
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> {
   const CaregiverConnectionsScreen({super.key});
@@ -53,7 +54,7 @@ class CaregiverConnectionsScreen extends GetView<CaregiverInvitationController> 
       ),
       body: Obx(() {
         if (controller.isLoadingConnections.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
         return RefreshIndicator(
           onRefresh: controller.loadConnections,
@@ -320,12 +321,7 @@ class _CommunicatorCard extends StatelessWidget {
               ),
 
               if (isSwitching)
-                const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Color(0xFF4CAF50)))
+                const AppShimmerCompact()
               else if (isSelected)
                 Row(
                   children: [

@@ -4,6 +4,7 @@ import 'package:chatter_bee/models/communicator_models/communicator_content_mode
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 
 Color _parseColor(String hex, Color fallback) {
@@ -53,11 +54,9 @@ class CommunicatorSubCategoryScreen
           return Obx(() {
             final subs = controller.subCategories.toList();
 
-            // Sub-categories load lazily now — show a spinner instead of
-            // flashing the empty state while the request is in flight.
+            
             if (controller.isLoading.value && subs.isEmpty) {
-              return const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFFFC857)));
+              return const AppShimmerGrid();
             }
 
             if (subs.isEmpty) {
@@ -114,7 +113,7 @@ class _SubCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = sub.imageIcon; // already a full URL from the new endpoint
+    final imageUrl = sub.imageIcon; 
     final bgColor = _parseColor(sub.color, const Color(0xFFB5CFD1));
 
     return GestureDetector(

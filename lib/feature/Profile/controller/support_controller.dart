@@ -11,7 +11,7 @@ class FaqItem {
 
   FaqItem({required this.id, required this.title, required this.content});
 
-  // Parse from translations.{lang} — falls back to 'en' if lang missing
+  
   factory FaqItem.fromJson(Map<String, dynamic> json, String lang) {
     final translations = json['translations'] as Map<String, dynamic>? ?? {};
     final langData = (translations[lang] ?? translations['en']) as Map<String, dynamic>? ?? {};

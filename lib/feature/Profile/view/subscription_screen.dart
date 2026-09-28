@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class SubscriptionScreen extends GetView<SubscriptionController> {
   const SubscriptionScreen({super.key});
@@ -39,9 +40,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: Color(0xFFFFC107)),
-          );
+          return const AppShimmerCards();
         }
 
         return SingleChildScrollView(
@@ -94,7 +93,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
               ),
               const SizedBox(height: 24),
 
-              // Free plan card
+              
               Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
@@ -283,7 +282,7 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
     );
   }
 
-  // Build Plan Card
+  
   Widget _buildPlanCard({
     required String planType,
     required String title,

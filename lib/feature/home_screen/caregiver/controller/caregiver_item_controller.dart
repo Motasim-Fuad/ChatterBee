@@ -17,6 +17,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CaregiverItemController extends GetxController {
   final CaregiverCustomizationRepository _repo =
@@ -25,7 +26,7 @@ class CaregiverItemController extends GetxController {
   final AudioPlayer _audioPlayer = AudioPlayer();
   bool _isRecorderInitialized = false;
 
-  /// CategoryLite (direct-item category) or SubCategoryLite.
+  
   late final dynamic parent;
   String get parentTitle =>
       parent is SubCategoryLite ? (parent as SubCategoryLite).name : (parent as CategoryLite).name;
@@ -88,7 +89,7 @@ class CaregiverItemController extends GetxController {
     await _soundPlayer!.openPlayer();
   }
 
-  // Normalize Lang
+  
   String _normalizeLang(String lang) {
     return lang.split('-').first.split('_').first.toLowerCase();
   }
@@ -119,7 +120,7 @@ class CaregiverItemController extends GetxController {
     }
   }
 
-  /// Loads this category's/sub-category's items lazily.
+  
   Future<void> _loadItems() async {
     final communicatorId = CommunicatorSessionService.to.communicatorId.value;
     if (communicatorId == 0) return;
@@ -153,7 +154,7 @@ class CaregiverItemController extends GetxController {
 
   Future<void> playItemAudio(ItemLite item) async {
     if (item.speak != null && item.speak!.isNotEmpty) {
-      // New endpoints already return a full URL for speak/image.
+      
       final url = item.speak!.startsWith('http')
           ? item.speak
           : AppUrl.mediaUrl(item.speak);
@@ -597,8 +598,7 @@ class _ItemFormSheetState extends State<ItemFormSheet> {
                   elevation: 0,
                 ),
                 child: c.formLoading.value
-                    ? const SizedBox(width: 20, height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black))
+                    ? const AppShimmerCompact()
                     : Text('save'.tr,
                     style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w700, fontSize: 16)),
               ),

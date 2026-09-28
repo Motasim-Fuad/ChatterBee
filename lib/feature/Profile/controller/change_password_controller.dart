@@ -1,6 +1,7 @@
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class ChangePasswordController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -43,8 +44,7 @@ class ChangePasswordController extends GetxController {
 
     try {
       isLoading.value = true;
-      Get.dialog(const Center(child: CircularProgressIndicator()),
-          barrierDismissible: false);
+      Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
 
       final response = await _authRepository.changePassword(
         oldPassword: oldPassword,

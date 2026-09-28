@@ -14,7 +14,7 @@ class ActivityRepository {
     return CommunicatorSessionService.to.resolveActivityCommunicatorId();
   }
 
-  // List Activities
+  
   Future<ApiResponse<List<ActivityModel>>> getActivities({
     int days = 30,
     int limit = 100,
@@ -64,7 +64,7 @@ class ActivityRepository {
     }
   }
 
-  // Create Activity
+  
   Future<ApiResponse<ActivityModel>> createActivity({
     required String activityName,
     required String datetime,
@@ -112,7 +112,7 @@ class ActivityRepository {
     }
   }
 
-  // Update Activity (PATCH)
+  
   Future<ApiResponse<ActivityModel>> updateActivity({
     required int activityId,
     String? activityName,
@@ -163,7 +163,7 @@ class ActivityRepository {
     }
   }
 
-  // Delete Activity
+  
   Future<ApiResponse<bool>> deleteActivity(int activityId) async {
     try {
       final response = await _apiClient.delete<dynamic>(

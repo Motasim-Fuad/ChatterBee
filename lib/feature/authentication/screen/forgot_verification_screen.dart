@@ -4,6 +4,7 @@ import 'package:chatter_bee/feature/authentication/controller/forgot_verificatio
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class ForgotVerificationScreen extends StatelessWidget {
   const ForgotVerificationScreen({super.key});
@@ -175,14 +176,7 @@ class ForgotVerificationScreen extends StatelessWidget {
                             disabledBackgroundColor: Colors.grey[300],
                           ),
                           child: controller.isLoading
-                              ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2C3E50)),
-                            ),
-                          )
+                              ? const AppShimmerCompact()
                               : Text(
                             'Continue',
                             style: GoogleFonts.nunito(

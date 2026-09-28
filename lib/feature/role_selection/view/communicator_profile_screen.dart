@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
   const CommunicatorProfileScreen({super.key});
@@ -23,7 +24,7 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
         return SingleChildScrollView(
           child: Padding(
@@ -236,8 +237,7 @@ class CommunicatorProfileScreen extends GetView<CommunicatorProfileController> {
                       elevation: 0,
                     ),
                     child: controller.isSaving.value
-                        ? const SizedBox(width: 20, height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.black)))
+                        ? const AppShimmerCompact()
                         : Text('continue_btn'.tr,
                         style: GoogleFonts.nunito(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700)),
                   ),

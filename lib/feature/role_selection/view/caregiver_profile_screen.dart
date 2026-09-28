@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/widgets/app_shimmer.dart';
 
 class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
   const CaregiverProfileScreen({super.key});
@@ -31,7 +32,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppShimmerProfile();
         }
         return SingleChildScrollView(
           child: Padding(
@@ -127,7 +128,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                   if (invCtrl.isLoadingConnections.value) {
                     return const SizedBox(
                       height: 90,
-                      child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      child: Center(child: AppShimmerCircle(size: 48)),
                     );
                   }
 
@@ -210,8 +211,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                                   if (isSwitching)
                                     const SizedBox(
                                       width: 80, height: 80,
-                                      child: Center(child: CircularProgressIndicator(
-                                          strokeWidth: 2, color: Color(0xFF4CAF50))),
+                                      child: Center(child: AppShimmerCircle(size: 56)),
                                     )
                                   else
                                     CircleAvatar(
@@ -323,11 +323,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                       elevation: 0,
                     ),
                     child: controller.isSaving.value
-                        ? const SizedBox(
-                        width: 20, height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.black)))
+                        ? const AppShimmerCompact()
                         : Text('continue_btn'.tr,
                         style: GoogleFonts.nunito(
                             color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700)),
@@ -342,7 +338,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
     );
   }
 
-  // Returns true when the avatar URL is usable
+  
   bool _hasValidUrl(String? url) {
     return url != null && url.isNotEmpty && Uri.tryParse(url)?.hasAbsolutePath == true;
   }
