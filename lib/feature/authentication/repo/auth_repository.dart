@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:chatter_bee/feature/authentication/model/auth_model.dart';
 import 'package:chatter_bee/services/notification_controller.dart';
@@ -107,7 +108,9 @@ class AuthRepository {
             message: 'This linked account is inactive. Please reactivate it before switching.',
           );
         }
+        await NotificationControllerFCM.to.deleteFcmToken();
         await _saveAuthData(switched);
+        unawaited(NotificationControllerFCM.to.registerFcmToken(force: true));
         return ApiResponse.success(
           data: switched,
           statusCode: response.statusCode,
@@ -378,6 +381,7 @@ class AuthRepository {
     ApiClient().endSessionTeardown();
     await _storage.saveUserRole(role);
     await _storage.setLoggedIn(true);
+    unawaited(NotificationControllerFCM.to.registerFcmToken());
   }
 
   Future<void> _clearAuthData() async {

@@ -1,6 +1,8 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
-import 'package:chatter_bee/feature/Profile/controller/subscription_controller.dart';
+import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
+import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/revenueCat_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,10 +10,31 @@ import 'package:google_fonts/google_fonts.dart';
 class ProFeaturePopup extends StatelessWidget {
   const ProFeaturePopup({super.key});
 
+  void _openSubscription() {
+    Get.back();
+    if (Get.currentRoute != AppRoutes.SUBSCRIPTION) {
+      Get.toNamed(AppRoutes.SUBSCRIPTION);
+    }
+  }
+
+  Future<void> _restore() async {
+    Get.back();
+    final restored = await RevenueCatService.instance.restorePurchases();
+    if (restored) {
+      if (Get.isRegistered<ProStatusController>()) {
+        ProStatusController.to.isProUser.value = true;
+      }
+      Get.snackbar('Restored!', 'Your subscription has been restored.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.shade100);
+    } else {
+      Get.snackbar('Not found', 'No active subscription to restore.',
+          snackPosition: SnackPosition.TOP);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final c = Get.find<SubscriptionController>();
-
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -135,10 +158,7 @@ class ProFeaturePopup extends StatelessWidget {
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Get.back(); 
-                          c.onContinuePressed(); 
-                        },
+                        onPressed: _openSubscription,
                         icon: const Icon(Icons.lock_outline, size: 20),
                         label: Text('Unlock with ChatterBee Pro',
                             style: GoogleFonts.nunito(
@@ -181,10 +201,7 @@ class ProFeaturePopup extends StatelessWidget {
                             style: GoogleFonts.nunito(
                                 fontSize: 12, color: Colors.grey[600])),
                         GestureDetector(
-                          onTap: () {
-                            Get.back();
-                            c.restorePurchases();
-                          },
+                          onTap: _restore,
                           child: Text('Restore Purchase',
                               style: GoogleFonts.nunito(
                                   fontSize: 12,

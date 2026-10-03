@@ -1,5 +1,7 @@
 import 'package:chatter_bee/config/app_colors.dart';
+import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -82,6 +84,72 @@ class _CustomSwitchState extends State<CustomSwitch>
   }
 }
 
+class _ProLockedView extends StatelessWidget {
+  const _ProLockedView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFFFF3D6), Colors.white],
+            ),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Image.asset(ImagesLink.logo, height: 64),
+            const SizedBox(height: 12),
+            Text('This is a ChatterBee Pro Feature!',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.nunito(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF1B2A41))),
+            const SizedBox(height: 8),
+            Text(
+              'Get instant alerts when your communicator speaks, so you never miss what\'s important.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.nunito(
+                  fontSize: 13.5, color: Colors.black87, height: 1.5),
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: ProAccessGate.showUnlockProDialog,
+                icon: const Icon(Icons.lock_outline, size: 20),
+                label: Text('Unlock with ChatterBee Pro',
+                    style: GoogleFonts.nunito(
+                        fontSize: 15, fontWeight: FontWeight.w800)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: Colors.black,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
 
@@ -111,6 +179,9 @@ class NotificationScreen extends StatelessWidget {
           ),
           Expanded(
             child: Obx(() {
+              if (!ProStatusController.to.isProUser.value) {
+                return const _ProLockedView();
+              }
               if (controller.isLoading.value) {
                 return const AppShimmerNotifications();
               }

@@ -79,4 +79,5 @@ class AppUrl {
   }
 
   static const String pressContent = '/api/communicator/content/pressed/';
+  static const String pressSentence = '/api/communicator/sentence/pressed/';
 }

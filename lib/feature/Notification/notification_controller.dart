@@ -1,7 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
-import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/api_client.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -93,11 +93,27 @@ class NotificationControllerdamo extends GetxController {
   var selectedTab = 0.obs;
   var isLoading   = false.obs;
 
+  Worker? _proWorker;
+
   @override
   void onInit() {
     super.onInit();
-    loadNotifications();
-    loadSettings();
+    if (_isPro) {
+      loadNotifications();
+      loadSettings();
+    }
+    _proWorker = ever<bool>(ProStatusController.to.isProUser, (isPro) {
+      if (isPro) {
+        loadNotifications();
+        loadSettings();
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    _proWorker?.dispose();
+    super.onClose();
   }
 
   
@@ -372,38 +388,6 @@ class NotificationControllerdamo extends GetxController {
   }
 
   void _showProDialog(String featureName) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.workspace_premium, color: Colors.amber),
-            SizedBox(width: 8),
-            Text('Pro Required',
-                style: TextStyle(fontWeight: FontWeight.w700)),
-          ],
-        ),
-        content: Text(
-          'Upgrade to Pro to enable "$featureName".',
-          style: const TextStyle(color: Color(0xFF636F85)),
-        ),
-        actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-              Get.toNamed(AppRoutes.SUBSCRIPTION);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Upgrade to Pro',
-                style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
+    ProAccessGate.show(featureName: featureName);
   }
 }

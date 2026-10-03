@@ -4,6 +4,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Notification/notification_screen.dart';
 import 'package:chatter_bee/feature/home_screen/caregiver/view/caregiver_home_screen.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/view/communicator_home_screen.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,10 @@ class NavigationController extends GetxController {
   final selectedIndex = 0.obs;
 
   void changeTab(int index) {
+    if (index == 1 && !ProAccessGate.isPro) {
+      ProAccessGate.showUnlockProDialog();
+      return;
+    }
     selectedIndex.value = index;
   }
 }

@@ -110,8 +110,10 @@ class CommunicatorItemController extends GetxController {
   
   void speakSelected() {
     if (isSpeakCooldown.value) return;
-    if (SentenceBarService.to.spokenText.isEmpty) return;
+    final sentence = SentenceBarService.to.spokenText;
+    if (sentence.isEmpty) return;
     SentenceBarService.to.speakAll(lang: _currentLang);
+    _repo.pressSentence(sentence);
     if (selectedItemId.value > 0) {
       _repo.pressContent(contentType: 'item', contentId: selectedItemId.value);
     }

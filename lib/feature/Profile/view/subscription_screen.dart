@@ -197,7 +197,32 @@ class SubscriptionScreen extends GetView<SubscriptionController> {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
+
+              if (!ProStatusController.to.isProUser.value)
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: controller.onContinuePressed,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
+                    ),
+                    child: Text(
+                      controller.isPlanSelected('monthly')
+                          ? 'Start ${controller.monthlyTrialText}'
+                          : 'Start ${controller.annuallyTrialText}',
+                      style: GoogleFonts.nunito(
+                          fontSize: 16, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+
+              const SizedBox(height: 8),
 
               TextButton(
                 onPressed: controller.restorePurchases,

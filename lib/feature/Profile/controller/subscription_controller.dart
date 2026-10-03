@@ -1,8 +1,6 @@
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
-import 'package:chatter_bee/feature/Profile/view/pro_feature_popup.dart';
 import 'package:chatter_bee/services/revenueCat_services.dart';
-import 'package:chatter_bee/widgets/paper_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,10 +50,6 @@ class SubscriptionController extends GetxController {
       return;
     }
     selectPlan(plan);
-    showPaperDialog(
-      child: const ProFeaturePopup(),
-      barrierColor: Colors.black54,
-    );
   }
 
   @override

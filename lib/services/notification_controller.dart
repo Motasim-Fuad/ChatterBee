@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:chatter_bee/Repository/notification/notification_repo.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -14,14 +17,36 @@ class NotificationControllerFCM extends GetxController {
   final RxString fcmToken = ''.obs;
   final RxBool isTokenRegistered = false.obs;
 
+  StreamSubscription<String>? _tokenRefreshSub;
+  Future<bool>? _registering;
+
   @override
   void onInit() {
     super.onInit();
     _getCurrentFcmToken();
+    _tokenRefreshSub = _fcm.onTokenRefresh.listen(_onTokenRefresh);
+  }
+
+  @override
+  void onClose() {
+    _tokenRefreshSub?.cancel();
+    super.onClose();
   }
 
   Future<void> _getCurrentFcmToken() async {
     try {
+      if (Platform.isIOS) {
+        String? apns;
+        for (int i = 0; i < 5; i++) {
+          apns = await _fcm.getAPNSToken();
+          if (apns != null) break;
+          await Future.delayed(const Duration(seconds: 2));
+        }
+        if (apns == null) {
+          if (kDebugMode) print('APNs token not available yet');
+          return;
+        }
+      }
       final token = await _fcm.getToken();
       fcmToken.value = token ?? '';
       if (kDebugMode) print('Current FCM Token: ${fcmToken.value}');
@@ -30,8 +55,33 @@ class NotificationControllerFCM extends GetxController {
     }
   }
 
+  Future<bool> _hasSession() async {
+    final access = await _secureStorage.getAccessToken();
+    return access != null && access.isNotEmpty;
+  }
 
-  Future<bool> registerFcmToken() async {
+  Future<void> _onTokenRefresh(String token) async {
+    if (token.isEmpty || token == fcmToken.value) return;
+    fcmToken.value = token;
+    if (await _hasSession()) {
+      await registerFcmToken();
+    }
+  }
+
+  Future<void> ensureRegistered() async {
+    if (!await _hasSession()) return;
+    await registerFcmToken();
+  }
+
+  Future<bool> registerFcmToken({bool force = false}) {
+    final inFlight = _registering;
+    if (inFlight != null) return inFlight;
+    final future = _register(force: force).whenComplete(() => _registering = null);
+    _registering = future;
+    return future;
+  }
+
+  Future<bool> _register({required bool force}) async {
     try {
       if (fcmToken.value.isEmpty) {
         await _getCurrentFcmToken();
@@ -43,29 +93,34 @@ class NotificationControllerFCM extends GetxController {
       }
 
       final existingId = await _secureStorage.getFcmTokenId();
-      if (existingId != null && existingId.isNotEmpty) {
-        if (kDebugMode) print('FCM token already registered with ID: $existingId');
+      final registeredToken = await _secureStorage.getFcmRegisteredToken();
+      final hasExisting = existingId != null && existingId.isNotEmpty;
+
+      if (!force && hasExisting && registeredToken == fcmToken.value) {
         isTokenRegistered.value = true;
         return true;
       }
 
-      final deviceType = FcmTokenRepository.getDeviceType();
+      if (hasExisting) {
+        await _fcmRepo.deleteFcmToken(tokenId: existingId);
+        await _secureStorage.deleteFcmTokenId();
+      }
+
       final response = await _fcmRepo.registerFcmToken(
         deviceToken: fcmToken.value,
-        deviceType: deviceType,
+        deviceType: FcmTokenRepository.getDeviceType(),
       );
 
-      if (response.isSuccess && response.data != null) {
-        final tokenId = response.data!['id']?.toString();
+      if (response.isSuccess) {
+        final data = response.data;
+        final tokenId = data is Map ? data['id']?.toString() : null;
         if (tokenId != null && tokenId.isNotEmpty) {
           await _secureStorage.saveFcmTokenId(tokenId);
-          isTokenRegistered.value = true;
-          if (kDebugMode) {
-            print('FCM Token registered successfully');
-            print('Token ID: $tokenId');
-          }
-          return true;
+          await _secureStorage.saveFcmRegisteredToken(fcmToken.value);
         }
+        isTokenRegistered.value = true;
+        if (kDebugMode) print('FCM Token registered (id: $tokenId)');
+        return true;
       }
 
       if (kDebugMode) print('FCM registration failed: ${response.message}');
@@ -86,19 +141,10 @@ class NotificationControllerFCM extends GetxController {
         return true;
       }
 
-      final response = await _fcmRepo.deleteFcmToken(tokenId: tokenId);
-
-      if (response.isSuccess ||
-          response.statusCode == 204 ||
-          response.statusCode == 404) {
-        await _secureStorage.deleteFcmTokenId();
-        isTokenRegistered.value = false;
-        return true;
-      } else {
-        await _secureStorage.deleteFcmTokenId();
-        isTokenRegistered.value = false;
-        return true;
-      }
+      await _fcmRepo.deleteFcmToken(tokenId: tokenId);
+      await _secureStorage.deleteFcmTokenId();
+      isTokenRegistered.value = false;
+      return true;
     } catch (e) {
       if (kDebugMode) print('deleteFcmToken error: $e');
       return false;
@@ -110,8 +156,7 @@ class NotificationControllerFCM extends GetxController {
     final newToken = await _fcm.getToken();
     if (newToken != null) {
       fcmToken.value = newToken;
-      await _secureStorage.deleteFcmTokenId();
-      await registerFcmToken();
+      await registerFcmToken(force: true);
     }
   }
 }

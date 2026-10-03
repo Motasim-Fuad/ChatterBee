@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/services/notification_controller.dart';
 import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,6 +32,9 @@ class _SplashScreenState extends State<SplashScreen> {
       final role = await _secureStorage.getUserRole();
 
       if (token != null && token.isNotEmpty) {
+        if (Get.isRegistered<NotificationControllerFCM>()) {
+          unawaited(NotificationControllerFCM.to.ensureRegistered());
+        }
         if (role == "caregiver") {
           Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
         } else if (role == "communicator") {

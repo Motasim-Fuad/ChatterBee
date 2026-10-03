@@ -400,6 +400,7 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> pickCatImage() async {
+    if (!ProAccessGate.allowOrPrompt()) return;
     final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,
@@ -703,6 +704,7 @@ class CaregiverHomeController extends GetxController
   }
 
   Future<void> pickQsImage() async {
+    if (!ProAccessGate.allowOrPrompt()) return;
     final picked = await _picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 80,

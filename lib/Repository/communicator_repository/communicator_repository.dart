@@ -239,6 +239,19 @@ class CommunicatorRepository {
     }
   }
 
+  Future<void> pressSentence(String sentence) async {
+    final text = sentence.trim();
+    if (text.isEmpty) return;
+    try {
+      await _client.post<Map<String, dynamic>>(
+        AppUrl.pressSentence,
+        data: {'sentence': text},
+      );
+    } catch (e) {
+      debugPrint('CommunicatorRepository.pressSentence error: $e');
+    }
+  }
+
   
   Future<ApiResponse<CommunicatorContentModel>> _fetchContent(
       String url, {

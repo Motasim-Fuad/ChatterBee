@@ -215,12 +215,14 @@ class CommunicatorHomeController extends GetxController
 
   void speakQuickSpeak() {
     if (isSpeakCooldown.value) return;
-    if (SentenceBarService.to.spokenText.isEmpty) {
+    final sentence = SentenceBarService.to.spokenText;
+    if (sentence.isEmpty) {
       Get.snackbar('select_first'.tr, 'tap_quick_speak_first'.tr,
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
     SentenceBarService.to.speakAll(lang: _currentLang);
+    _repo.pressSentence(sentence);
     if (selectedQsId.value > 0) {
       _repo.pressContent(contentType: 'quickspeak', contentId: selectedQsId.value);
     }

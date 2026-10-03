@@ -21,6 +21,7 @@ class SecureStorageService {
   static const String _keyUserRole = 'user_role';
 
   static const String _keyFcmTokenId = 'fcm_token_id';
+  static const String _keyFcmRegisteredToken = 'fcm_registered_token';
   static const String _keyRememberedEmail = 'remembered_login_email';
 
   String? _memAccessToken;
@@ -126,6 +127,15 @@ class SecureStorageService {
   Future<void> deleteFcmTokenId() async {
     _memFcmTokenId = null;
     await _storage.delete(key: _keyFcmTokenId);
+    await _storage.delete(key: _keyFcmRegisteredToken);
+  }
+
+  Future<void> saveFcmRegisteredToken(String token) async {
+    await _write(_keyFcmRegisteredToken, token);
+  }
+
+  Future<String?> getFcmRegisteredToken() async {
+    return _storage.read(key: _keyFcmRegisteredToken);
   }
 
   Future<void> saveRememberedEmail(String email) async {
@@ -168,6 +178,7 @@ class SecureStorageService {
     await _storage.delete(key: _keyAccessToken);
     await _storage.delete(key: _keyRefreshToken);
     await _storage.delete(key: _keyFcmTokenId);
+    await _storage.delete(key: _keyFcmRegisteredToken);
   }
 
   Future<void> delete(String key) async {
