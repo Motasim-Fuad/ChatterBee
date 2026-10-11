@@ -1,9 +1,11 @@
+import 'package:chatter_bee/Repository/communicator_repository/communicator_repository.dart';
 import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TextToSpeakController extends GetxController {
+  final CommunicatorRepository _repo = CommunicatorRepository();
   final TextEditingController textController = TextEditingController();
   var text = ''.obs;
 
@@ -36,6 +38,7 @@ class TextToSpeakController extends GetxController {
       lang = LanguageController.to.currentLocale.value.languageCode;
     } catch (_) {}
     TtsService.to.speak(spoken, lang: lang);
+    _repo.pressSentence(spoken);
   }
 
   void clearText() {

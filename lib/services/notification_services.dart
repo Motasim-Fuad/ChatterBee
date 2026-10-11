@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:chatter_bee/services/communicator_session_service.dart';
+import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -56,6 +58,11 @@ class NotificationService extends GetxService {
     await _createAndroidChannel();
 
     await _getFcmTokenOnly();
+    await _fcm.setForegroundNotificationPresentationOptions(
+      alert: false,
+      badge: true,
+      sound: false,
+    );
 
     _listenForeground();
     _listenBackgroundTap();
@@ -149,7 +156,9 @@ class NotificationService extends GetxService {
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
-    final title = message.notification?.title ?? message.data['title'];
+    final title = _titleWithSpeakerName(
+      message.notification?.title ?? message.data['title']?.toString(),
+    );
     final body = message.notification?.body ?? message.data['body'];
 
     try {
@@ -204,6 +213,28 @@ class NotificationService extends GetxService {
         ),
       ),
     );
+  }
+
+  String? _titleWithSpeakerName(String? title) {
+    if (title == null || title.trim().isEmpty) return title;
+    if (!title.trim().toLowerCase().startsWith('you said')) return title;
+    final name = _speakerFirstName();
+    if (name.isEmpty) return title;
+    return title.replaceFirst(RegExp(r'^you', caseSensitive: false), name);
+  }
+
+  String _speakerFirstName() {
+    String raw = '';
+    try {
+      if (Get.isRegistered<CommunicatorSessionService>()) {
+        raw = CommunicatorSessionService.to.communicatorName.value.trim();
+      }
+    } catch (_) {}
+    if (raw.isEmpty) {
+      raw = StorageService().getUserName()?.trim() ?? '';
+    }
+    if (raw.isEmpty) return '';
+    return raw.split(RegExp(r'\s+')).first;
   }
 
   void _handlePayload(NotificationPayload payload) {

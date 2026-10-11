@@ -26,7 +26,7 @@ void main() async {
 
     Get.put(NotificationControllerFCM());
     await RevenueCatService.instance.init();
-    await Get.putAsync(() => TtsService().onInit().then((_) => TtsService()));
+    await Get.putAsync(() => TtsService().init(), permanent: true);
     await Get.putAsync(() => SpeechModeService().init());
     Get.put(SentenceBarService(), permanent: true);
     Get.put(ProStatusController(), permanent: true);

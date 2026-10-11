@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 
@@ -9,27 +11,62 @@ class TtsService extends GetxService {
 
   final RxBool isSpeaking = false.obs;
 
-  @override
-  Future<void> onInit() async {
-    super.onInit();
-    await _tts.setSharedInstance(true);
-    await _tts.setSpeechRate(0.5);
-    await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
+  Future<TtsService> init() async {
+    try {
+      if (Platform.isIOS) {
+        await _tts.setSharedInstance(true);
+        await _applyIosAudioSession();
+      }
+      if (Platform.isAndroid) {
+        final engine = await _tts.getDefaultEngine;
+        if (engine is String && engine.isNotEmpty) {
+          await _tts.setEngine(engine);
+        }
+      }
+      await _tts.setSpeechRate(0.5);
+      await _tts.setVolume(1.0);
+      await _tts.setPitch(1.0);
+    } catch (e) {
+      debugPrint('TtsService init error: $e');
+    }
 
     _tts.setStartHandler(() => isSpeaking.value = true);
     _tts.setCompletionHandler(() => isSpeaking.value = false);
-    _tts.setErrorHandler((_) => isSpeaking.value = false);
+    _tts.setCancelHandler(() => isSpeaking.value = false);
+    _tts.setErrorHandler((msg) {
+      debugPrint('TTS error: $msg');
+      isSpeaking.value = false;
+    });
+    return this;
+  }
+
+  Future<void> _applyIosAudioSession() async {
+    await _tts.setIosAudioCategory(
+      IosTextToSpeechAudioCategory.playback,
+      [
+        IosTextToSpeechAudioCategoryOptions.duckOthers,
+        IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+        IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+      ],
+      IosTextToSpeechAudioMode.spokenAudio,
+    );
   }
 
   Future<void> speak(String text, {String lang = 'en'}) async {
     if (text.trim().isEmpty) return;
 
-    await stop();
-
-    final ttsLang = _mapLang(lang);
-    await _tts.setLanguage(ttsLang);
-    await _tts.speak(text);
+    try {
+      await stop();
+      if (Platform.isIOS) {
+        await _applyIosAudioSession();
+      }
+      await _tts.setLanguage(_mapLang(lang));
+      await _tts.setVolume(1.0);
+      await _tts.speak(text);
+    } catch (e) {
+      debugPrint('TTS speak error: $e');
+      isSpeaking.value = false;
+    }
   }
 
   Future<void> speakWhenIdle(String text, {String lang = 'en'}) async {
@@ -41,11 +78,12 @@ class TtsService extends GetxService {
   }
 
   Future<void> stop() async {
-    await _tts.stop();
+    try {
+      await _tts.stop();
+    } catch (_) {}
     isSpeaking.value = false;
   }
 
-  
   String _mapLang(String lang) {
     switch (lang) {
       case 'es': return 'es-ES';
