@@ -2,6 +2,7 @@ workflows:
   android-ios-release:
     name: Android + iOS Release Build
     max_build_duration: 40
+    instance_type: mac_mini_m4
 
     environment:
       flutter: stable
