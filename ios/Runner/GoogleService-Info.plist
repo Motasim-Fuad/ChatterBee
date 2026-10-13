@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.chatterbee.app</string>
+	<string>com.example.chatterBee</string>
 	<key>PROJECT_ID</key>
 	<string>chatterbee-9f4a0</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:266665436778:ios:ef43f7b1845c07f3c10c13</string>
+	<string>1:266665436778:ios:91ff20ae82ef9be1c10c13</string>
 </dict>
 </plist>

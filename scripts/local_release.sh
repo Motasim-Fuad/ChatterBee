@@ -18,6 +18,10 @@ fi
 set -a
 # shellcheck disable=SC1091
 source .env
+if [[ -f signing.env ]]; then
+  # shellcheck disable=SC1091
+  source signing.env
+fi
 set +a
 
 TARGET="${1:-android}"

@@ -1,3 +1,4 @@
+import 'package:chatter_bee/services/revenueCat_services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -22,6 +23,10 @@ class ProStatusController extends GetxController {
   
   Future<void> _initStatus() async {
     isChecking.value = true;
+    if (!RevenueCatService.instance.isConfigured) {
+      isChecking.value = false;
+      return;
+    }
     try {
       final info = await Purchases.getCustomerInfo();
       _updateStatus(info, source: 'INIT');
@@ -34,6 +39,7 @@ class ProStatusController extends GetxController {
 
   
   void _listenToStream() {
+    if (!RevenueCatService.instance.isConfigured) return;
     Purchases.addCustomerInfoUpdateListener(_onCustomerInfoUpdated);
     debugPrint('[PRO] Stream listener attached');
   }
@@ -71,7 +77,9 @@ class ProStatusController extends GetxController {
   
   @override
   void onClose() {
-    Purchases.removeCustomerInfoUpdateListener(_onCustomerInfoUpdated);
+    if (RevenueCatService.instance.isConfigured) {
+      Purchases.removeCustomerInfoUpdateListener(_onCustomerInfoUpdated);
+    }
     super.onClose();
   }
 }

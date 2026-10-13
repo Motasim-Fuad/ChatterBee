@@ -8,6 +8,7 @@ import 'package:chatter_bee/services/speech_mode_service.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'app/my_app.dart';
 import 'feature/Profile/controller/pro_status_controller.dart';
@@ -17,6 +18,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
+    await dotenv.load(fileName: '.env');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );

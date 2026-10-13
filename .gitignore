@@ -47,6 +47,7 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 .env
+signing.env
 *.jks
 *.p8
 *.p12

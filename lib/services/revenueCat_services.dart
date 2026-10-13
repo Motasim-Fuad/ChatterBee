@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RevenueCatService {
@@ -8,17 +9,16 @@ class RevenueCatService {
   RevenueCatService._();
   static final RevenueCatService instance = RevenueCatService._();
 
-  
-  Future<void> init() async {
-    final androidKey = const String.fromEnvironment('RC_ANDROID_PUBLIC_KEY');
-    final iosKey = const String.fromEnvironment('RC_IOS_PUBLIC_KEY');
+  bool _configured = false;
+  bool get isConfigured => _configured;
 
+  Future<void> init() async {
+    final androidKey = dotenv.env['RC_ANDROID_PUBLIC_KEY'] ?? '';
+    final iosKey = dotenv.env['RC_IOS_PUBLIC_KEY'] ?? '';
     final apiKey = Platform.isAndroid ? androidKey : iosKey;
 
     if (apiKey.isEmpty) {
-      debugPrint(
-        '[RC] API key is empty. Fill .env and run ./scripts/local_release.sh',
-      );
+      debugPrint('[RC] API key is empty in .env. Purchases will stay off.');
       return;
     }
     await Purchases.setLogLevel(
@@ -26,10 +26,11 @@ class RevenueCatService {
     );
 
     await Purchases.configure(PurchasesConfiguration(apiKey));
+    _configured = true;
   }
 
-  
   Future<List<Package>> getOfferings() async {
+    if (!_configured) return [];
     try {
       final offerings = await Purchases.getOfferings();
       return offerings.current?.availablePackages ?? [];
@@ -41,6 +42,7 @@ class RevenueCatService {
 
   
   Future<bool> purchase(Package package) async {
+    if (!_configured) return false;
     try {
       final result = await Purchases.purchasePackage(package);
       return _isPro(result.customerInfo);
@@ -56,6 +58,7 @@ class RevenueCatService {
 
   
   Future<bool> restorePurchases() async {
+    if (!_configured) return false;
     try {
       final info = await Purchases.restorePurchases();
       return _isPro(info);
@@ -67,6 +70,7 @@ class RevenueCatService {
 
   
   Future<bool> isProUser() async {
+    if (!_configured) return false;
     try {
       final info = await Purchases.getCustomerInfo();
       return _isPro(info);
