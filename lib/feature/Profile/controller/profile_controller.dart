@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:chatter_bee/config/app_colors.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/routes/return_to_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -129,12 +130,12 @@ class ProfileController extends GetxController {
           : switched.user.email;
       await CommunicatorSessionService.to.setSelected(id, name);
 
-      Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
+      returnToNavigation();
     } else if (response.statusCode == 404) {
       final name = (user['full_name'] ?? user['email'] ?? 'Communicator')
           .toString();
       await CommunicatorSessionService.to.setSelected(id, name);
-      Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
+      returnToNavigation();
     } else {
       Get.snackbar('error'.tr, response.message, snackPosition: SnackPosition.BOTTOM);
     }

@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
-import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/routes/return_to_navigation.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
@@ -155,7 +155,7 @@ class CaregiverProfileController extends GetxController {
         Get.snackbar('success'.tr, 'profile_updated'.tr,
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: const Color(0xFFE8F5E9));
-        Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
+        returnToNavigation();
       } else {
         Get.snackbar('error'.tr, response.message,
             snackPosition: SnackPosition.BOTTOM);

@@ -13,6 +13,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class NavigationController extends GetxController {
   final selectedIndex = 0.obs;
+  final isCommunicator = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    syncRole();
+  }
+
+  void syncRole() {
+    isCommunicator.value =
+        StorageService().getUserRole()?.trim().toLowerCase() == 'communicator';
+  }
 
   void changeTab(int index) {
     if (index == 1 && !ProAccessGate.isPro) {
@@ -26,9 +38,6 @@ class NavigationController extends GetxController {
 class NavigationScreen extends GetView<NavigationController> {
   const NavigationScreen({super.key});
 
-  bool get _isCommunicator =>
-      StorageService().getUserRole()?.trim().toLowerCase() == 'communicator';
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -39,7 +48,7 @@ class NavigationScreen extends GetView<NavigationController> {
           Obx(() => IndexedStack(
             index: controller.selectedIndex.value,
             children: [
-              _isCommunicator
+              controller.isCommunicator.value
                   ? const CommunicatorHomeScreen()
                   : const CaregiverHomeScreen(),
               const NotificationScreen(),

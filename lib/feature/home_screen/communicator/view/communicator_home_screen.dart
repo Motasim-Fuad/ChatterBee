@@ -13,6 +13,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/widgets/symbol_search_field.dart';
 
 
 Color _parseColor(String hex, Color fallback) {
@@ -175,30 +176,11 @@ class _CommHomePage extends StatelessWidget {
                 if (!controller.isSearchOpen.value) {
                   return const SizedBox.shrink();
                 }
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: TextField(
-                    controller: controller.searchTextController,
-                    autofocus: true,
-                    onChanged: controller.onSearchChanged,
-                    onTapOutside: (_) =>
-                        FocusManager.instance.primaryFocus?.unfocus(),
-                    decoration: InputDecoration(
-                      hintText: 'search_symbols'.tr,
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.close, color: Color(0xFF636F85)),
-                        onPressed: controller.closeSearch,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide:
-                        const BorderSide(color: Color(0xFFE3E3E9)),
-                      ),
-                    ),
-                  ),
+                return SymbolSearchField(
+                  hintText: 'search_symbols'.tr,
+                  initialText: controller.searchQuery.value,
+                  onChanged: controller.onSearchChanged,
+                  onClose: controller.closeSearch,
                 );
               }),
             ),

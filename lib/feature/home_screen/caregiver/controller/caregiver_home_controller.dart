@@ -60,9 +60,7 @@ class CaregiverHomeController extends GetxController
   final RxString selectedQuickSpeakColor = '#FFD700'.obs;
   final RxBool isSearchOpen = false.obs;
   final RxString searchQuery = ''.obs;
-  final TextEditingController searchTextController = TextEditingController();
 
-  
   final RxList<SearchItemResult> searchItems = <SearchItemResult>[].obs;
   final RxBool isSearching = false.obs;
 
@@ -192,6 +190,10 @@ class CaregiverHomeController extends GetxController
 
   Future<void> refresh() => loadContent();
 
+  /// Profile (buddy mode, voice) may have changed. Reload before painting
+  /// categories so the shell the user popped back to is current.
+  Future<void> reloadAfterProfileChange() => _initLoad();
+
   void toggleSearch() {
     if (isSearchOpen.value) {
       closeSearch();
@@ -202,7 +204,6 @@ class CaregiverHomeController extends GetxController
 
   void closeSearch() {
     _searchDebounce?.cancel();
-    searchTextController.clear();
     searchQuery.value = '';
     searchItems.clear();
     isSearchOpen.value = false;
@@ -843,7 +844,6 @@ class CaregiverHomeController extends GetxController
     WidgetsBinding.instance.removeObserver(this);
     _searchDebounce?.cancel();
     pageController.dispose();
-    searchTextController.dispose();
     _recorder?.closeRecorder();
     _soundPlayer?.closePlayer();
     _audioPlayer.dispose();
