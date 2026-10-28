@@ -52,3 +52,6 @@ signing.env
 *.p8
 *.p12
 *.mobileprovision
+# Android signing
+key.properties
+**/key.properties
