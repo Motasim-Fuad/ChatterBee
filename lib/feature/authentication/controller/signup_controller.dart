@@ -5,6 +5,7 @@ import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class SignUpController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -131,32 +132,12 @@ class SignUpController extends GetxController {
 
   
   void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Error',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red.shade100,
-      colorText: Colors.red.shade800,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-      icon: const Icon(Icons.error_outline, color: Colors.red),
-    );
+    AppToast.error(message);
   }
 
   
   void _showSuccessSnackbar(String message) {
-    Get.snackbar(
-      'Success',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green.shade100,
-      colorText: Colors.green.shade800,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-      icon: const Icon(Icons.check_circle_outline, color: Colors.green),
-    );
+    AppToast.success(message);
   }
 
   

@@ -2,6 +2,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/feature/communicator/sub_category/item_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class FruitsController extends GetxController {
   var selectedItem = ''.obs;
@@ -23,12 +24,9 @@ class FruitsController extends GetxController {
 
   void speakItem() {
     if (selectedItem.value.isNotEmpty) {
-      Get.snackbar('Speaking', selectedItem.value, snackPosition: SnackPosition.BOTTOM);
+      AppToast.show(selectedItem.value);
     } else {
-      Get.snackbar('Error', 'Please select an item first',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.shade100,
-          colorText: Colors.red.shade900);
+      AppToast.error('Please select an item first');
     }
   }
 }

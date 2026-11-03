@@ -1,6 +1,7 @@
 import 'package:chatter_bee/feature/Profile/controller/pro_status_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class LanguageController extends GetxController {
   static LanguageController get to => Get.find();
@@ -44,11 +45,7 @@ class LanguageController extends GetxController {
 
   Future<void> changeLanguage(String langCode) async {
     if (!isPro && langCode != 'en') {
-      Get.snackbar(
-        "Premium Feature",
-        "Upgrade to unlock all languages",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppToast.show("Upgrade to unlock all languages");
       return;
     }
 

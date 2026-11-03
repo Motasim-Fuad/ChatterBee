@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CaregiverItemController extends GetxController {
   final CaregiverCustomizationRepository _repo =
@@ -250,8 +251,7 @@ class CaregiverItemController extends GetxController {
 
   Future<void> save(String word) async {
     if (word.trim().isEmpty) {
-      Get.snackbar('error'.tr, 'please_enter_word'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('please_enter_word'.tr);
       return;
     }
     formLoading.value = true;
@@ -271,11 +271,9 @@ class CaregiverItemController extends GetxController {
       if (response.isSuccess) {
         Get.back();
         await refresh();
-        Get.snackbar('updated'.tr, 'item_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('item_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } else {
       final communicatorId =
@@ -293,11 +291,9 @@ class CaregiverItemController extends GetxController {
       if (response.isSuccess) {
         Get.back();
         await refresh();
-        Get.snackbar('created'.tr, 'item_created'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('item_created'.tr);
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     }
   }

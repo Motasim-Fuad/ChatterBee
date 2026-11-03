@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CoreWordsController extends GetxController {
   var selectedWords = <String>[].obs;
@@ -60,20 +61,9 @@ class CoreWordsController extends GetxController {
 
   void speakCoreWords() {
     if (coreWordsText.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        coreWordsText.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(coreWordsText.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select words first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select words first');
     }
   }
 

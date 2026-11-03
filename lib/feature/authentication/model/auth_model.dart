@@ -30,10 +30,26 @@ class LoginResponse {
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     final data = json['data'] ?? json;
 
+    // Switch-account responses carry `role` / `user_id` next to `user`, and the
+    // nested user may only have `profile.role` and first/last name.
+    final userJson = Map<String, dynamic>.from(
+        (data['user'] is Map) ? data['user'] as Map : <String, dynamic>{});
+    final profile = userJson['profile'];
+    userJson['role'] ??=
+        data['role'] ?? (profile is Map ? profile['role'] : null);
+    userJson['id'] ??= data['user_id'];
+    userJson['is_active'] ??= data['is_active'];
+    if ((userJson['full_name'] ?? '').toString().isEmpty) {
+      final first = (userJson['first_name'] ?? '').toString();
+      final last = (userJson['last_name'] ?? '').toString();
+      final full = '$first $last'.trim();
+      if (full.isNotEmpty) userJson['full_name'] = full;
+    }
+
     return LoginResponse(
       accessToken: data['access'] ?? '',
       refreshToken: data['refresh'] ?? '',
-      user: UserData.fromJson(data['user'] ?? {}),
+      user: UserData.fromJson(userJson),
     );
   }
 }

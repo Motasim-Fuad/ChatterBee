@@ -15,6 +15,7 @@ import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CommunicatorHomeController extends GetxController
     with WidgetsBindingObserver {
@@ -214,8 +215,7 @@ class CommunicatorHomeController extends GetxController
     if (isSpeakCooldown.value) return;
     final sentence = SentenceBarService.to.spokenText;
     if (sentence.isEmpty) {
-      Get.snackbar('select_first'.tr, 'tap_quick_speak_first'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.show('tap_quick_speak_first'.tr);
       return;
     }
     SentenceBarService.to.speakAll(lang: _currentLang);

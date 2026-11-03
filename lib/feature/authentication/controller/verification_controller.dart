@@ -6,6 +6,7 @@ import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class VerificationController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -325,46 +326,19 @@ class VerificationController extends GetxController {
   void _showSuccessSnackbar(String title, String message) {
     if (_isDisposed) return;
 
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    AppToast.success(message);
   }
 
   void _showErrorSnackbar(String title, String message) {
     if (_isDisposed) return;
 
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    AppToast.error(message);
   }
 
   void _showWarningSnackbar(String title, String message) {
     if (_isDisposed) return;
 
-    Get.snackbar(
-      title,
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.orange,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 3),
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-    );
+    AppToast.show(message);
   }
 
   void goBack() {

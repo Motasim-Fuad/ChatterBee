@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ThingsController extends GetxController {
   var selectedThing = ''.obs;
@@ -58,20 +59,9 @@ class ThingsController extends GetxController {
 
   void speakThing() {
     if (selectedThing.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        selectedThing.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(selectedThing.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select an option first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select an option first');
     }
   }
 

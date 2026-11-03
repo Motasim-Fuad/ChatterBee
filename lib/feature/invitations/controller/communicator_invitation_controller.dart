@@ -2,6 +2,7 @@ import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
 import 'package:chatter_bee/models/profile_invitation_model/profile_invitation_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CommunicatorInvitationController extends GetxController {
   final ProfileInvitationRepo _repo = ProfileInvitationRepo();
@@ -59,13 +60,7 @@ class CommunicatorInvitationController extends GetxController {
       await _repo.acceptInvitation(invitationId: invitation.id);
       if (response.isSuccess) {
         receivedInvitations.removeWhere((inv) => inv.id == invitation.id);
-        Get.snackbar(
-          'connected_title'.tr,
-          '${'now_connected_with'.tr} ${invitation.caregiverName ?? 'the caregiver'}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFE8F5E9),
-          duration: const Duration(seconds: 3),
-        );
+        AppToast.success('${'now_connected_with'.tr} ${invitation.caregiverName ?? 'the caregiver'}');
       } else {
         String errorMsg = response.message;
         if (response.errors != null && response.errors!.isNotEmpty) {
@@ -74,13 +69,11 @@ class CommunicatorInvitationController extends GetxController {
               ? firstError.first.toString()
               : firstError.toString();
         }
-        Get.snackbar('error'.tr, errorMsg,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(errorMsg);
       }
     } catch (e) {
       debugPrint('Accept invitation error: $e');
-      Get.snackbar('error'.tr, 'failed_accept'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_accept'.tr);
     } finally {
       processingIds.remove(invitation.id);
       processingIds.refresh();
@@ -97,10 +90,7 @@ class CommunicatorInvitationController extends GetxController {
       await _repo.rejectInvitation(invitationId: invitation.id);
       if (response.isSuccess) {
         receivedInvitations.removeWhere((inv) => inv.id == invitation.id);
-        Get.snackbar(
-          'declined'.tr, 'invitation_declined'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        AppToast.show('invitation_declined'.tr);
       } else {
         String errorMsg = response.message;
         if (response.errors != null && response.errors!.isNotEmpty) {
@@ -109,13 +99,11 @@ class CommunicatorInvitationController extends GetxController {
               ? firstError.first.toString()
               : firstError.toString();
         }
-        Get.snackbar('error'.tr, errorMsg,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(errorMsg);
       }
     } catch (e) {
       debugPrint('Reject invitation error: $e');
-      Get.snackbar('error'.tr, 'failed_decline'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_decline'.tr);
     } finally {
       processingIds.remove(invitation.id);
       processingIds.refresh();

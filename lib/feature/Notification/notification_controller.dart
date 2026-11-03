@@ -4,6 +4,7 @@ import 'package:chatter_bee/services/api_client.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class NotificationModel {
   final int id;
@@ -215,16 +216,7 @@ class NotificationControllerdamo extends GetxController {
   
   void deleteNotification(NotificationModel notification) {
     notifications.remove(notification);
-    Get.snackbar(
-      'Deleted',
-      '${notification.title} removed',
-      snackPosition: SnackPosition.BOTTOM,
-      duration: const Duration(seconds: 2),
-      mainButton: TextButton(
-        onPressed: () { notifications.add(notification); Get.back(); },
-        child: const Text('UNDO'),
-      ),
-    );
+    AppToast.show('${notification.title} removed');
   }
 
   
@@ -382,9 +374,7 @@ class NotificationControllerdamo extends GetxController {
   int get unreadCount => notifications.where((n) => !n.isRead).length;
 
   void _showError(String msg) {
-    Get.snackbar('Error', msg,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3));
+    AppToast.error(msg);
   }
 
   void _showProDialog(String featureName) {

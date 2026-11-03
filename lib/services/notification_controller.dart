@@ -113,7 +113,8 @@ class NotificationControllerFCM extends GetxController {
 
       if (response.isSuccess) {
         final data = response.data;
-        final tokenId = data is Map ? data['id']?.toString() : null;
+        final inner = data is Map ? (data['data'] ?? data) : null;
+        final tokenId = inner is Map ? inner['id']?.toString() : null;
         if (tokenId != null && tokenId.isNotEmpty) {
           await _secureStorage.saveFcmTokenId(tokenId);
           await _secureStorage.saveFcmRegisteredToken(fcmToken.value);

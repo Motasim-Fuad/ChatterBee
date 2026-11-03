@@ -8,9 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CommunicatorSessionService extends GetxService {
   static const String _communicatorIdKey = 'selected_communicator_id';
   static const String _communicatorNameKey = 'selected_communicator_name';
+  static const String _caregiverIdKey = 'linked_caregiver_id';
+  static const String _caregiverNameKey = 'linked_caregiver_name';
 
   final RxInt communicatorId = 0.obs;
   final RxString communicatorName = ''.obs;
+
+  /// Caregiver this device switched FROM (so we can switch back freely).
+  final RxInt caregiverId = 0.obs;
+  final RxString caregiverName = ''.obs;
 
   static CommunicatorSessionService get to => Get.find();
 
@@ -24,7 +30,19 @@ class CommunicatorSessionService extends GetxService {
     final prefs = await SharedPreferences.getInstance();
     communicatorId.value = prefs.getInt(_communicatorIdKey) ?? 0;
     communicatorName.value = prefs.getString(_communicatorNameKey) ?? '';
+    caregiverId.value = prefs.getInt(_caregiverIdKey) ?? 0;
+    caregiverName.value = prefs.getString(_caregiverNameKey) ?? '';
   }
+
+  Future<void> setCaregiver(int id, String name) async {
+    caregiverId.value = id;
+    caregiverName.value = name;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_caregiverIdKey, id);
+    await prefs.setString(_caregiverNameKey, name);
+  }
+
+  bool get hasCaregiver => caregiverId.value != 0;
 
   Future<void> setSelected(int id, String name) async {
     communicatorId.value = id;
@@ -40,6 +58,10 @@ class CommunicatorSessionService extends GetxService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_communicatorIdKey);
     await prefs.remove(_communicatorNameKey);
+    caregiverId.value = 0;
+    caregiverName.value = '';
+    await prefs.remove(_caregiverIdKey);
+    await prefs.remove(_caregiverNameKey);
   }
 
   bool get hasSelected => communicatorId.value != 0;

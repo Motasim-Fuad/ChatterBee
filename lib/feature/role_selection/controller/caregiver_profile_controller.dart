@@ -8,6 +8,7 @@ import 'package:chatter_bee/services/storage/data_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CaregiverProfileController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -93,7 +94,9 @@ class CaregiverProfileController extends GetxController {
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(20), topRight: Radius.circular(20)),
           ),
-          child: Column(
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('choose_profile_picture'.tr,
@@ -118,11 +121,11 @@ class CaregiverProfileController extends GetxController {
                 ),
             ],
           ),
+          ),
         ),
       );
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_open_picker'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_open_picker'.tr);
     }
   }
 
@@ -132,15 +135,13 @@ class CaregiverProfileController extends GetxController {
           source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
       if (image != null) profileImage.value = File(image.path);
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_pick_image'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_pick_image'.tr);
     }
   }
 
   Future<void> onContinue() async {
     if (fullNameController.text.trim().isEmpty) {
-      Get.snackbar('error'.tr, 'enter_full_name_error'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('enter_full_name_error'.tr);
       return;
     }
     try {
@@ -152,17 +153,13 @@ class CaregiverProfileController extends GetxController {
         avatar: profileImage.value,
       );
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'profile_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: const Color(0xFFE8F5E9));
+        AppToast.success('profile_updated'.tr);
         returnToNavigation();
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'profile_update_failed'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('profile_update_failed'.tr);
     } finally {
       isSaving.value = false;
     }

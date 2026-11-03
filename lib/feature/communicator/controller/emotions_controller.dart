@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class EmotionsController extends GetxController {
   var selectedEmotion = ''.obs;
@@ -46,20 +47,9 @@ class EmotionsController extends GetxController {
 
   void speakEmotion() {
     if (selectedEmotion.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        'I feel ${selectedEmotion.value.toLowerCase()}',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show('I feel ${selectedEmotion.value.toLowerCase()}');
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select an emotion first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select an emotion first');
     }
   }
 

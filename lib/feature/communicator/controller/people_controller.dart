@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class PeopleController extends GetxController {
   var selectedPerson = ''.obs;
@@ -34,20 +35,9 @@ class PeopleController extends GetxController {
 
   void speakPerson() {
     if (selectedPerson.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        selectedPerson.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(selectedPerson.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select a person first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select a person first');
     }
   }
 

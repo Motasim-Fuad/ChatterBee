@@ -10,8 +10,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/Repository/profile_invitation_repo.dart';
 import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
+import 'package:chatter_bee/services/storage/secure_storage.dart';
 import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ProfileController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -59,12 +61,10 @@ class ProfileController extends GetxController {
           switchableUsers.clear();
         }
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_load_profile'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_load_profile'.tr);
     } finally {
       isLoading.value = false;
     }
@@ -76,6 +76,11 @@ class ProfileController extends GetxController {
   }
 
   bool get canSwitchUser => selectedRole.value.toLowerCase() == 'caregiver';
+
+  /// Communicator session that was opened from a caregiver -> can go back.
+  bool get canSwitchBack =>
+      selectedRole.value.toLowerCase() == 'communicator' &&
+      CommunicatorSessionService.to.hasCaregiver;
 
   Future<void> toggleBuddyBeeMode(bool value) async {
     if (value && !ProAccessGate.isPro) {
@@ -110,21 +115,23 @@ class ProfileController extends GetxController {
 
   Future<void> switchToUser(Map<String, dynamic> user) async {
     if (user['is_active'] == false) {
-      Get.snackbar(
-        'error'.tr,
-        'This linked account is inactive. Please reactivate it before switching.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppToast.error('This linked account is inactive. Please reactivate it before switching.');
       return;
     }
     final id = int.tryParse(
         (user['_communicator_id'] ?? user['id']).toString());
     if (id == null) return;
+    // Remember who we are now (the caregiver) BEFORE the tokens are replaced.
+    final callerId = int.tryParse(await SecureStorageService().getUserId() ?? '') ?? 0;
+    final callerName = userName.value;
     Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
     final response = await _authRepository.switchAccount(targetUserId: id);
     if (Get.isDialogOpen ?? false) Get.back();
     if (response.isSuccess && response.data != null) {
       final switched = response.data!;
+      if (callerId != 0) {
+        await CommunicatorSessionService.to.setCaregiver(callerId, callerName);
+      }
       final name = switched.user.fullName.isNotEmpty
           ? switched.user.fullName
           : switched.user.email;
@@ -137,11 +144,24 @@ class ProfileController extends GetxController {
       await CommunicatorSessionService.to.setSelected(id, name);
       returnToNavigation();
     } else {
-      Get.snackbar('error'.tr, response.message, snackPosition: SnackPosition.BOTTOM);
+      AppToast.error(response.message);
     }
   }
 
-  
+  /// Communicator -> Caregiver (same endpoint, target = caregiver user id).
+  Future<void> switchBackToCaregiver() async {
+    final id = CommunicatorSessionService.to.caregiverId.value;
+    if (id == 0) return;
+    Get.dialog(const AppShimmerBlocking(), barrierDismissible: false);
+    final response = await _authRepository.switchAccount(targetUserId: id);
+    if (Get.isDialogOpen ?? false) Get.back();
+    if (response.isSuccess && response.data != null) {
+      returnToNavigation();
+    } else {
+      AppToast.error(response.message);
+    }
+  }
+
   Future<void> pickImage() async {
     try {
       await Get.bottomSheet(
@@ -154,7 +174,9 @@ class ProfileController extends GetxController {
               topRight: Radius.circular(20),
             ),
           ),
-          child: Column(
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('choose_profile_picture'.tr,
@@ -188,11 +210,11 @@ class ProfileController extends GetxController {
                 ),
             ],
           ),
+          ),
         ),
       );
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_open_picker'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_open_picker'.tr);
     }
   }
 
@@ -209,8 +231,7 @@ class ProfileController extends GetxController {
         await _uploadAvatar(File(image.path));
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_pick_image'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_pick_image'.tr);
     }
   }
 
@@ -218,22 +239,18 @@ class ProfileController extends GetxController {
     try {
       final response = await _authRepository.updateProfile(avatar: file);
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'profile_picture_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('profile_picture_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_upload_picture'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_upload_picture'.tr);
     }
   }
 
   void removeProfileImage() {
     profileImage.value = null;
-    Get.snackbar('success'.tr, 'profile_picture_removed'.tr,
-        snackPosition: SnackPosition.BOTTOM);
+    AppToast.success('profile_picture_removed'.tr);
   }
 
   
@@ -415,18 +432,15 @@ class ProfileController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
-        Get.snackbar('success'.tr, 'account_deleted'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('account_deleted'.tr);
         await Future.delayed(const Duration(milliseconds: 500));
         Get.offAllNamed(AppRoutes.SIGNINSCREEN);
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      Get.snackbar('error'.tr, 'failed_delete_account'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_delete_account'.tr);
     }
   }
 

@@ -12,6 +12,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 Color _parseColor(String hex, Color fallback) {
   try {
@@ -357,9 +358,7 @@ void _showItemDialog(
                         onTap: () async {
                           if (!hasAudio) {
                             Navigator.of(ctx).pop();
-                            Get.snackbar('no_audio_title'.tr,
-                                'item_has_no_audio'.tr,
-                                snackPosition: SnackPosition.BOTTOM);
+                            AppToast.show('item_has_no_audio'.tr);
                             return;
                           }
                           await controller.playItemAudio(item);

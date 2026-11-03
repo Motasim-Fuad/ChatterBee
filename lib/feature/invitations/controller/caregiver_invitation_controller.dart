@@ -4,6 +4,7 @@ import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CaregiverInvitationController extends GetxController {
   final ProfileInvitationRepo _repo = ProfileInvitationRepo();
@@ -100,13 +101,11 @@ class CaregiverInvitationController extends GetxController {
   Future<void> sendInvitation() async {
     final email = emailController.text.trim();
     if (email.isEmpty) {
-      Get.snackbar('error'.tr, 'enter_email'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('enter_email'.tr);
       return;
     }
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'valid_email'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('valid_email'.tr);
       return;
     }
 
@@ -117,13 +116,7 @@ class CaregiverInvitationController extends GetxController {
       if (response.isSuccess) {
         emailController.clear();
         Get.back();
-        Get.snackbar(
-          'invitation_sent_title'.tr,
-          '${'invitation_sent_msg'.tr} $email',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFE8F5E9),
-          duration: const Duration(seconds: 3),
-        );
+        AppToast.success('${'invitation_sent_msg'.tr} $email');
         await loadSentInvitations();
       } else {
         String errorMsg = response.message;
@@ -133,13 +126,11 @@ class CaregiverInvitationController extends GetxController {
               ? firstError.first.toString()
               : firstError.toString();
         }
-        Get.snackbar('error'.tr, errorMsg,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(errorMsg);
       }
     } catch (e) {
       debugPrint('Send invitation error: $e');
-      Get.snackbar('error'.tr, 'profile_update_failed'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('profile_update_failed'.tr);
     } finally {
       isSendingInvitation.value = false;
     }
@@ -159,19 +150,12 @@ class CaregiverInvitationController extends GetxController {
           connection.communicatorId,
           connection.communicatorName,
         );
-        Get.snackbar(
-          'switched'.tr,
-          '${'now_viewing'.tr} ${connection.communicatorName}${'profile_suffix'.tr}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFE8F5E9),
-        );
+        AppToast.success('${'now_viewing'.tr} ${connection.communicatorName}${'profile_suffix'.tr}');
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_switch'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_switch'.tr);
     } finally {
       isSwitchingTo.value = -1;
     }
@@ -209,18 +193,12 @@ class CaregiverInvitationController extends GetxController {
         if (selectedConnectionId.value == connection.id) {
           selectedConnectionId.value = -1;
         }
-        Get.snackbar(
-          'disconnected'.tr,
-          '${connection.communicatorName} ${'has_been_disconnected'.tr}',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        AppToast.show('${connection.communicatorName} ${'has_been_disconnected'.tr}');
       } else {
-        Get.snackbar('error'.tr, response.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar('error'.tr, 'failed_disconnect'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('failed_disconnect'.tr);
     }
   }
 

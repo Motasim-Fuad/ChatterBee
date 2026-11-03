@@ -3,6 +3,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/config/translations/widgets/language_selector.dart';
 import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
 import 'package:chatter_bee/services/speech_mode_service.dart';
+import 'package:chatter_bee/services/communicator_session_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -101,6 +102,29 @@ class ProfileScreen extends GetView<ProfileController> {
                   ),
                 ),
                 if (controller.canSwitchUser) const SizedBox(height: 16),
+
+                if (controller.canSwitchBack) Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('switch_back_to_caregiver'.tr,
+                          style: GoogleFonts.nunito(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.black)),
+                      const SizedBox(height: 12),
+                      _buildRoleCard(
+                        icon: SvgPicture.asset(ImagesLink.simplificationCare),
+                        title: CommunicatorSessionService.to.caregiverName.value.isNotEmpty
+                            ? CommunicatorSessionService.to.caregiverName.value
+                            : 'caregiver'.tr,
+                        role: 'caregiver',
+                        isSelected: false,
+                        onTap: controller.switchBackToCaregiver,
+                      ),
+                    ],
+                  ),
+                ),
+                if (controller.canSwitchBack) const SizedBox(height: 16),
 
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -208,7 +232,6 @@ class ProfileScreen extends GetView<ProfileController> {
                         onTap: controller.onLogoutTap,
                         textColor: Colors.red,
                       ),
-                      if (controller.canSwitchUser) ...[
                       const SizedBox(height: 8),
                       _buildMenuTile(
                         icon: SvgPicture.asset(ImagesLink.delete),
@@ -216,7 +239,6 @@ class ProfileScreen extends GetView<ProfileController> {
                         onTap: controller.onDeleteAccountTap,
                         textColor: Colors.red,
                       ),
-                      ],
                     ],
                   ),
                 ),
@@ -239,7 +261,9 @@ class ProfileScreen extends GetView<ProfileController> {
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -272,6 +296,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 },
               ),
             ],
+          ),
           ),
         );
       }),

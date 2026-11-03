@@ -6,6 +6,7 @@ import 'package:chatter_bee/services/revenueCat_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ProFeaturePopup extends StatelessWidget {
   const ProFeaturePopup({super.key});
@@ -24,12 +25,9 @@ class ProFeaturePopup extends StatelessWidget {
       if (Get.isRegistered<ProStatusController>()) {
         ProStatusController.to.isProUser.value = true;
       }
-      Get.snackbar('Restored!', 'Your subscription has been restored.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.green.shade100);
+      AppToast.success('Your subscription has been restored.');
     } else {
-      Get.snackbar('Not found', 'No active subscription to restore.',
-          snackPosition: SnackPosition.TOP);
+      AppToast.show('No active subscription to restore.');
     }
   }
 

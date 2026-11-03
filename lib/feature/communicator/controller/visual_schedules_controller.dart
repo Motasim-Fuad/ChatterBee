@@ -2,6 +2,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class VisualSchedulesController extends GetxController {
   var scheduleItems = <ScheduleItemModel>[].obs;
@@ -167,14 +168,7 @@ class VisualSchedulesController extends GetxController {
     print('Items after insert: ${scheduleItems.length}');
     print('Activity added to list');
 
-    Get.snackbar(
-      'Success',
-      'Activity added to schedule',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green.shade100,
-      colorText: Colors.green.shade900,
-      duration: const Duration(seconds: 2),
-    );
+    AppToast.success('Activity added to schedule');
   }
 
   
@@ -208,14 +202,7 @@ class VisualSchedulesController extends GetxController {
 
       print('Activity updated in list');
 
-      Get.snackbar(
-        'Updated',
-        'Activity updated successfully',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.blue.shade100,
-        colorText: Colors.blue.shade900,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.success('Activity updated successfully');
     } else {
       print('Item not found with id: $id');
     }
@@ -228,14 +215,7 @@ class VisualSchedulesController extends GetxController {
     print('Activity deleted: ${item.title}');
     print('Remaining items: ${scheduleItems.length}');
 
-    Get.snackbar(
-      'Deleted',
-      '${item.title} removed from schedule',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.orange.shade100,
-      colorText: Colors.orange.shade900,
-      duration: const Duration(seconds: 2),
-    );
+    AppToast.show('${item.title} removed from schedule');
   }
 
   @override

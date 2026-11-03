@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class HealthController extends GetxController {
   var selectedHealth = ''.obs;
@@ -30,20 +31,9 @@ class HealthController extends GetxController {
 
   void speakHealth() {
     if (selectedHealth.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        selectedHealth.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(selectedHealth.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select a health option first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select a health option first');
     }
   }
 

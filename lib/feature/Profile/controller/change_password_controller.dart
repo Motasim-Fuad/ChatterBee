@@ -2,6 +2,7 @@ import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ChangePasswordController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -25,20 +26,17 @@ class ChangePasswordController extends GetxController {
     final confirmPassword = confirmPasswordController.text.trim();
 
     if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
-      Get.snackbar('error'.tr, 'fill_all_fields'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('fill_all_fields'.tr);
       return;
     }
 
     if (newPassword.length < 8) {
-      Get.snackbar('error'.tr, 'password_min_length'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('password_min_length'.tr);
       return;
     }
 
     if (newPassword != confirmPassword) {
-      Get.snackbar('error'.tr, 'passwords_not_match'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('passwords_not_match'.tr);
       return;
     }
 
@@ -55,24 +53,18 @@ class ChangePasswordController extends GetxController {
       if (Get.isDialogOpen ?? false) Get.back();
 
       if (response.isSuccess) {
-        Get.snackbar(
-          'success'.tr, 'password_changed'.tr,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFE8F5E9),
-        );
+        AppToast.success('password_changed'.tr);
         _clearFields();
         Get.back();
       } else {
         final oldPassError = response.getFieldError('old_password');
         final newPassError = response.getFieldError('new_password');
         final errorMsg = oldPassError ?? newPassError ?? response.message;
-        Get.snackbar('error'.tr, errorMsg,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(errorMsg);
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      Get.snackbar('error'.tr, 'profile_update_failed'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('profile_update_failed'.tr);
     } finally {
       isLoading.value = false;
     }

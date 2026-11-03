@@ -36,7 +36,7 @@ class CaregiverHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<CaregiverHomeController>();
-    Get.put(ProfileController());
+    Get.put(ProfileController(), permanent: true);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),

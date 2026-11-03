@@ -2,6 +2,7 @@ import 'package:chatter_bee/Repository/activity/activity_repository.dart';
 import 'package:chatter_bee/models/activity/activity_models.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ActivitiesController extends GetxController {
   final ActivityRepository _repository = ActivityRepository();
@@ -72,14 +73,7 @@ class ActivitiesController extends GetxController {
     final result = await Get.toNamed('/add-activity');
     if (result != null && result is ActivityModel) {
       onActivityAdded(result);
-      Get.snackbar(
-        'success'.tr,
-        '${result.activityName} ${'activity_added'.tr}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade100,
-        colorText: Colors.green.shade900,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.success('${result.activityName} ${'activity_added'.tr}');
     } else if (result == null) {
       fetchActivities();
     }
@@ -93,14 +87,7 @@ class ActivitiesController extends GetxController {
     );
     if (result != null && result is ActivityModel) {
       onActivityUpdated(result);
-      Get.snackbar(
-        'success'.tr,
-        '${result.activityName} ${'activity_updated'.tr}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade100,
-        colorText: Colors.green.shade900,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.success('${result.activityName} ${'activity_updated'.tr}');
     }
   }
 
@@ -115,21 +102,9 @@ class ActivitiesController extends GetxController {
 
     if (response.isSuccess) {
       activities.removeWhere((a) => a.id == activity.id);
-      Get.snackbar(
-        'deleted'.tr,
-        '${activity.activityName} ${'activity_deleted'.tr}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade100,
-        colorText: Colors.green.shade900,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.success('${activity.activityName} ${'activity_deleted'.tr}');
     } else {
-      Get.snackbar(
-        'error'.tr, response.message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error(response.message);
     }
   }
   int _statusPriority(String? status) {

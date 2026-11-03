@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class LoginController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -149,46 +150,18 @@ class LoginController extends GetxController {
         await _saveRememberedEmailAfterLogin(emailController.text.trim());
         TextInput.finishAutofillContext();
 
-        Get.snackbar(
-          'Success',
-          'Login successful!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 2),
-        );
+        AppToast.success('Login successful!');
 
         Get.offAllNamed(AppRoutes.NAVIGATIONBAR);
       } else {
         if (response.statusCode == 403) {
-          Get.snackbar(
-            'Email Not Verified',
-            'Please verify your email before logging in. Check your inbox for verification code.',
-            backgroundColor: Colors.orange,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
-            duration: const Duration(seconds: 4),
-          );
+          AppToast.error('Please verify your email before logging in. Check your inbox for verification code.');
         } else {
-          Get.snackbar(
-            'Login Failed',
-            response.message,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
-            duration: const Duration(seconds: 3),
-          );
+          AppToast.error(response.message);
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'An unexpected error occurred. Please try again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-      );
+      AppToast.error('An unexpected error occurred. Please try again.');
     } finally {
       isLoading.value = false;
     }

@@ -1,6 +1,7 @@
 import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class BreakfastController extends GetxController {
   var selectedFood = ''.obs;
@@ -54,20 +55,9 @@ class BreakfastController extends GetxController {
 
   void speakFood() {
     if (selectedFood.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        selectedFood.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(selectedFood.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select a breakfast item first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select a breakfast item first');
     }
   }
 

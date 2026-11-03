@@ -3,6 +3,7 @@ import 'package:chatter_bee/config/translations/language_controller.dart';
 import 'package:chatter_bee/services/tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class TextToSpeakController extends GetxController {
   final CommunicatorRepository _repo = CommunicatorRepository();
@@ -24,13 +25,7 @@ class TextToSpeakController extends GetxController {
   void speakText() {
     final spoken = text.value.trim();
     if (spoken.isEmpty) {
-      Get.snackbar(
-        'error'.tr,
-        'type_to_speak_hint'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('type_to_speak_hint'.tr);
       return;
     }
     var lang = 'en';

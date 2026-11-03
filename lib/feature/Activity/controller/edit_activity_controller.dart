@@ -5,6 +5,7 @@ import 'package:chatter_bee/widgets/schedule_image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class EditActivityController extends GetxController {
   final ActivityRepository _repository = ActivityRepository();
@@ -109,10 +110,7 @@ class EditActivityController extends GetxController {
             existingImageUrl.value = '';
           }
         } catch (e) {
-          Get.snackbar(
-            'error'.tr, 'failed_pick_image_activity'.tr,
-            snackPosition: SnackPosition.BOTTOM,
-          );
+          AppToast.error('failed_pick_image_activity'.tr);
         }
       },
     );
@@ -123,12 +121,7 @@ class EditActivityController extends GetxController {
   Future<void> saveActivity() async {
     final name = activityNameController.text.trim();
     if (name.isEmpty) {
-      Get.snackbar(
-        'missing_field'.tr, 'activity_name_required'.tr,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('activity_name_required'.tr);
       return;
     }
 
@@ -147,12 +140,7 @@ class EditActivityController extends GetxController {
     if (response.isSuccess && response.data != null) {
       Get.back(result: response.data);
     } else {
-      Get.snackbar(
-        'error'.tr, response.message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error(response.message);
     }
   }
 

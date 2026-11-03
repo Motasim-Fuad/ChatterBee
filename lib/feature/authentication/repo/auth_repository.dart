@@ -12,6 +12,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:chatter_bee/routes/app_routes.dart';
+import 'package:chatter_bee/routes/return_to_navigation.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class AuthRepository {
   final ApiClient _apiClient = ApiClient();
@@ -332,7 +334,7 @@ class AuthRepository {
       if (Get.currentRoute == AppRoutes.SIGNINSCREEN) return;
       FocusManager.instance.primaryFocus?.unfocus();
       Get.offAllNamed(AppRoutes.SIGNINSCREEN);
-      Get.snackbar('Session Expired', 'Please login again', snackPosition: SnackPosition.TOP);
+      AppToast.error('Please login again');
     } catch (e) {
       LoggerUtils.logError('Handle unauthorized error: $e');
     }
@@ -390,6 +392,7 @@ class AuthRepository {
     }
     await _secureStorage.clearAll();
     await _storage.clearAll();
+    resetSessionControllers();
   }
 
   Future<bool> isLoggedIn() async {

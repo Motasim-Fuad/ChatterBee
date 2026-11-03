@@ -2,6 +2,7 @@ import 'package:chatter_bee/config/imagesUrl.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class FoodDrinkController extends GetxController {
   var selectedFood = ''.obs;
@@ -113,26 +114,15 @@ class FoodDrinkController extends GetxController {
         Get.toNamed(AppRoutes.SNACKS);
         break;
       default:
-        Get.snackbar('Category', category);
+        AppToast.show(category);
     }
   }
 
   void speakFood() {
     if (selectedFood.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        selectedFood.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(selectedFood.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select a food item first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select a food item first');
     }
   }
 

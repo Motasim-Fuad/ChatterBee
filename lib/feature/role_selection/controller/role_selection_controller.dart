@@ -2,6 +2,7 @@ import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class RoleSelectionController extends GetxController {
   final RxString selectedRole = ''.obs;
@@ -14,13 +15,7 @@ class RoleSelectionController extends GetxController {
   
   Future<void> continueToSignup() async {
     if (selectedRole.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please select a role',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      AppToast.error('Please select a role');
       return;
     }
 

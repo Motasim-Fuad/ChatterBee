@@ -36,7 +36,7 @@ class CommunicatorHomeScreen extends GetView<CommunicatorHomeController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileController());
+    Get.put(ProfileController(), permanent: true);
 
     return Scaffold(
       backgroundColor: AppColors.bgColor,

@@ -2,6 +2,7 @@ import 'package:chatter_bee/feature/authentication/repo/auth_repository.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class ForgotPasswordController extends GetxController {
   final AuthRepository _authRepository = AuthRepository();
@@ -81,14 +82,7 @@ class ForgotPasswordController extends GetxController {
       );
 
       if (response.isSuccess) {
-        Get.snackbar(
-          'Success',
-          'Password reset code sent to your email',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 2),
-        );
+        AppToast.success('Password reset code sent to your email');
 
         Get.toNamed(
           AppRoutes.FORGOTOTPSCREEN,
@@ -97,24 +91,10 @@ class ForgotPasswordController extends GetxController {
           },
         );
       } else {
-        Get.snackbar(
-          'Error',
-          response.message,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 3),
-        );
+        AppToast.error(response.message);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to send reset email. Please try again.',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-      );
+      AppToast.error('Failed to send reset email. Please try again.');
     } finally {
       _setLoading(false);
     }

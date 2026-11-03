@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CaregiverSubCategoryController extends GetxController {
   final CaregiverCustomizationRepository _repo =
@@ -151,8 +152,7 @@ class CaregiverSubCategoryController extends GetxController {
 
   Future<void> save(String name) async {
     if (name.trim().isEmpty) {
-      Get.snackbar('error'.tr, 'please_enter_name'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('please_enter_name'.tr);
       return;
     }
     formLoading.value = true;
@@ -171,11 +171,9 @@ class CaregiverSubCategoryController extends GetxController {
       if (res.isSuccess) {
         Get.back();
         await refresh();
-        Get.snackbar('updated'.tr, 'sub_category_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('sub_category_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     } else {
       final communicatorId =
@@ -193,11 +191,9 @@ class CaregiverSubCategoryController extends GetxController {
       if (res.isSuccess) {
         Get.back();
         await refresh();
-        Get.snackbar('created'.tr, 'sub_category_created'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('sub_category_created'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     }
   }

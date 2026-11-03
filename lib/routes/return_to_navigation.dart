@@ -1,5 +1,8 @@
 import 'package:chatter_bee/feature/home_screen/caregiver/controller/caregiver_home_controller.dart';
 import 'package:chatter_bee/feature/home_screen/communicator/contoller/communicator_home_controller.dart';
+import 'package:chatter_bee/feature/Notification/notification_controller.dart';
+import 'package:chatter_bee/feature/Profile/controller/profile_controller.dart';
+import 'package:chatter_bee/services/pro_access_gate.dart';
 import 'package:chatter_bee/feature/navigation_bar/navigation_bar.dart';
 import 'package:chatter_bee/routes/app_routes.dart';
 import 'package:chatter_bee/services/storage/data_storage.dart';
@@ -38,14 +41,33 @@ void _syncShellWithStoredRole() {
     Get.find<NavigationController>().syncRole();
   }
 
+  // The profile (name, avatar, role, switch list) belongs to the old account.
+  if (Get.isRegistered<ProfileController>()) {
+    Get.find<ProfileController>().loadUserProfile();
+  } else {
+    Get.put(ProfileController(), permanent: true);
+  }
+
+  // Notifications of the previous account must not stay on screen.
+  if (Get.isRegistered<NotificationControllerdamo>()) {
+    final n = Get.find<NotificationControllerdamo>();
+    n.notifications.clear();
+    if (ProAccessGate.isPro) {
+      n.loadNotifications();
+      n.loadSettings();
+    }
+  }
+
+  // permanent: true => not linked to the /Profile route that is being popped,
+  // so GetX will not delete the controller when that route is disposed.
   if (communicator) {
     if (!Get.isRegistered<CommunicatorHomeController>()) {
-      Get.put(CommunicatorHomeController());
+      Get.put(CommunicatorHomeController(), permanent: true);
     } else {
-      Get.find<CommunicatorHomeController>().refresh();
+      Get.find<CommunicatorHomeController>().loadContent();
     }
   } else if (!Get.isRegistered<CaregiverHomeController>()) {
-    Get.put(CaregiverHomeController());
+    Get.put(CaregiverHomeController(), permanent: true);
   } else {
     Get.find<CaregiverHomeController>().reloadAfterProfileChange();
   }
@@ -59,4 +81,21 @@ void _syncShellWithStoredRole() {
       Get.delete<CommunicatorHomeController>(force: true);
     }
   });
+}
+
+/// Call on logout / session expiry so permanent controllers never leak one
+/// account's data into the next login.
+void resetSessionControllers() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (Get.isRegistered<ProfileController>()) {
+      Get.delete<ProfileController>(force: true);
+    }
+    if (Get.isRegistered<CommunicatorHomeController>()) {
+      Get.delete<CommunicatorHomeController>(force: true);
+    }
+    if (Get.isRegistered<CaregiverHomeController>()) {
+      Get.delete<CaregiverHomeController>(force: true);
+    }
+  });
+  WidgetsBinding.instance.scheduleFrame();
 }

@@ -24,6 +24,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 const List<Map<String, String>> kColorOptions = [
   {'hex': '#B5CFD1', 'label': 'Teal'},
@@ -414,8 +415,7 @@ class CaregiverHomeController extends GetxController
 
   Future<void> saveCategory(String name) async {
     if (name.trim().isEmpty) {
-      Get.snackbar('error'.tr, 'please_enter_name'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('please_enter_name'.tr);
       return;
     }
     catFormLoading.value = true;
@@ -434,11 +434,9 @@ class CaregiverHomeController extends GetxController
       if (res.isSuccess) {
         Get.back();
         await loadContent();
-        Get.snackbar('updated'.tr, 'category_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('category_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     } else {
       final res = await _repo.createCategory(
@@ -453,11 +451,9 @@ class CaregiverHomeController extends GetxController
       if (res.isSuccess) {
         Get.back();
         await loadContent();
-        Get.snackbar('created'.tr, 'category_created'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('category_created'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     }
   }
@@ -678,11 +674,9 @@ class CaregiverHomeController extends GetxController
       qsFormLoading.value = false;
       if (res.isSuccess) {
         await loadContent();
-        Get.snackbar('updated'.tr, 'quick_speak_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('quick_speak_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
       return;
     }
@@ -696,11 +690,9 @@ class CaregiverHomeController extends GetxController
     qsFormLoading.value = false;
     if (res.isSuccess) {
       await loadContent();
-      Get.snackbar('created'.tr, 'quick_speak_created'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.success('quick_speak_created'.tr);
     } else {
-      Get.snackbar('error'.tr, res.message,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error(res.message);
     }
   }
 
@@ -719,8 +711,7 @@ class CaregiverHomeController extends GetxController
   Future<void> toggleQsRecording() async {
     final perm = await Permission.microphone.request();
     if (!perm.isGranted) {
-      Get.snackbar('permission'.tr, 'mic_permission_required'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('mic_permission_required'.tr);
       return;
     }
 
@@ -785,8 +776,7 @@ class CaregiverHomeController extends GetxController
 
   Future<void> saveQuickSpeak(String word) async {
     if (word.trim().isEmpty) {
-      Get.snackbar('error'.tr, 'please_enter_word'.tr,
-          snackPosition: SnackPosition.BOTTOM);
+      AppToast.error('please_enter_word'.tr);
       return;
     }
     qsFormLoading.value = true;
@@ -806,11 +796,9 @@ class CaregiverHomeController extends GetxController
       if (res.isSuccess) {
         Get.back();
         await loadContent();
-        Get.snackbar('updated'.tr, 'quick_speak_updated'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('quick_speak_updated'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     } else {
       final res = await _repo.createQuickSpeak(
@@ -825,11 +813,9 @@ class CaregiverHomeController extends GetxController
       if (res.isSuccess) {
         Get.back();
         await loadContent();
-        Get.snackbar('created'.tr, 'quick_speak_created'.tr,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.success('quick_speak_created'.tr);
       } else {
-        Get.snackbar('error'.tr, res.message,
-            snackPosition: SnackPosition.BOTTOM);
+        AppToast.error(res.message);
       }
     }
   }

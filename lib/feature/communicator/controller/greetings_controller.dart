@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class GreetingsController extends GetxController {
   var selectedWords = <String>[].obs;
@@ -30,20 +31,9 @@ class GreetingsController extends GetxController {
 
   void speakGreeting() {
     if (greetingText.value.isNotEmpty) {
-      Get.snackbar(
-        'Speaking',
-        greetingText.value,
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      AppToast.show(greetingText.value);
     } else {
-      Get.snackbar(
-        'Error',
-        'Please select words first',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade100,
-        colorText: Colors.red.shade900,
-      );
+      AppToast.error('Please select words first');
     }
   }
 

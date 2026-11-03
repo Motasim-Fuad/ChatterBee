@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:chatter_bee/widgets/app_shimmer.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
   const CaregiverProfileScreen({super.key});
@@ -291,8 +292,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
 
                 Center(
                   child: TextButton.icon(
-                    onPressed: () => Get.snackbar('Preview', 'Voice preview would play here',
-                        snackPosition: SnackPosition.TOP),
+                    onPressed: () => AppToast.show('Voice preview would play here'),
                     icon: SvgPicture.asset(ImagesLink.voiceIcon),
                     label: Text('preview_voice'.tr,
                         style: GoogleFonts.nunito(
@@ -301,8 +301,7 @@ class CaregiverProfileScreen extends GetView<CaregiverProfileController> {
                 ),
                 Center(
                   child: TextButton.icon(
-                    onPressed: () => Get.snackbar('Upload', 'Voice upload functionality',
-                        snackPosition: SnackPosition.BOTTOM),
+                    onPressed: () => AppToast.show('Voice upload functionality'),
                     icon: SvgPicture.asset(ImagesLink.voiceMic),
                     label: Text('upload_voice'.tr,
                         style: GoogleFonts.nunito(

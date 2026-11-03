@@ -60,9 +60,9 @@ class ApiClient {
           }
 
           LoggerUtils.logApi('REQUEST[${options.method}] => ${options.uri}');
-          LoggerUtils.logDebug('Headers: ${options.headers}');
+          LoggerUtils.logDebug('Headers: ${LoggerUtils.redact(options.headers)}');
           if (options.data != null) {
-            LoggerUtils.logDebug('Data: ${options.data}');
+            LoggerUtils.logDebug('Data: ${options.data is FormData ? 'FormData' : LoggerUtils.redact(options.data)}');
           }
 
           return handler.next(options);
@@ -70,7 +70,7 @@ class ApiClient {
         onResponse: (response, handler) {
           LoggerUtils.logSuccess(
               'RESPONSE[${response.statusCode}] => ${response.requestOptions.uri}');
-          LoggerUtils.logDebug('Response Data: ${response.data}');
+          LoggerUtils.logDebug('Response Data: ${LoggerUtils.redact(response.data)}');
           return handler.next(response);
         },
         onError: (error, handler) async {

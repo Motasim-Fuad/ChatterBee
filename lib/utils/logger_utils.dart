@@ -54,4 +54,31 @@ class LoggerUtils {
       _logger.i('API: $message');
     }
   }
+
+  static const Set<String> _secretKeys = {
+    'password',
+    'old_password',
+    'new_password',
+    'confirm_password',
+    'access',
+    'refresh',
+    'token',
+    'authorization',
+    'otp',
+  };
+
+  /// Returns a copy of [value] with secrets (passwords, tokens, otp) masked,
+  /// so they never end up in console logs or pasted bug reports.
+  static dynamic redact(dynamic value) {
+    if (value is Map) {
+      return value.map((k, v) => MapEntry(
+            k,
+            _secretKeys.contains(k.toString().toLowerCase())
+                ? '***'
+                : redact(v),
+          ));
+    }
+    if (value is List) return value.map(redact).toList();
+    return value;
+  }
 }

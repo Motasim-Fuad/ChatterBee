@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:chatter_bee/utils/app_toast.dart';
 
 class SubscriptionController extends GetxController {
   final selectedPlan = 'monthly'.obs;
@@ -45,8 +46,7 @@ class SubscriptionController extends GetxController {
   
   void onPlanTapped(String plan) {
     if (isProUser) {
-      Get.snackbar('Already Pro', 'You have an active subscription.',
-          snackPosition: SnackPosition.TOP);
+      AppToast.show('You have an active subscription.');
       return;
     }
     selectPlan(plan);
@@ -87,15 +87,13 @@ class SubscriptionController extends GetxController {
   
   void onContinuePressed() {
     if (isProUser) {
-      Get.snackbar('Already Pro', 'You have an active subscription.',
-          snackPosition: SnackPosition.TOP);
+      AppToast.show('You have an active subscription.');
       return;
     }
 
     final pkg = selectedPackage;
     if (pkg == null) {
-      Get.snackbar('Error', 'Product not found. Please try again.',
-          snackPosition: SnackPosition.TOP);
+      AppToast.error('Product not found. Please try again.');
       return;
     }
 
@@ -110,8 +108,7 @@ class SubscriptionController extends GetxController {
         ProStatusController.to.isProUser.value = true;
         _showSuccessSheet();
       } else {
-        Get.snackbar('Cancelled', 'Purchase was cancelled.',
-            snackPosition: SnackPosition.TOP);
+        AppToast.show('Purchase was cancelled.');
       }
     } finally {
       isLoading.value = false;
@@ -125,12 +122,9 @@ class SubscriptionController extends GetxController {
       final restored = await RevenueCatService.instance.restorePurchases();
       if (restored) {
         ProStatusController.to.isProUser.value = true;
-        Get.snackbar('Restored!', 'Your subscription has been restored.',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.shade100);
+        AppToast.success('Your subscription has been restored.');
       } else {
-        Get.snackbar('Not found', 'No active subscription to restore.',
-            snackPosition: SnackPosition.TOP);
+        AppToast.show('No active subscription to restore.');
       }
     } finally {
       isLoading.value = false;
