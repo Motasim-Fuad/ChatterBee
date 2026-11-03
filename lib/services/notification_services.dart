@@ -34,7 +34,8 @@ class NotificationPayload {
 class NotificationService extends GetxService {
   static NotificationService get to => Get.find();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  // lazy: must not throw at construction if Firebase failed to initialise
+  late final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
   FlutterLocalNotificationsPlugin();
 

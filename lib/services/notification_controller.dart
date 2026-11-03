@@ -12,7 +12,7 @@ class NotificationControllerFCM extends GetxController {
 
   final FcmTokenRepository _fcmRepo = FcmTokenRepository();
   final SecureStorageService _secureStorage = SecureStorageService();
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  late final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   final RxString fcmToken = ''.obs;
   final RxBool isTokenRegistered = false.obs;
@@ -23,8 +23,12 @@ class NotificationControllerFCM extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _getCurrentFcmToken();
-    _tokenRefreshSub = _fcm.onTokenRefresh.listen(_onTokenRefresh);
+    try {
+      _getCurrentFcmToken();
+      _tokenRefreshSub = _fcm.onTokenRefresh.listen(_onTokenRefresh);
+    } catch (e) {
+      debugPrint('[FCM] controller init skipped: $e');
+    }
   }
 
   @override
