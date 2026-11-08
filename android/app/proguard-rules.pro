@@ -1,0 +1,4 @@
+   -keep class io.flutter.plugins.** { *; }
+   -keep class com.github.dart_lang.jni.** { *; }
+   -keepclasseswithmembernames class * { native <methods>; }
+   -keepattributes *Annotation*, Signature, InnerClasses, EnclosingMethod

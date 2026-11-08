@@ -9,8 +9,18 @@ class StorageService {
 
 
   Future<void> init() async {
-    _prefs = await SharedPreferences.getInstance();
-    print('StorageService initialized');
+    try {
+      _prefs = await SharedPreferences.getInstance();
+      print('StorageService initialized');
+    } catch (e) {
+      // Last-resort fallback so the app (and login) still work if the native
+      // SharedPreferences plugin is broken, e.g. stripped by R8 in release.
+      // Values are then kept in memory only for this app session.
+      print('StorageService: native prefs failed ($e), using in-memory store');
+      // ignore: invalid_use_of_visible_for_testing_member
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      _prefs = await SharedPreferences.getInstance();
+    }
   }
 
   SharedPreferences get prefs {
